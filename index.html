@@ -57,15 +57,16 @@
         .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; }
         .bg-vacio { background: #f8fafc; border-style: dashed; border-color: #cbd5e1; }
 
+        /* BAJO SILO */
         .bs-dimmed { opacity: 0.3; filter: grayscale(100%); }
-        .bs-badge { position: absolute; bottom: 0px; left: 0; right: 0; padding: 2px 0; font-size: 0.5rem; font-weight: bold; color: white; text-align: center;}
+        .bs-badge { position: absolute; bottom: 0px; left: 0; right: 0; padding: 2px 0; font-size: 0.5rem; font-weight: bold; color: white; text-align: center; text-transform: uppercase;}
         .bs-A { background: #10b981; } .bs-C { background: #ef4444; } .bs-V { background: #64748b; } .bs-T { background: #f59e0b; }
         
         .bs-alert-banner { display: none; background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 4px; font-weight: 600; margin-bottom: 15px; border: 1px solid #f87171; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; justify-content: center; align-items: flex-end; padding: 0; }
         .modal.active { display: flex; }
-        .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 16px 16px 0 0; padding: 24px; max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 25px rgba(0,0,0,0.2); }
+        .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 16px 16px 0 0; padding: 24px; max-height: 92vh; overflow-y: auto; box-shadow: 0 -10px 25px rgba(0,0,0,0.2); }
         
         @media (min-width: 769px) {
             .modal { align-items: center; padding: 15px; }
@@ -85,7 +86,7 @@
         .btn-save:active { background: var(--secondary); }
         .btn-close { background: white; color: var(--text); border: 1px solid #cbd5e1; padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
-        .btn-hist { background: #f8fafc; color: var(--primary); border: 1px solid var(--border); padding: 12px; width: 100%; border-radius: 6px; font-size: 0.9rem; font-weight: 600; margin-top: 15px; cursor: pointer; text-align: center; }
+        .btn-hist { background: #f8fafc; color: var(--primary); border: 1px solid var(--border); padding: 12px; width: 100%; border-radius: 6px; font-size: 0.9rem; font-weight: 600; margin-top: 10px; cursor: pointer; text-align: center; }
         .btn-recir { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 12px; width: 100%; border-radius: 6px; font-size: 0.9rem; font-weight: 600; margin-top: 10px; cursor: pointer; text-align: center; }
         .btn-manual { background: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; padding: 12px; width: 100%; border-radius: 6px; font-size: 0.9rem; font-weight: 600; margin-top: 10px; cursor: pointer; text-align: center; }
 
@@ -114,6 +115,9 @@
         .check-alerta { display: flex; align-items: center; gap: 10px; margin-top: 15px; background: #fff3cd; padding: 12px; border-radius: 6px; border: 1px solid #ffe69c;}
         .check-alerta input { width: 24px; height: 24px; margin: 0; cursor: pointer; }
         .check-alerta label { margin: 0; color: #856404; font-size: 0.85rem; text-transform: none; }
+
+        .seccion-historial { background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 25px; border: 1px dashed #cbd5e1;}
+        .seccion-historial h3 { font-size: 0.9rem; color: var(--text-light); margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
     </style>
 </head>
 <body>
@@ -148,7 +152,7 @@
             <select id="filtro-bajosilo" class="filtro-cereal" onchange="dibujarBajoSilo()">
                 <option value="TODOS">Todos los Cereales</option>
             </select>
-            <p style="font-size:0.85rem; color:var(--text-light); margin-top:0;">Toca las unidades para marcarlas temporalmente. No afecta al Tablero.</p>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-top:0;">Tocá una unidad para cambiar su estado (Cerrado/Abierto).</p>
             <div id="contenedor-bajosilo"></div>
         </div>
 
@@ -255,7 +259,7 @@
             <h2 id="m-titulo" style="border:none; margin-bottom:0;">Unidad 101</h2>
             <div id="m-alertas"></div>
             
-            <label>Estado Operativo</label>
+            <label>Estado Operativo (Tablero)</label>
             <div class="btn-group" style="margin-top:5px;">
                 <button class="btn-estado" onclick="setEstado('VACIO')" id="e-vacio">VACÍO</button>
                 <button class="btn-estado" onclick="setEstado('CON_CARGA')" id="e-carga">CON CARGA</button>
@@ -325,11 +329,15 @@
                 </div>
             </div>
 
-            <button class="btn-recir" id="btn-recir" onclick="abrirModalRecirculacion()">🔄 Registrar Recirculación</button>
-            <button class="btn-manual" id="btn-hist-manual" onclick="abrirModalHistManual()">🕰️ Agregar Historial Manual</button>
+            <!-- SECCION SIEMPRE VISIBLE PARA HISTORIALES -->
+            <div class="seccion-historial">
+                <h3>Libreta de Seguimiento</h3>
+                <button class="btn-recir" onclick="abrirModalRecirculacion()">🔄 Registrar Recirculación</button>
+                <button class="btn-manual" onclick="abrirModalHistManual()">🕰️ Agregar Historial Manual (Fechas Viejas)</button>
+                <button class="btn-hist" onclick="abrirHistorial()">📋 Ver Historial Completo</button>
+            </div>
             
-            <button class="btn-hist" id="btn-ver-hist" onclick="abrirHistorial()">📋 Ver Historial de Movimientos</button>
-            <button class="btn-save" onclick="guardarSilo()">GUARDAR REGISTRO</button>
+            <button class="btn-save" onclick="guardarSilo()">GUARDAR DATOS DEL TABLERO</button>
             <button class="btn-close" onclick="cerrarModal('modal-silo')">Cancelar</button>
         </div>
     </div>
@@ -340,7 +348,7 @@
             <h2 style="border:none; margin-bottom:5px;">Agregar al Historial</h2>
             <p style="color:var(--text-light); font-size:0.9rem; margin-top:0;">Unidad <span id="hm-sub"></span></p>
             
-            <label>Fecha</label>
+            <label>Fecha (Puede ser vieja)</label>
             <input type="date" id="hm-fecha">
 
             <label>Tonelaje (t)</label>
@@ -383,10 +391,10 @@
             
             <label>Marcar estado (Temporal):</label>
             <div class="btn-group" style="flex-direction: column;">
-                <button class="btn-estado" style="padding:18px; font-size:1rem;" onclick="setBajoSiloState('ABIERTO')">ABIERTO (Extrayendo)</button>
-                <button class="btn-estado" style="padding:18px; font-size:1rem;" onclick="setBajoSiloState('CERRADO')">CERRADO (Operativo)</button>
-                <button class="btn-estado" style="padding:18px; font-size:1rem;" onclick="setBajoSiloState('VACIADO')">VACIADO</button>
-                <button class="btn-estado" style="padding:18px; font-size:1rem;" onclick="setBajoSiloState('TAPADO')">TAPADO</button>
+                <button class="btn-estado" style="padding:18px; font-size:1rem; background:#10b981; color:white;" onclick="setBajoSiloState('ABIERTO')">🟢 ABIERTO (Extrayendo)</button>
+                <button class="btn-estado" style="padding:18px; font-size:1rem; background:#ef4444; color:white;" onclick="setBajoSiloState('CERRADO')">🔴 CERRADO (Operativo)</button>
+                <button class="btn-estado" style="padding:18px; font-size:1rem; background:#64748b; color:white;" onclick="setBajoSiloState('VACIADO')">⚪ VACIADO</button>
+                <button class="btn-estado" style="padding:18px; font-size:1rem; background:#f59e0b; color:white;" onclick="setBajoSiloState('TAPADO')">🟠 TAPADO</button>
             </div>
             <button class="btn-close" style="margin-top:20px;" onclick="cerrarModal('modal-bajosilo')">Cerrar</button>
         </div>
@@ -422,7 +430,6 @@
         const MIN_14 = [702, 705, 708, 711, 714, 717];
         const MIN_10 = [502, 505, 508, 511, 514, 517];
 
-        // Estructura de cintas (solo para cálculos internos de relleno)
         const CINTAS = { C1: { nombre: "Cinta 1", silos: [] }, C2: { nombre: "Cinta 2", silos: [] }, C3: { nombre: "Cinta 3", silos: [] }, C4: { nombre: "Cinta 4", silos: [] } };
         for(let i=701; i<=718; i++) CINTAS.C1.silos.push(i);
         for(let i=601; i<=617; i++) CINTAS.C1.silos.push(i);
@@ -433,7 +440,6 @@
         for(let i=101; i<=118; i++) CINTAS.C4.silos.push(i);
         for(let i=201; i<=217; i++) CINTAS.C4.silos.push(i);
 
-        // Estructura visual por Sectores (100s, 200s...)
         const SECTORES = [
             { nombre: "SECTOR 700", rango: [701, 718] },
             { nombre: "SECTOR 600", rango: [601, 617] },
@@ -523,7 +529,6 @@
             return 'f-OTROS';
         }
 
-        // --- DIBUJAR TABLERO (Por Sectores) ---
         function dibujarTablero() {
             const contenedor = document.getElementById('contenedor-tablero');
             const filtro = document.getElementById('filtro-tablero').value;
@@ -532,14 +537,8 @@
             SECTORES.forEach(sector => {
                 let htmlSilos = '';
                 
-                // Generar la lista de números en ese sector
                 for(let num = sector.rango[0]; num <= sector.rango[1]; num++) {
-                    // Filtrar los que no van (como los pares del 400 en la cinta 2)
-                    if(num >= 400 && num < 500) {
-                        let esPar = num % 2 === 0;
-                        if(!esPar) continue; // Solo pares
-                    }
-                    // En la vida real algunos silos no existen (ej 618), pero la base ya los filtra
+                    if(num >= 400 && num < 500 && num % 2 !== 0) continue; // Omitir impares del 400
 
                     let data = getSiloData(num);
                     if(filtro !== 'TODOS' && data.cereal !== filtro && data.estado !== 'VACIO') continue;
@@ -592,11 +591,7 @@
             let alertHtml = tieneAlerta(num) ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:4px; font-size:0.85rem; font-weight:600; margin-top:15px;">⚠️ UNIDAD CON ALERTAS ACTIVAS.</div>` : '';
             document.getElementById('m-alertas').innerHTML = alertHtml;
             
-            let tieneCarga = (data.estado !== 'VACIO');
-            document.getElementById('btn-recir').style.display = tieneCarga ? 'block' : 'none';
-            document.getElementById('btn-hist-manual').style.display = tieneCarga ? 'block' : 'none';
-            document.getElementById('btn-ver-hist').style.display = data.historial.length > 0 ? 'block' : 'none';
-            
+            // Siempre mostrar los botones, sin importar el estado
             document.getElementById('modal-silo').classList.add('active');
         }
 
@@ -689,10 +684,10 @@
                 let ahora = new Date();
                 let fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 data.historial.push({ tipo: 'REGISTRO', fecha: fechaStr, estado: data.estado, cereal: data.cereal || 'Vacío', calidad: data.calidad || '-', tonelaje: data.tonelaje });
-                if(data.historial.length > 30) data.historial.shift();
+                if(data.historial.length > 50) data.historial.shift();
             }
 
-            data.lastUpdate = Date.now(); // Marca de tiempo para fusión de datos
+            data.lastUpdate = Date.now(); 
             guardarDB(); cerrarModal('modal-silo'); dibujarTablero();
         }
 
@@ -716,12 +711,11 @@
                 fecha_mov: fecha, 
                 tonelaje: tons
             });
-            if(data.historial.length > 50) data.historial.shift(); // Límite un poco más amplio
+            if(data.historial.length > 50) data.historial.shift(); 
 
             data.lastUpdate = Date.now();
             guardarDB();
             cerrarModal('modal-hist-manual');
-            document.getElementById('btn-ver-hist').style.display = 'block';
             alert("Historial manual agregado.");
         }
 
@@ -747,7 +741,6 @@
             data.lastUpdate = Date.now();
             guardarDB();
             cerrarModal('modal-recirculacion');
-            document.getElementById('btn-ver-hist').style.display = 'block';
             alert("Recirculación registrada.");
         }
 
@@ -758,8 +751,6 @@
             let cont = document.getElementById('lista-historial');
             cont.innerHTML = '';
             
-            // Ordenar: los manuales tienen fecha_mov, los registros tienen fecha completa. 
-            // Para simplificar, mostramos en orden de inserción inversa (último primero).
             let hist = [...data.historial].reverse();
             
             hist.forEach(h => {
@@ -784,7 +775,7 @@
             document.getElementById('modal-historial').classList.add('active');
         }
 
-        // --- BAJO SILO (Por Sectores) ---
+        // --- BAJO SILO (Todo arranca CERRADO) ---
         function dibujarBajoSilo() {
             let cont = document.getElementById('contenedor-bajosilo');
             let resumenDiv = document.getElementById('resumen-bajosilo');
@@ -797,22 +788,22 @@
                 let htmlSilos = '';
                 
                 for(let num = sector.rango[0]; num <= sector.rango[1]; num++) {
-                    if(num >= 400 && num < 500 && num % 2 !== 0) continue; // Omitir impares del 400
+                    if(num >= 400 && num < 500 && num % 2 !== 0) continue; 
 
                     let dbData = getSiloData(num);
                     if((dbData.estado === 'VACIO' || dbData.estado === 'FUERA_SERVICIO') && !bajoSiloLocal[num]) continue;
 
                     let esDelCereal = (cerealFiltro === 'TODOS' || dbData.cereal === cerealFiltro);
-                    
-                    // Buscar a qué cinta pertenece para el resumen
                     let cintaKey = 'C1';
-                    if(num >= 500) cintaKey = 'C2'; // Aproximación simple para totales visuales
+                    if(num >= 500) cintaKey = 'C2'; 
                     
                     if(esDelCereal && (dbData.estado === 'CON_CARGA' || dbData.estado === 'TAPADA' || dbData.estado === 'EN_USO')) {
                         totalesCinta[cintaKey] += parseFloat(dbData.tonelaje) || 0;
                     }
 
-                    if(bajoSiloLocal[num] === 'ABIERTO') abiertos.push(num);
+                    // LOGICA BAJO SILO: Si no hay estado local, ES CERRADO por defecto.
+                    let estadoLocal = bajoSiloLocal[num] || 'CERRADO';
+                    if(estadoLocal === 'ABIERTO') abiertos.push(num);
 
                     let isVacio = dbData.estado === 'VACIO';
                     let textoCereal = isVacio ? 'VACÍO' : (dbData.estado === 'FUERA_SERVICIO' ? 'F. SERVICIO' : dbData.cereal);
@@ -821,7 +812,9 @@
 
                     let franjaClass = isVacio ? 'f-VACIO' : getFranjaClass(dbData.cereal);
                     let dimClass = (cerealFiltro !== 'TODOS' && !esDelCereal) ? 'bs-dimmed' : '';
-                    let badge = bajoSiloLocal[num] ? `<div class="bs-badge bs-${bajoSiloLocal[num][0]}">${bajoSiloLocal[num]}</div>` : '';
+                    
+                    // Etiqueta de estado
+                    let badge = `<div class="bs-badge bs-${estadoLocal[0]}">${estadoLocal}</div>`;
 
                     htmlSilos += `
                         <div class="tarjeta ${isVacio?'bg-vacio':''} ${dimClass}" onclick="abrirModalBajoSilo(${num})">
@@ -859,14 +852,19 @@
         function abrirModalBajoSilo(num) {
             bsSiloSeleccionado = num;
             let dbData = getSiloData(num);
-            let estadoLocal = bajoSiloLocal[num] || 'CERRADO';
+            let estadoLocal = bajoSiloLocal[num] || 'CERRADO'; // Por defecto Cerrado
             document.getElementById('bs-titulo').innerText = 'Unidad ' + num;
             document.getElementById('bs-info').innerHTML = `Producto: <b>${dbData.cereal || 'Vacío'}</b> (${dbData.calidad || 'S/C'})<br>Tonelaje: <b>${dbData.tonelaje}t</b><br>Estado actual: <b>${estadoLocal}</b>`;
             document.getElementById('modal-bajosilo').classList.add('active');
         }
 
         function setBajoSiloState(estado) { 
-            bajoSiloLocal[bsSiloSeleccionado] = estado; 
+            // Si ya estaba en ese estado, no hace nada (o lo desmarca)
+            if(bajoSiloLocal[bsSiloSeleccionado] === estado && estado === 'ABIERTO') {
+                bajoSiloLocal[bsSiloSeleccionado] = 'CERRADO';
+            } else {
+                bajoSiloLocal[bsSiloSeleccionado] = estado; 
+            }
             guardarBajoSiloLocal();
             cerrarModal('modal-bajosilo'); 
             dibujarBajoSilo(); 
@@ -1054,7 +1052,6 @@
             document.getElementById('sel-cereal-relleno').innerHTML = opt; document.getElementById('filtro-bajosilo').innerHTML = optTodos;
         }
 
-        // --- EXPORTAR E IMPORTAR CON FUSIÓN ---
         function exportarDatos() {
             let dataStr = JSON.stringify(db); 
             let blob = new Blob([dataStr], {type: "application/json"});
@@ -1074,25 +1071,19 @@
                     if(opcion === "1") {
                         db = data; guardarDB(); location.reload();
                     } else if (opcion === "2") {
-                        // Lógica de Fusión
                         let importados = 0;
-                        // 1. Fusionar Cereales (si faltan)
                         data.cereales.forEach(cImp => {
                             if(!db.cereales.find(c => c.id === cImp.id)) { db.cereales.push(cImp); importados++; }
                         });
-                        // 2. Fusionar Silos
                         for(let num in data.silos) {
                             let dbSilo = getSiloData(num);
                             let impSilo = data.silos[num];
-                            // Comparar marcas de tiempo
                             if(impSilo.lastUpdate && impSilo.lastUpdate > (dbSilo.lastUpdate || 0)) {
                                 db.silos[num] = impSilo;
                                 importados++;
                             }
                         }
-                        // 3. Fusionar Otros
                         data.otros.forEach(oImp => {
-                            // Evitar duplicados exactos básicos
                             if(!db.otros.find(o => o.nombre === oImp.nombre && o.fecha === oImp.fecha)) {
                                 db.otros.push(oImp); importados++;
                             }

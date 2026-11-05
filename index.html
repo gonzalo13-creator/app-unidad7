@@ -34,7 +34,6 @@
         /* --- ESTILOS EXCLUSIVOS CELULAR (APP NATIVA) --- */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            /* El menú se va abajo, fijo, con iconos */
             .sidebar { 
                 width: 100%; height: 65px; flex-direction: row; overflow-x: auto; justify-content: flex-start;
                 border-top: 1px solid #0f172a; padding-bottom: env(safe-area-inset-bottom);
@@ -47,30 +46,22 @@
             }
             .nav-btn.active { border-left: none; border-top: 3px solid #38bdf8; background: #0f172a;}
             
-            /* Ajustamos el contenido para que no quede tapado por el menú */
             .content { height: calc(100% - 65px); padding-bottom: 0; }
             .tab-content { padding: 15px; }
-            input, select, textarea { font-size: 16px !important; padding: 14px; } /* Evita zoom en iOS y agranda la zona de toque */
+            input, select, textarea { font-size: 16px !important; padding: 14px; } 
             
-            /* Grilla de tarjetas más grandes para el dedo */
             .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
             .tarjeta { min-height: 90px; }
             .t-num { font-size: 1.3rem; }
             
-            /* Modales tipo "Bottom Sheet" (suben desde abajo) */
             .modal { align-items: flex-end; padding: 0; }
-            .modal-box { 
-                border-radius: 20px 20px 0 0; max-height: 92vh; padding: 20px; padding-bottom: 30px; 
-                animation: slideUp 0.3s ease-out; 
-            }
+            .modal-box { border-radius: 20px 20px 0 0; max-height: 92vh; padding: 20px; padding-bottom: 30px; animation: slideUp 0.3s ease-out; }
             @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
             
-            /* Botones de estado en vertical para que entren bien */
             .btn-group { flex-direction: column; }
             .btn-estado { padding: 16px; font-size: 1rem; text-align: center; }
             .btn-save, .btn-close { padding: 18px; font-size: 1.1rem; }
             
-            /* Tablas scrolleables */
             .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px;}
             .data-table { min-width: 600px; }
         }
@@ -759,6 +750,11 @@
                 if(!data.fecha_antigua && data.fecha) data.fecha_antigua = data.fecha;
             } else { 
                 data.cereal = ''; data.calidad = ''; data.tonelaje = 0; data.metros = ''; data.notas = ''; data.alerta_manual = false;
+                // Si se vacía en el tablero, borramos cualquier estado local del bajo silo
+                if(bajoSiloLocal[siloEditando]) {
+                    delete bajoSiloLocal[siloEditando];
+                    guardarBajoSiloLocal();
+                }
             }
 
             if(estadoAnterior !== data.estado || tonelajeAnterior != data.tonelaje || data.historial.length === 0) {
@@ -892,7 +888,17 @@
                     if(num >= 400 && num < 500 && num % 2 !== 0) continue; 
 
                     let dbData = getSiloData(num);
-                    if((dbData.estado === 'VACIO' || dbData.estado === 'FUERA_SERVICIO') && !bajoSiloLocal[num]) continue;
+                    
+                    // --- FIX PRINCIPAL AQUI ---
+                    // Si en el tablero esta vacio o fuera de servicio, lo ocultamos y limpiamos memoria local
+                    if(dbData.estado === 'VACIO' || dbData.estado === 'FUERA_SERVICIO') {
+                        if(bajoSiloLocal[num]) {
+                            delete bajoSiloLocal[num];
+                            guardarBajoSiloLocal();
+                        }
+                        continue; 
+                    }
+                    // ---------------------------
 
                     let esDelCereal = (cerealFiltro === 'TODOS' || dbData.cereal === cerealFiltro);
                     let cintaKey = 'C1';
@@ -905,18 +911,17 @@
                     let estadoLocal = bajoSiloLocal[num] || 'CERRADO';
                     if(estadoLocal === 'ABIERTO') abiertos.push(num);
 
-                    let isVacio = dbData.estado === 'VACIO';
-                    let textoCereal = isVacio ? 'VACÍO' : (dbData.estado === 'FUERA_SERVICIO' ? 'F. SERVICIO' : dbData.cereal);
-                    let textoCalidad = isVacio ? '' : (dbData.calidad || '');
+                    let textoCereal = dbData.cereal;
+                    let textoCalidad = dbData.calidad || '';
                     let textoTon = dbData.tonelaje > 0 ? dbData.tonelaje + 't' : '';
 
-                    let franjaClass = isVacio ? 'f-VACIO' : getFranjaClass(dbData.cereal);
+                    let franjaClass = getFranjaClass(dbData.cereal);
                     let dimClass = (cerealFiltro !== 'TODOS' && !esDelCereal) ? 'bs-dimmed' : '';
                     
                     let badge = `<div class="bs-badge bs-${estadoLocal[0]}">${estadoLocal}</div>`;
 
                     htmlSilos += `
-                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${dimClass}" onclick="abrirModalBajoSilo(${num})">
+                        <div class="tarjeta ${dimClass}" onclick="abrirModalBajoSilo(${num})">
                             <div class="franja ${franjaClass}"></div>
                             <div class="t-num">${num}</div>
                             <div class="t-info">${textoCereal}</div>

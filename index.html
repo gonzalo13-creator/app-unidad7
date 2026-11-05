@@ -108,11 +108,13 @@
         .alert-row { color: #b91c1c; font-weight: 500; font-size: 0.85rem; }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; text-decoration: none; color: white; background: var(--secondary); border: none; cursor: pointer; }
         
-        .hist-item { border-left: 2px solid #cbd5e1; padding-left: 10px; margin-bottom: 15px; font-size: 0.85rem; }
+        .hist-item { border-left: 2px solid #cbd5e1; padding: 10px; margin-bottom: 10px; font-size: 0.85rem; background: #f8fafc; border-radius: 0 4px 4px 0; display: flex; justify-content: space-between; align-items: center;}
         .hist-date { font-weight: bold; color: var(--primary); font-size: 0.8rem; }
-        .hist-recir { border-left-color: #3b82f6; background: #f0f9ff; padding: 10px; border-radius: 0 4px 4px 0; margin-bottom: 15px; }
-        .hist-manual { border-left-color: #a855f7; background: #faf5ff; padding: 10px; border-radius: 0 4px 4px 0; margin-bottom: 15px; }
-        
+        .hist-recir { border-left-color: #3b82f6; background: #f0f9ff; }
+        .hist-manual { border-left-color: #a855f7; background: #faf5ff; }
+        .btn-del-hist { background: #fee2e2; color: #b91c1c; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
+        .btn-del-hist:hover { background: #fca5a5; }
+
         .check-alerta { display: flex; align-items: center; gap: 10px; margin-top: 15px; background: #fff3cd; padding: 12px; border-radius: 6px; border: 1px solid #ffe69c;}
         .check-alerta input { width: 24px; height: 24px; margin: 0; cursor: pointer; }
         .check-alerta label { margin: 0; color: #856404; font-size: 0.85rem; text-transform: none; }
@@ -199,12 +201,12 @@
                 </div>
             </div>
 
-            <!-- NUEVO PANEL DE DETALLE -->
+            <!-- PANEL DE DETALLE -->
             <div id="panel-detalle-estado" class="card-panel" style="display:none; background: #f8fafc;">
                 <h3 class="detalle-titulo" id="detalle-titulo-text">Detalle</h3>
                 <div class="table-responsive">
                     <table class="data-table" id="tabla-detalle">
-                        <thead><tr><th>Unidad</th><th>Cereal</th><th>Calidad</th><th>Tonelaje</th><th>Acción</th></tr></thead>
+                        <thead><tr><th>Unidad</th><th>Cereal</th><th>Calidad</th><th>Tonelaje</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -223,7 +225,7 @@
             <div class="card-panel">
                 <div class="table-responsive">
                     <table class="data-table" id="tabla-alertas">
-                        <thead><tr><th>Unidad</th><th>Cereal</th><th>Motivo de Alerta</th><th>Acción</th></tr></thead>
+                        <thead><tr><th>Unidad</th><th>Cereal</th><th>Motivo de Alerta</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -481,7 +483,6 @@
         let bsSiloSeleccionado = null;
         let capacidadPlantaTotal = 0;
 
-        // Variables para el detalle de Existencias
         let estadoSeleccionadoDetalle = null;
 
         function init() {
@@ -715,8 +716,11 @@
             data.lastUpdate = Date.now(); 
             guardarDB(); cerrarModal('modal-silo'); dibujarTablero();
             
-            // Si estamos viendo un detalle en existencias, lo actualizamos
-            if(estadoSeleccionadoDetalle) mostrarDetalleEstado(estadoSeleccionadoDetalle, document.querySelector(`.stat-box[onclick*="${estadoSeleccionadoDetalle}"]`));
+            // Refrescar panel de detalle si está abierto
+            if(estadoSeleccionadoDetalle) {
+                let box = document.querySelector(`.stat-box[onclick*="${estadoSeleccionadoDetalle}"]`);
+                if(box) mostrarDetalleEstado(estadoSeleccionadoDetalle, box);
+            }
         }
 
         // --- HISTORIAL MANUAL ---
@@ -772,35 +776,57 @@
             alert("Recirculación registrada.");
         }
 
-        // --- HISTORIAL ---
+        // --- HISTORIAL Y BORRADO ---
         function abrirHistorial() {
             let data = getSiloData(siloEditando);
             document.getElementById('h-sub').innerText = 'Unidad ' + siloEditando;
             let cont = document.getElementById('lista-historial');
             cont.innerHTML = '';
             
-            let hist = [...data.historial].reverse();
-            
-            hist.forEach(h => {
+            // Usamos un bucle for inverso para mantener los índices reales para el borrado
+            for(let i = data.historial.length - 1; i >= 0; i--) {
+                let h = data.historial[i];
+                
                 if(h.tipo === 'RECIRCULACION') {
                     cont.innerHTML += `
                         <div class="hist-item hist-recir">
-                            <div class="hist-date">🔄 Recirculación: ${h.fecha_mov}</div>
+                            <div>
+                                <div class="hist-date">🔄 Recirculación: ${h.fecha_mov}</div>
+                            </div>
+                            <button class="btn-del-hist" onclick="borrarHistorialItem(${i})">❌</button>
                         </div>`;
                 } else if(h.tipo === 'MANUAL') {
                     cont.innerHTML += `
                         <div class="hist-item hist-manual">
-                            <div class="hist-date">🕰️ ${h.fecha_mov} | <b>${h.tonelaje}t</b></div>
+                            <div>
+                                <div class="hist-date">🕰️ ${h.fecha_mov} | <b>${h.tonelaje}t</b></div>
+                            </div>
+                            <button class="btn-del-hist" onclick="borrarHistorialItem(${i})">❌</button>
                         </div>`;
                 } else {
                     cont.innerHTML += `
                         <div class="hist-item">
-                            <div class="hist-date">${h.fecha}</div>
-                            <div style="margin-top:4px;"><b>${h.cereal}</b> (${h.calidad}) - <b>${h.tonelaje}t</b><br><span style="color:var(--text-light); font-size:0.8rem;">Estado: ${h.estado}</span></div>
+                            <div>
+                                <div class="hist-date">${h.fecha}</div>
+                                <div style="margin-top:4px;"><b>${h.cereal}</b> (${h.calidad}) - <b>${h.tonelaje}t</b><br><span style="color:var(--text-light); font-size:0.8rem;">Estado: ${h.estado}</span></div>
+                            </div>
+                            <button class="btn-del-hist" onclick="borrarHistorialItem(${i})">❌</button>
                         </div>`;
                 }
-            });
+            }
             document.getElementById('modal-historial').classList.add('active');
+        }
+
+        function borrarHistorialItem(index) {
+            if(!confirm("¿Estás seguro de borrar este registro del historial?")) return;
+            
+            let data = getSiloData(siloEditando);
+            data.historial.splice(index, 1);
+            data.lastUpdate = Date.now();
+            guardarDB();
+            
+            // Volver a dibujar el modal
+            abrirHistorial();
         }
 
         // --- BAJO SILO (Todo arranca CERRADO) ---
@@ -914,11 +940,11 @@
 
                     if(motivos.length > 0) {
                         hayAlertas = true;
-                        tbody.innerHTML += `<tr><td style="font-weight:600;">${num}</td><td>${d.cereal}</td><td class="alert-row">${motivos.join(' | ')}</td><td><button class="btn-sm" onclick="abrirModalSilo(${num})">Editar</button></td></tr>`;
+                        tbody.innerHTML += `<tr><td style="font-weight:600;">${num}</td><td>${d.cereal}</td><td class="alert-row">${motivos.join(' | ')}</td></tr>`;
                     }
                 });
             }
-            if(!hayAlertas) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">No hay alertas registradas.</td></tr>';
+            if(!hayAlertas) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-light);">No hay alertas registradas.</td></tr>';
         }
 
         function actualizarExistencias() {
@@ -950,7 +976,6 @@
             bar.style.width = porcentaje + '%'; bar.innerText = porcentaje + '%';
             if(porcentaje > 90) bar.style.backgroundColor = '#ef4444'; else if(porcentaje > 75) bar.style.backgroundColor = '#f59e0b'; else bar.style.backgroundColor = '#3b82f6';
 
-            // Si había un detalle abierto, lo mantenemos actualizado o lo cerramos
             if(estadoSeleccionadoDetalle) {
                 let box = document.querySelector(`.stat-box[onclick*="${estadoSeleccionadoDetalle}"]`);
                 if(box) mostrarDetalleEstado(estadoSeleccionadoDetalle, box);
@@ -959,9 +984,7 @@
             calcularStock();
         }
 
-        // --- NUEVA FUNCION PARA MOSTRAR EL DETALLE ---
         function mostrarDetalleEstado(estado, element) {
-            // Si hacemos click en el mismo que ya estaba, lo cerramos
             if(estadoSeleccionadoDetalle === estado && document.getElementById('panel-detalle-estado').style.display === 'block') {
                 document.getElementById('panel-detalle-estado').style.display = 'none';
                 document.querySelectorAll('.stat-box').forEach(b => b.classList.remove('active-stat'));
@@ -971,7 +994,6 @@
 
             estadoSeleccionadoDetalle = estado;
             
-            // Estilos visuales
             document.querySelectorAll('.stat-box').forEach(b => b.classList.remove('active-stat'));
             if(element) element.classList.add('active-stat');
 
@@ -989,7 +1011,6 @@
             tbody.innerHTML = '';
             let hay = false;
 
-            // Recorremos todos los sectores para mantener un orden lógico
             SECTORES.forEach(sector => {
                 for(let num = sector.rango[0]; num <= sector.rango[1]; num++) {
                     if(num >= 400 && num < 500 && num % 2 !== 0) continue;
@@ -997,20 +1018,18 @@
                     let d = getSiloData(num);
                     if(d.estado === estado) {
                         hay = true;
-                        let btn = `<button class="btn-sm" onclick="cerrarModal('panel-detalle-estado'); abrirModalSilo(${num})">Editar</button>`;
                         tbody.innerHTML += `<tr>
                             <td style="font-weight:600;">${num}</td>
                             <td>${d.cereal || '-'}</td>
                             <td>${d.calidad || '-'}</td>
                             <td>${d.tonelaje > 0 ? d.tonelaje + ' t' : '-'}</td>
-                            <td>${btn}</td>
                         </tr>`;
                     }
                 }
             });
 
             if(!hay) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-light);">No hay unidades en este estado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">No hay unidades en este estado.</td></tr>';
             }
 
             document.getElementById('panel-detalle-estado').style.display = 'block';

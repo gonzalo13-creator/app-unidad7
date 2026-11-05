@@ -65,6 +65,7 @@
         label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin: 12px 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;}
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; background: #f8fafc; color: var(--text); }
         input:focus, select:focus { outline: none; border-color: var(--secondary); background: white; }
+        input:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
         
         .btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
         .btn-estado { flex: 1; padding: 10px 5px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: 600; color: var(--text-light); background: white; cursor: pointer; min-width: 80px; font-size: 0.75rem; transition: all 0.2s;}
@@ -81,7 +82,6 @@
         .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--primary); line-height: 1; }
         .stat-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;}
         
-        /* Barra de Ocupación */
         .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 4px; margin-top: 10px; height: 20px; overflow: hidden; }
         .progress-bar { height: 100%; background-color: #3b82f6; color: white; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: width 0.5s ease; }
 
@@ -190,7 +190,7 @@
             <div class="card-panel">
                 <label>Seleccionar Cereal:</label>
                 <select id="sel-cereal-relleno" class="filtro-cereal" onchange="calcularRellenos()"></select>
-                <p style="font-size:0.8rem; color:var(--text-light); margin-top:15px;">* Capacidad estimada según PH del cereal seleccionado. Silos con ⚠️ requieren medición manual.</p>
+                <p style="font-size:0.8rem; color:var(--text-light); margin-top:15px;">* Solo se muestran unidades con mercadería parcial (para rellenar). Silos con ⚠️ requieren medición manual.</p>
                 <table class="data-table" id="tabla-rellenos">
                     <thead><tr><th>Unidad</th><th>Cinta</th><th>Estado</th><th>Espacio Disp.</th></tr></thead>
                     <tbody></tbody>
@@ -256,7 +256,7 @@
                 <div style="display:flex; gap:15px; margin-top:10px;">
                     <div style="flex:1;">
                         <label>Metros Vacío</label>
-                        <input type="number" id="m-metros" step="0.1" oninput="calcularTonelaje()">
+                        <input type="number" id="m-metros" step="0.5" oninput="calcularTonelaje()">
                     </div>
                     <div style="flex:1;">
                         <label>Tonelaje</label>
@@ -358,7 +358,6 @@
 
     <script>
         const PH_BASE = 80;
-        // Tablas de capacidad
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
         const TABLA_ENTRESILOS = [[0,311.5],[0.5,307.25],[1,303],[1.5,298.75],[2,294.5],[2.5,290.25],[3,286],[3.5,281.75],[4,277.5],[4.5,273.25],[5,269],[5.5,264.75],[6,260.5],[6.5,256.25],[7,252],[7.5,247.75],[8,243.5],[8.5,239.25],[9,235],[9.5,230.75],[10,226.5],[10.5,222.25],[11,218],[11.5,213.75],[12,209.5],[12.5,205.25],[13,201],[13.5,196.75],[14,192.5],[14.5,188.25],[15,184],[15.5,179.75],[16,175.5],[16.5,171.25],[17,167],[17.5,162.75],[18,158.5],[18.5,154.25],[19,150],[19.5,145.75],[20,141.5],[20.5,137.25],[21,133],[21.5,128.75],[22,124.5],[22.5,120.25],[23,116],[23.5,111.75],[24,107.5],[24.5,103.25],[25,99],[25.5,94.75],[26,90.5],[26.5,86.25],[27,82],[27.5,77.75],[28,73.5],[28.5,69.25],[29,65],[29.5,60.75],[30,56.5],[30.5,52.25],[31,48],[31.5,43.75],[32,39.5],[32.5,35.25],[33,31],[33.5,26.75],[34,22.5],[34.5,18.25],[35,14],[35.5,9.75],[36,6.5],[36.5,3.75],[37,1.25],[37.5,0.6]];
 
@@ -381,8 +380,6 @@
         let estadoTemp = 'VACIO';
         let bajoSiloLocal = {};
         let bsSiloSeleccionado = null;
-
-        // Capacidad Teórica Total (Calculada al inicio)
         let capacidadPlantaTotal = 0;
 
         function init() {
@@ -402,9 +399,7 @@
         }
 
         function calcularCapacidadPlanta() {
-            // Estimamos la capacidad total usando un PH promedio de 75 para todos los silos
-            let phPromedio = 75;
-            let total = 0;
+            let phPromedio = 75; let total = 0;
             for(let key in CINTAS) {
                 CINTAS[key].silos.forEach(num => {
                     let tipo = ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO';
@@ -517,12 +512,37 @@
             if(estadoTemp === 'TAPADA') document.getElementById('e-tapado').classList.add('sel');
             if(estadoTemp === 'FUERA_SERVICIO') document.getElementById('e-fuera').classList.add('sel');
         }
-        function verificarCamposCarga() { document.getElementById('campos-carga').style.display = (estadoTemp === 'VACIO') ? 'none' : 'block'; }
+
+        function verificarCamposCarga() {
+            let divCarga = document.getElementById('campos-carga');
+            let inputMetros = document.getElementById('m-metros');
+            let inputTonelaje = document.getElementById('m-tonelaje');
+            let msjCalc = document.getElementById('m-msj-calc');
+
+            if(estadoTemp === 'VACIO') {
+                divCarga.style.display = 'none';
+            } else {
+                divCarga.style.display = 'block';
+                if(estadoTemp === 'EN_USO') {
+                    inputMetros.disabled = true;
+                    inputTonelaje.disabled = true;
+                    inputMetros.value = ''; // Limpiar
+                    inputTonelaje.value = '';
+                    msjCalc.innerText = "Unidad en proceso de carga. Bloqueado hasta finalizar.";
+                    msjCalc.style.color = "#d97706";
+                } else {
+                    inputMetros.disabled = false;
+                    inputTonelaje.disabled = false;
+                    msjCalc.innerText = "";
+                }
+            }
+        }
+
         function cambiarOrigen() { document.getElementById('campos-transile').style.display = (document.getElementById('m-origen').value === 'TRANSILE') ? 'block' : 'none'; }
         function cambiarFumigacion() { document.getElementById('campos-fumigacion').style.display = (document.getElementById('m-fumigacion').value !== 'SIN_FUMIGAR') ? 'block' : 'none'; }
 
         function calcularTonelaje() {
-            if(siloEditando === null) return;
+            if(siloEditando === null || estadoTemp === 'EN_USO') return;
             let cerealId = document.getElementById('m-cereal').value;
             let metros = parseFloat(document.getElementById('m-metros').value);
             let msj = document.getElementById('m-msj-calc');
@@ -551,27 +571,28 @@
             if(estadoTemp !== 'VACIO') {
                 data.cereal = document.getElementById('m-cereal').value;
                 data.calidad = document.getElementById('m-calidad').value;
-                data.metros = document.getElementById('m-metros').value;
-                data.tonelaje = document.getElementById('m-tonelaje').value;
                 data.origen = document.getElementById('m-origen').value;
                 data.fecha = document.getElementById('m-fecha').value;
                 data.fumigacion = document.getElementById('m-fumigacion').value;
                 data.fecha_fumigacion = document.getElementById('m-fecha-fumigacion').value;
                 data.notas = document.getElementById('m-notas').value;
+                
+                if(estadoTemp !== 'EN_USO') {
+                    data.metros = document.getElementById('m-metros').value;
+                    data.tonelaje = document.getElementById('m-tonelaje').value;
+                } else {
+                    data.metros = '';
+                    data.tonelaje = 0;
+                }
+
                 if(!data.fecha_antigua && data.fecha) data.fecha_antigua = data.fecha;
             } else { data.cereal = ''; data.calidad = ''; data.tonelaje = 0; data.metros = ''; data.notas = ''; }
 
-            // Registrar en Historial si hubo cambios relevantes
             if(estadoAnterior !== data.estado || tonelajeAnterior != data.tonelaje || data.historial.length === 0) {
                 let ahora = new Date();
                 let fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                data.historial.push({
-                    fecha: fechaStr,
-                    estado: data.estado,
-                    cereal: data.cereal || 'Vacío',
-                    calidad: data.calidad || '-',
-                    tonelaje: data.tonelaje
-                });
+                data.historial.push({ fecha: fechaStr, estado: data.estado, cereal: data.cereal || 'Vacío', calidad: data.calidad || '-', tonelaje: data.tonelaje });
+                if(data.historial.length > 30) data.historial.shift(); // Límite de 30
             }
 
             guardarDB(); cerrarModal('modal-silo'); dibujarTablero();
@@ -583,17 +604,12 @@
             document.getElementById('h-sub').innerText = 'Unidad ' + siloEditando;
             let cont = document.getElementById('lista-historial');
             cont.innerHTML = '';
-            
-            // Mostrar del más reciente al más antiguo
             let hist = [...data.historial].reverse();
             hist.forEach(h => {
                 cont.innerHTML += `
                     <div class="hist-item">
                         <div class="hist-date">${h.fecha}</div>
-                        <div style="margin-top:4px;">
-                            <b>${h.cereal}</b> (${h.calidad}) - <b>${h.tonelaje}t</b><br>
-                            <span style="color:var(--text-light); font-size:0.8rem;">Estado: ${h.estado}</span>
-                        </div>
+                        <div style="margin-top:4px;"><b>${h.cereal}</b> (${h.calidad}) - <b>${h.tonelaje}t</b><br><span style="color:var(--text-light); font-size:0.8rem;">Estado: ${h.estado}</span></div>
                     </div>`;
             });
             document.getElementById('modal-historial').classList.add('active');
@@ -668,13 +684,11 @@
                 else if(estadoLocal === 'ABIERTO') dbData.estado = 'EN_USO';
                 else if(estadoLocal === 'CERRADO') { if(dbData.estado !== 'VACIO' && dbData.estado !== 'TAPADA') dbData.estado = 'CON_CARGA'; }
 
-                // Historial automático para cambios desde Bajo Silo
                 if(estadoAnterior !== dbData.estado || tonelajeAnterior != dbData.tonelaje) {
                     let ahora = new Date();
                     let fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    dbData.historial.push({
-                        fecha: fechaStr, estado: dbData.estado, cereal: dbData.cereal || 'Vacío', calidad: dbData.calidad || '-', tonelaje: dbData.tonelaje
-                    });
+                    dbData.historial.push({ fecha: fechaStr, estado: dbData.estado, cereal: dbData.cereal || 'Vacío', calidad: dbData.calidad || '-', tonelaje: dbData.tonelaje });
+                    if(dbData.historial.length > 30) dbData.historial.shift();
                 }
             }
             guardarDB(); bajoSiloLocal = {}; dibujarBajoSilo(); dibujarTablero();
@@ -698,11 +712,7 @@
 
                     if(motivos.length > 0) {
                         hayAlertas = true;
-                        tbody.innerHTML += `<tr>
-                            <td style="font-weight:600;">${num}</td><td>${d.cereal}</td>
-                            <td class="alert-row">${motivos.join(' | ')}</td>
-                            <td><button class="btn-sm" onclick="abrirModalSilo(${num})">Editar</button></td>
-                        </tr>`;
+                        tbody.innerHTML += `<tr><td style="font-weight:600;">${num}</td><td>${d.cereal}</td><td class="alert-row">${motivos.join(' | ')}</td><td><button class="btn-sm" onclick="abrirModalSilo(${num})">Editar</button></td></tr>`;
                     }
                 });
             }
@@ -723,7 +733,6 @@
                 });
             }
             
-            // Sumar otros almacenajes al total actual para la ocupación
             db.otros.forEach(o => { totalActual += parseFloat(o.tonelaje) || 0; });
 
             document.getElementById('st-vacios').innerText = counts.VACIO;
@@ -732,16 +741,12 @@
             document.getElementById('st-tapados').innerText = counts.TAPADA;
             document.getElementById('st-fuera').innerText = counts.FUERA_SERVICIO;
             
-            // Actualizar barra de Ocupación
             let porcentaje = Math.min(100, Math.round((totalActual / capacidadPlantaTotal) * 100)) || 0;
             document.getElementById('oc-up').innerText = Math.round(totalActual).toLocaleString() + ' t';
             document.getElementById('oc-total').innerText = Math.round(capacidadPlantaTotal).toLocaleString() + ' t';
             let bar = document.getElementById('oc-bar');
-            bar.style.width = porcentaje + '%';
-            bar.innerText = porcentaje + '%';
-            if(porcentaje > 90) bar.style.backgroundColor = '#ef4444';
-            else if(porcentaje > 75) bar.style.backgroundColor = '#f59e0b';
-            else bar.style.backgroundColor = '#3b82f6';
+            bar.style.width = porcentaje + '%'; bar.innerText = porcentaje + '%';
+            if(porcentaje > 90) bar.style.backgroundColor = '#ef4444'; else if(porcentaje > 75) bar.style.backgroundColor = '#f59e0b'; else bar.style.backgroundColor = '#3b82f6';
 
             calcularStock();
         }
@@ -789,7 +794,8 @@
             for(let key in CINTAS) {
                 CINTAS[key].silos.forEach(num => {
                     let d = getSiloData(num);
-                    if(d.estado === 'VACIO' || d.estado === 'CON_CARGA' || d.estado === 'EN_USO') {
+                    // SOLO MOSTRAR SI TIENE CARGA PARCIAL (no vacíos ni fuera de servicio)
+                    if(d.estado === 'CON_CARGA' || d.estado === 'EN_USO' || d.estado === 'TAPADA') {
                         let tipo = ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO';
                         let capMaxPhRef = (tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS)[0][1];
                         let capMaxTon = Math.round(capMaxPhRef * cereal.ph / PH_BASE);
@@ -799,18 +805,23 @@
                         if(falta > 10) {
                             hayDisponibles = true;
                             let manualTag = SILOS_MANUALES.includes(num) ? ' ⚠️' : '';
-                            let estadoTag = d.estado === 'VACIO' ? 'Vacío' : 'Parcial';
-                            tbody.innerHTML += `<tr>
-                                <td style="font-weight:600;">${num}${manualTag}</td>
-                                <td>${CINTAS[key].nombre}</td>
-                                <td><span style="color:var(--text-light); font-size:0.85rem;">${estadoTag}</span></td>
-                                <td style="font-weight:600; color:#16a34a;">~${falta} t</td>
-                            </tr>`;
+                            let estadoTag = d.cereal === cerealId ? d.estado : 'Mezcla/otro';
+                            
+                            // Solo mostrar si el silo tiene el mismo cereal, o si está vacío de otro cereal (pero eso implicaría limpieza).
+                            // Para ser precisos, mostramos si el cereal coincide O si está en carga.
+                            if(d.cereal === cerealId) {
+                                tbody.innerHTML += `<tr>
+                                    <td style="font-weight:600;">${num}${manualTag}</td>
+                                    <td>${CINTAS[key].nombre}</td>
+                                    <td><span style="color:var(--text-light); font-size:0.85rem;">${estadoTag} (${d.cereal})</span></td>
+                                    <td style="font-weight:600; color:#16a34a;">~${falta} t</td>
+                                </tr>`;
+                            }
                         }
                     }
                 });
             }
-            if(!hayDisponibles) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">Sin espacio disponible.</td></tr>';
+            if(!hayDisponibles) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">Sin espacio disponible para este cereal en unidades con carga parcial.</td></tr>';
         }
 
         function tieneAlerta(num) {
@@ -850,7 +861,7 @@
             let color = document.getElementById('new-cereal-color').value;
             if(!nom || isNaN(ph)) return alert("Complete nombre y PH");
             db.cereales.push({id: nom, nombre: nom, ph: ph, color: color});
-            guardarDB(); actualizarSelects(); dibujarAdmin(); calcularCapacidadPlanta(); // Recalcular capacidad por si acaso
+            guardarDB(); actualizarSelects(); dibujarAdmin(); calcularCapacidadPlanta();
             document.getElementById('new-cereal-nombre').value = ''; document.getElementById('new-cereal-ph').value = '';
         }
 

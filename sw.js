@@ -1,4 +1,4 @@
-const CACHE_NAME = 'silos-u7-v2'; // Le subí la versión para que fuerce la actualización
+const CACHE_NAME = 'silos-u7-v4'; // <--- Versión actualizada para forzar la descarga
 const urlsToCache = [
     './',
     './index.html',

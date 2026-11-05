@@ -16,7 +16,6 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; -webkit-text-size-adjust: 100%; }
         
-        /* MENÚ LATERAL (PC) Y BARRA INFERIOR (CELU) */
         .sidebar { width: 240px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
         .nav-btn { padding: 16px 20px; border: none; background: none; color: #cbd5e1; font-size: 0.95rem; text-align: left; cursor: pointer; border-bottom: 1px solid var(--secondary); font-weight: 500; display: flex; align-items: center; gap: 10px; }
         .nav-btn:hover { background: var(--secondary); color: white; }
@@ -32,7 +31,6 @@
             .nav-btn { padding: 14px 18px; font-size: 0.85rem; border-bottom: none; border-right: 1px solid var(--secondary); white-space: nowrap; }
             .nav-btn.active { border-left: none; border-bottom: 3px solid #38bdf8; }
             .tab-content { padding: 15px; }
-            /* Forzar tamaño de letra 16px en inputs para evitar zoom en iOS */
             input, select, textarea { font-size: 16px !important; }
         }
 
@@ -42,7 +40,6 @@
         .fila-cinta { margin-bottom: 20px; }
         .titulo-cinta { font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* TARJETAS OPTIMIZADAS PARA MÓVIL */
         .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
         .tarjeta { min-height: 82px; border-radius: 4px; background: white; border: 1px solid #cbd5e1; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s; overflow: hidden; padding-bottom: 4px; }
         .tarjeta:active { transform: scale(0.96); }
@@ -60,14 +57,12 @@
         .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; }
         .bg-vacio { background: #f8fafc; border-style: dashed; border-color: #cbd5e1; }
 
-        /* BAJO SILO */
         .bs-dimmed { opacity: 0.3; filter: grayscale(100%); }
         .bs-badge { position: absolute; bottom: 0px; left: 0; right: 0; padding: 2px 0; font-size: 0.5rem; font-weight: bold; color: white; text-align: center;}
         .bs-A { background: #10b981; } .bs-C { background: #ef4444; } .bs-V { background: #64748b; } .bs-T { background: #f59e0b; }
         
         .bs-alert-banner { display: none; background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 4px; font-weight: 600; margin-bottom: 15px; border: 1px solid #f87171; }
 
-        /* MODALES MÓVILES (Estilo Bottom Sheet en celu) */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; justify-content: center; align-items: flex-end; padding: 0; }
         .modal.active { display: flex; }
         .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 16px 16px 0 0; padding: 24px; max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 25px rgba(0,0,0,0.2); }
@@ -90,6 +85,7 @@
         .btn-save:active { background: var(--secondary); }
         .btn-close { background: white; color: var(--text); border: 1px solid #cbd5e1; padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         .btn-hist { background: #f8fafc; color: var(--primary); border: 1px solid var(--border); padding: 12px; width: 100%; border-radius: 6px; font-size: 0.9rem; font-weight: 600; margin-top: 15px; cursor: pointer; text-align: center; }
+        .btn-recir { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 12px; width: 100%; border-radius: 6px; font-size: 0.9rem; font-weight: 600; margin-top: 10px; cursor: pointer; text-align: center; }
 
         .card-panel { background: white; padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .stat-box { display: flex; flex-direction: column; gap: 5px; }
@@ -99,7 +95,6 @@
         .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 4px; margin-top: 10px; height: 20px; overflow: hidden; }
         .progress-bar { height: 100%; background-color: #3b82f6; color: white; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: width 0.5s ease; }
 
-        /* TABLAS SCROLLABLES EN CELU */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; min-width: 500px; }
         .data-table th { text-align: left; padding: 12px 10px; background: #f8fafc; border-bottom: 2px solid var(--border); color: var(--text-light); font-weight: 600; font-size: 0.8rem; text-transform: uppercase;}
@@ -111,6 +106,7 @@
         
         .hist-item { border-left: 2px solid #cbd5e1; padding-left: 10px; margin-bottom: 15px; font-size: 0.85rem; }
         .hist-date { font-weight: bold; color: var(--primary); font-size: 0.8rem; }
+        .hist-recir { border-left-color: #3b82f6; background: #f0f9ff; padding: 10px; border-radius: 0 4px 4px 0; margin-bottom: 15px; }
         
         .check-alerta { display: flex; align-items: center; gap: 10px; margin-top: 15px; background: #fff3cd; padding: 12px; border-radius: 6px; border: 1px solid #ffe69c;}
         .check-alerta input { width: 24px; height: 24px; margin: 0; cursor: pointer; }
@@ -130,7 +126,6 @@
     </div>
 
     <div class="content">
-        <!-- PESTAÑA: TABLERO -->
         <div id="tablero" class="tab-content active">
             <h2>Estado de Unidades</h2>
             <select id="filtro-tablero" class="filtro-cereal" onchange="dibujarTablero()">
@@ -139,14 +134,11 @@
             <div id="contenedor-tablero"></div>
         </div>
 
-        <!-- PESTAÑA: BAJO SILO -->
         <div id="bajosilo" class="tab-content">
             <h2>Operación Bajo Silo</h2>
-            
             <div id="bs-alert-banner" class="bs-alert-banner">
                 ⚠️ Unidades ABIERTAS: <span id="bs-cant-abiertos"></span><br><span style="font-size:0.8rem; font-weight:normal;">(Verificá si olvidaste cerrarlas)</span>
             </div>
-            
             <div id="resumen-bajosilo" class="card-panel" style="display:none; padding:15px;"></div>
             
             <label>Seleccionar Cereal a Operar:</label>
@@ -157,10 +149,8 @@
             <div id="contenedor-bajosilo"></div>
         </div>
 
-        <!-- PESTAÑA: EXISTENCIAS -->
         <div id="existencias" class="tab-content">
             <h2>Resumen Ejecutivo y Existencias</h2>
-            
             <div class="card-panel" style="border-left: 4px solid #3b82f6;">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light); border-bottom:1px solid var(--border); padding-bottom:10px;">Ocupación de la Planta</h3>
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
@@ -197,7 +187,6 @@
             </div>
         </div>
 
-        <!-- PESTAÑA: ALERTAS -->
         <div id="alertas" class="tab-content">
             <h2>Centro de Alertas</h2>
             <div class="card-panel">
@@ -210,7 +199,6 @@
             </div>
         </div>
 
-        <!-- PESTAÑA: RELLENOS -->
         <div id="rellenos" class="tab-content">
             <h2>Disponibilidad (Rellenos)</h2>
             <div class="card-panel">
@@ -226,14 +214,12 @@
             </div>
         </div>
 
-        <!-- PESTAÑA: OTROS ALMACENAJE -->
         <div id="otros" class="tab-content">
             <h2>Otros Almacenajes</h2>
             <button class="btn-save" style="margin-top:0; margin-bottom:20px;" onclick="abrirModalOtro()">+ Registrar Tolva / Balanza</button>
             <div id="lista-otros"></div>
         </div>
 
-        <!-- PESTAÑA: ADMINISTRACIÓN -->
         <div id="admin" class="tab-content">
             <h2>Administración del Sistema</h2>
             <div class="card-panel">
@@ -259,7 +245,7 @@
         </div>
     </div>
 
-    <!-- MODAL: EDITAR SILO (TABLERO) -->
+    <!-- MODAL: EDITAR SILO -->
     <div id="modal-silo" class="modal">
         <div class="modal-box">
             <h2 id="m-titulo" style="border:none; margin-bottom:0;">Unidad 101</h2>
@@ -329,16 +315,41 @@
                 <label>Observaciones</label>
                 <input type="text" id="m-notas" placeholder="Ej: Mercadería húmeda...">
                 
-                <!-- NUEVO CHECK PARA ALERTA MANUAL -->
                 <div class="check-alerta">
                     <input type="checkbox" id="m-alerta-manual">
                     <label for="m-alerta-manual">Forzar Alerta Manual (Calidad / Observaciones)</label>
                 </div>
             </div>
 
+            <!-- NUEVO BOTON DE RECIRCULACION -->
+            <button class="btn-recir" id="btn-recir" onclick="abrirModalRecirculacion()">🔄 Registrar Recirculación</button>
+            
             <button class="btn-hist" id="btn-ver-hist" onclick="abrirHistorial()">📋 Ver Historial de Movimientos</button>
             <button class="btn-save" onclick="guardarSilo()">GUARDAR REGISTRO</button>
             <button class="btn-close" onclick="cerrarModal('modal-silo')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL: RECIRCULACIÓN -->
+    <div id="modal-recirculacion" class="modal">
+        <div class="modal-box">
+            <h2 style="border:none; margin-bottom:5px;">Registrar Recirculación</h2>
+            <p id="recir-sub" style="color:var(--text-light); font-size:0.9rem; margin-top:0;"></p>
+            
+            <label>Fecha de Recirculación</label>
+            <input type="date" id="recir-fecha">
+
+            <label>¿Se fumigó en esta recirculación?</label>
+            <select id="recir-fumigo">
+                <option value="NO">No se fumigó</option>
+                <option value="SI">Sí, se fumigó</option>
+            </select>
+
+            <label>Motivo / Observación</label>
+            <input type="text" id="recir-notas" placeholder="Ej: Bajar temperatura, inspección...">
+            
+            <button class="btn-save" onclick="guardarRecirculacion()">Guardar Recirculación</button>
+            <button class="btn-close" onclick="cerrarModal('modal-recirculacion')">Cancelar</button>
         </div>
     </div>
 
@@ -487,7 +498,6 @@
             return 'f-OTROS';
         }
 
-        // --- TABLERO ---
         function dibujarTablero() {
             const contenedor = document.getElementById('contenedor-tablero');
             const filtro = document.getElementById('filtro-tablero').value;
@@ -522,7 +532,6 @@
             }
         }
 
-        // --- MODAL SILO ---
         function abrirModalSilo(num) {
             siloEditando = num;
             let data = getSiloData(num);
@@ -545,7 +554,11 @@
             let alertHtml = tieneAlerta(num) ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:4px; font-size:0.85rem; font-weight:600; margin-top:15px;">⚠️ UNIDAD CON ALERTAS ACTIVAS.</div>` : '';
             document.getElementById('m-alertas').innerHTML = alertHtml;
             
+            // Mostrar botones extra solo si hay cereal cargado
+            let tieneCarga = (data.estado !== 'VACIO');
+            document.getElementById('btn-recir').style.display = tieneCarga ? 'block' : 'none';
             document.getElementById('btn-ver-hist').style.display = data.historial.length > 0 ? 'block' : 'none';
+            
             document.getElementById('modal-silo').classList.add('active');
         }
 
@@ -570,15 +583,12 @@
             } else {
                 divCarga.style.display = 'block';
                 if(estadoTemp === 'EN_USO') {
-                    inputMetros.disabled = true;
-                    inputTonelaje.disabled = true;
-                    inputMetros.value = ''; 
-                    inputTonelaje.value = '';
+                    inputMetros.disabled = true; inputTonelaje.disabled = true;
+                    inputMetros.value = ''; inputTonelaje.value = '';
                     msjCalc.innerText = "Unidad en proceso de carga. Bloqueado hasta finalizar.";
                     msjCalc.style.color = "#d97706";
                 } else {
-                    inputMetros.disabled = false;
-                    inputTonelaje.disabled = false;
+                    inputMetros.disabled = false; inputTonelaje.disabled = false;
                     msjCalc.innerText = "";
                 }
             }
@@ -629,8 +639,7 @@
                     data.metros = document.getElementById('m-metros').value;
                     data.tonelaje = document.getElementById('m-tonelaje').value;
                 } else {
-                    data.metros = '';
-                    data.tonelaje = 0;
+                    data.metros = ''; data.tonelaje = 0;
                 }
 
                 if(!data.fecha_antigua && data.fecha) data.fecha_antigua = data.fecha;
@@ -641,11 +650,60 @@
             if(estadoAnterior !== data.estado || tonelajeAnterior != data.tonelaje || data.historial.length === 0) {
                 let ahora = new Date();
                 let fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                data.historial.push({ fecha: fechaStr, estado: data.estado, cereal: data.cereal || 'Vacío', calidad: data.calidad || '-', tonelaje: data.tonelaje });
+                data.historial.push({ tipo: 'REGISTRO', fecha: fechaStr, estado: data.estado, cereal: data.cereal || 'Vacío', calidad: data.calidad || '-', tonelaje: data.tonelaje });
                 if(data.historial.length > 30) data.historial.shift();
             }
 
             guardarDB(); cerrarModal('modal-silo'); dibujarTablero();
+        }
+
+        // --- RECIRCULACION ---
+        function abrirModalRecirculacion() {
+            document.getElementById('recir-sub').innerText = 'Unidad ' + siloEditando;
+            document.getElementById('recir-fecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('recir-notas').value = '';
+            document.getElementById('recir-fumigo').value = 'NO';
+            document.getElementById('modal-recirculacion').classList.add('active');
+        }
+
+        function guardarRecirculacion() {
+            let data = getSiloData(siloEditando);
+            let fecha = document.getElementById('recir-fecha').value;
+            let fumigo = document.getElementById('recir-fumigo').value;
+            let notas = document.getElementById('recir-notas').value;
+
+            let ahora = new Date();
+            let fechaRegistro = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            // Registrar en el historial
+            data.historial.push({ 
+                tipo: 'RECIRCULACION', 
+                fecha: fechaRegistro, 
+                fecha_mov: fecha,
+                fumigo: fumigo,
+                notas: notas,
+                estado: data.estado,
+                cereal: data.cereal,
+                calidad: data.calidad,
+                tonelaje: data.tonelaje
+            });
+            if(data.historial.length > 30) data.historial.shift();
+
+            // Si fumigó, actualizar la fecha de fumigación automáticamente
+            if(fumigo === 'SI') {
+                data.fumigacion = 'FUMIGADO';
+                data.fecha_fumigacion = fecha;
+                // Refrescar los campos en la ficha por si vuelve a abrir
+                document.getElementById('m-fumigacion').value = 'FUMIGADO';
+                document.getElementById('m-fecha-fumigacion').value = fecha;
+                document.getElementById('campos-fumigacion').style.display = 'block';
+            }
+
+            guardarDB();
+            cerrarModal('modal-recirculacion');
+            document.getElementById('btn-ver-hist').style.display = 'block';
+            // No cerramos el modal-silo para que el usuario vea los cambios reflejados
+            alert("Recirculación registrada correctamente.");
         }
 
         // --- HISTORIAL ---
@@ -655,12 +713,25 @@
             let cont = document.getElementById('lista-historial');
             cont.innerHTML = '';
             let hist = [...data.historial].reverse();
+            
             hist.forEach(h => {
-                cont.innerHTML += `
-                    <div class="hist-item">
-                        <div class="hist-date">${h.fecha}</div>
-                        <div style="margin-top:4px;"><b>${h.cereal}</b> (${h.calidad}) - <b>${h.tonelaje}t</b><br><span style="color:var(--text-light); font-size:0.8rem;">Estado: ${h.estado}</span></div>
-                    </div>`;
+                if(h.tipo === 'RECIRCULACION') {
+                    let fumigadoStr = h.fumigo === 'SI' ? '<span style="color:#16a34a; font-weight:bold;">FUMIGADO</span>' : '<span style="color:#b91c1c;">NO FUMIGADO</span>';
+                    cont.innerHTML += `
+                        <div class="hist-item hist-recir">
+                            <div class="hist-date">🔄 ${h.fecha} (Movimiento: ${h.fecha_mov})</div>
+                            <div style="margin-top:4px;">
+                                Recirculación - ${fumigadoStr}<br>
+                                <span style="color:var(--text-light); font-size:0.8rem;">Nota: ${h.notas || 'Sin nota'}</span>
+                            </div>
+                        </div>`;
+                } else {
+                    cont.innerHTML += `
+                        <div class="hist-item">
+                            <div class="hist-date">${h.fecha}</div>
+                            <div style="margin-top:4px;"><b>${h.cereal}</b> (${h.calidad}) - <b>${h.tonelaje}t</b><br><span style="color:var(--text-light); font-size:0.8rem;">Estado: ${h.estado}</span></div>
+                        </div>`;
+                }
             });
             document.getElementById('modal-historial').classList.add('active');
         }

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Unidad 7 - Gestión Silos</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a4d1e">
+    <style>
+        :root {
+            --primary: #1a4d1e; --bg: #f0f2f5; --card: #ffffff; --text: #333;
+            --maiz: #e67e22; --soja: #f1c40f; --sorgo: #2980b9; --trigo: #27ae60;
+            --mezcla: #e84393; --girasol: #ecf0f1; --otros: #c0392b; --vacio: #ecf0f1;
+        }
+        * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        
+        /* MENÚ LATERAL (PC) Y BARRA INFERIOR (CELU) */
+        .sidebar { width: 220px; background: var(--primary); color: white; display: flex; flex-direction: column; }
+        .nav-btn { padding: 18px 15px; border: none; background: none; color: white; font-size: 1.1rem; text-align: left; cursor: pointer; border-bottom: 1px solid #2e6b33; font-weight: bold; }
+        .nav-btn.active { background: #2e6b33; border-left: 5px solid #f1c40f; }
+        .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .tab-content { display: none; flex: 1; overflow-y: auto; padding: 15px; }
+        .tab-content.active { display: block; }
+
+        /* RESPONSIVE PARA CELULAR */
+        @media (max-width: 768px) {
+            body { flex-direction: column-reverse; }
+            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); }
+            .nav-btn { padding: 12px 8px; font-size: 0.8rem; text-align: center; border-bottom: none; border-top: 1px solid #2e6b33; border-left: none !important; }
+            .nav-btn.active { border-left: none; border-bottom: 4px solid #f1c40f; }
+            .tab-content { padding: 10px; }
+        }
+
+        /* ESTILOS DEL TABLERO */
+        h2 { font-size: 1.2rem; margin-top: 0; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .filtro-cereal { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; font-weight: bold; }
+        
+        .fila-cinta { margin-bottom: 20px; }
+        .titulo-cinta { font-size: 0.9rem; color: #666; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .grid-tarjetas { display: flex; flex-wrap: wrap; gap: 8px; }
+        
+        .tarjeta { width: 75px; height: 75px; border-radius: 8px; border: 2px solid #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; transition: transform 0.1s; }
+        .tarjeta:active { transform: scale(0.95); }
+        .t-num { font-size: 1.3rem; font-weight: 900; color: #111; }
+        .t-info { font-size: 0.65rem; font-weight: bold; text-align: center; line-height: 1; margin-top: 2px; text-transform: uppercase; }
+        
+        /* Colores de fondo por cereal */
+        .bg-MAIZ { background-color: var(--maiz); color: white; }
+        .bg-SOJA { background-color: var(--soja); color: #111; }
+        .bg-SORGO { background-color: var(--sorgo); color: white; }
+        .bg-TRIGO { background-color: var(--trigo); color: white; }
+        .bg-MEZCLA { background-color: var(--mezcla); color: white; }
+        .bg-GIRASOL { background-color: var(--girasol); color: #111; }
+        .bg-OTROS { background-color: var(--otros); color: white; }
+        .bg-VACIO { background-color: #ffffff; border-style: dashed; color: #555; }
+        
+        /* Estados Especiales */
+        .t-alerta { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .estado-enuso { border-color: #f39c12; border-width: 3px; background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(243, 156, 18, 0.2) 5px, rgba(243, 156, 18, 0.2) 10px); }
+        .estado-tapado { border-color: #e67e22; border-width: 3px; }
+        .estado-fuera { background-color: #7f8c8d !important; color: white !important; border-color: #2c3e50; border-width: 3px; }
+
+        /* MODALES (FICHAS) */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal.active { display: flex; }
+        .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        
+        label { display: block; font-size: 0.85rem; font-weight: bold; color: #555; margin: 10px 0 4px 0; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; font-weight: bold; }
+        
+        .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-estado { flex: 1; padding: 12px 5px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; opacity: 0.4; min-width: 80px; }
+        .btn-estado.sel { opacity: 1; box-shadow: 0 0 0 3px rgba(0,0,0,0.2); transform: scale(1.02); }
+        .b-vacio { background: #95a5a6; color: #111;} .b-carga { background: #2ecc71; } .b-uso { background: #f39c12; } .b-tapado { background: #e67e22; } .b-fuera { background: #c0392b; }
+        
+        .btn-save { background: var(--primary); color: white; padding: 15px; width: 100%; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .btn-close { background: #bdc3c7; color: #111; padding: 12px; width: 100%; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; margin-top: 8px; cursor: pointer; }
+        
+        .alerta-box { background: #fadbd8; border: 1px solid #e74c3c; color: #922b21; padding: 10px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; }
+        
+        /* ESTILOS EXISTENCIAS Y BAJO SILO */
+        .grid-bajosilo { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+        .card-panel { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .stat-num { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
+        
+        @media print {
+            body { display: block; height: auto; overflow: visible; background: white; }
+            .sidebar, .btn-save, .btn-close, .nav-btn { display: none !important; }
+            .tab-content { display: block !important; padding: 0; }
+            .tarjeta { border: 1px solid #000 !important; box-shadow: none !important; background: white !important; color: black !important; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENÚ DE NAVEGACIÓN -->
+    <div class="sidebar">
+        <button class="nav-btn active" onclick="cambiarTab('tablero', this)">📋 Tablero</button>
+        <button class="nav-btn" onclick="cambiarTab('bajosilo', this)">🚜 Bajo Silo</button>
+        <button class="nav-btn" onclick="cambiarTab('existencias', this)">📊 Existencias</button>
+        <button class="nav-btn" onclick="cambiarTab('otros', this)">📦 Otros Almac.</button>
+        <button class="nav-btn" onclick="cambiarTab('admin', this)">⚙️ Administración</button>
+    </div>
+
+    <div class="content">
+        <!-- PESTAÑA: TABLERO -->
+        <div id="tablero" class="tab-content active">
+            <h2>Tablero Unidad 7</h2>
+            <select id="filtro-tablero" class="filtro-cereal" onchange="dibujarTablero()">
+                <option value="TODOS">Mostrar Todos los Cereales</option>
+            </select>
+            <div id="contenedor-tablero"></div>
+        </div>
+
+        <!-- PESTAÑA: BAJO SILO -->
+        <div id="bajosilo" class="tab-content">
+            <h2>Operación Bajo Silo</h2>
+            <div id="alerta-olvidos" style="display:none;" class="alerta-box"></div>
+            <select id="filtro-bajosilo" class="filtro-cereal" multiple style="height:100px;" onchange="dibujarBajoSilo()">
+                <!-- Opciones cargadas por JS -->
+            </select>
+            <p style="font-size:0.8rem; color:#666;">Toca una unidad para cambiar su estado operativo.</p>
+            <div id="contenedor-bajosilo" class="grid-bajosilo"></div>
+        </div>
+
+        <!-- PESTAÑA: EXISTENCIAS -->
+        <div id="existencias" class="tab-content">
+            <h2>Existencias y Estado</h2>
+            <div class="card-panel">
+                <h3>Estado de Unidades</h3>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;">
+                    <div>⚪ Vacíos: <span class="stat-num" id="st-vacios">0</span></div>
+                    <div>🟢 Con Carga: <span class="stat-num" id="st-carga">0</span></div>
+                    <div>🟡 En Uso: <span class="stat-num" id="st-uso">0</span></div>
+                    <div>🟠 Tapados: <span class="stat-num" id="st-tapados">0</span></div>
+                    <div>🔴 Fuera Serv: <span class="stat-num" id="st-fuera">0</span></div>
+                </div>
+            </div>
+            
+            <div class="card-panel">
+                <h3>Stock por Cereal</h3>
+                <select id="sel-cereal-stock" class="filtro-cereal" onchange="calcularStock()"></select>
+                <div id="resultado-stock" style="margin-top:15px; font-size:1.1rem;"></div>
+                <button style="margin-top:15px; background:#3498db; color:white; padding:10px; border:none; border-radius:6px; width:100%; font-weight:bold;" onclick="window.print()">🖨️ Imprimir Reporte</button>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: OTROS ALMACENAJE -->
+        <div id="otros" class="tab-content">
+            <h2>Otros Almacenajes</h2>
+            <button class="btn-save" style="margin-top:0; margin-bottom:15px;" onclick="abrirModalOtro()">+ Agregar Tolva / Balanza / Caño</button>
+            <div id="lista-otros"></div>
+        </div>
+
+        <!-- PESTAÑA: ADMINISTRACIÓN -->
+        <div id="admin" class="tab-content">
+            <h2>Administración de Cereales</h2>
+            <div id="lista-admin-cereales"></div>
+            
+            <div class="card-panel" style="margin-top:20px;">
+                <h3>Agregar Cereal Nuevo</h3>
+                <label>Nombre:</label>
+                <input type="text" id="new-cereal-nombre" placeholder="Ej: ARVEJA">
+                <label>PH (Peso Hectolítrico):</label>
+                <input type="number" id="new-cereal-ph" placeholder="Ej: 75">
+                <label>Color Identificador:</label>
+                <input type="color" id="new-cereal-color" value="#c0392b">
+                <button class="btn-save" onclick="agregarCerealNuevo()">Guardar Cereal</button>
+            </div>
+            
+            <div class="card-panel">
+                <h3>Respaldo de Datos</h3>
+                <button class="btn-save" style="background:#2980b9;" onclick="exportarDatos()">📥 Descargar Copia de Seguridad</button>
+                <label style="margin-top:20px;">Restaurar Copia:</label>
+                <input type="file" id="import-file" accept=".json" onchange="importarDatos(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDITAR SILO (TABLERO) -->
+    <div id="modal-silo" class="modal">
+        <div class="modal-box">
+            <h2 id="m-titulo" style="margin-bottom:5px;">Silo 101</h2>
+            <div id="m-alertas"></div>
+            
+            <label>Estado de la Unidad</label>
+            <div class="btn-group" style="margin-top:5px;">
+                <button class="btn-estado b-vacio" onclick="setEstado('VACIO')" id="e-vacio">VACÍO</button>
+                <button class="btn-estado b-carga" onclick="setEstado('CON_CARGA')" id="e-carga">CON CARGA</button>
+                <button class="btn-estado b-uso" onclick="setEstado('EN_USO')" id="e-uso">EN USO</button>
+                <button class="btn-estado b-tapado" onclick="setEstado('TAPADA')" id="e-tapado">TAPADA</button>
+                <button class="btn-estado b-fuera" onclick="setEstado('FUERA_SERVICIO')" id="e-fuera">F. SERVICIO</button>
+            </div>
+
+            <div id="campos-carga" style="display:none;">
+                <label>Cereal</label>
+                <select id="m-cereal" onchange="calcularTonelaje()"></select>
+                
+                <label>Calidad (Manual)</label>
+                <input type="text" id="m-calidad" placeholder="Ej: G2">
+                
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <div style="flex:1;">
+                        <label>Metros Vacío</label>
+                        <input type="number" id="m-metros" step="0.1" oninput="calcularTonelaje()">
+                    </div>
+                    <div style="flex:1;">
+                        <label>Tonelaje</label>
+                        <input type="number" id="m-tonelaje" placeholder="0">
+                    </div>
+                </div>
+                <div id="m-msj-calc" style="font-size:0.75rem; color:#e67e22; font-weight:bold; margin-top:4px;"></div>
+
+                <label>Origen</label>
+                <select id="m-origen" onchange="cambiarOrigen()">
+                    <option value="CAMIONES">Camiones</option>
+                    <option value="VAGONES">Vagones</option>
+                    <option value="EMBARQUE">Embarque</option>
+                    <option value="TRANSFERENCIA">Transferencia</option>
+                    <option value="TRANSILE">Transile</option>
+                    <option value="LIMPIEZA">Limpieza</option>
+                </select>
+                
+                <div id="campos-transile" style="display:none; background:#f9f9f9; padding:10px; border-radius:6px; margin-top:10px;">
+                    <label>Unidad Origen</label>
+                    <input type="text" id="m-unidad-origen" placeholder="Silo/Entresilo de donde vino">
+                    <label>Fecha Movimiento</label>
+                    <input type="date" id="m-fecha-origen">
+                </div>
+
+                <label>Fecha de Carga / Primer Registro</label>
+                <input type="date" id="m-fecha">
+
+                <label>Fumigación</label>
+                <select id="m-fumigacion" onchange="cambiarFumigacion()">
+                    <option value="SIN_FUMIGAR">Sin Fumigar</option>
+                    <option value="FUMIGADO">Fumigado</option>
+                    <option value="SOLO_LIQUIDO">Solo Líquido</option>
+                    <option value="SOLO_PASTILLAS">Solo Pastillas</option>
+                </select>
+                
+                <div id="campos-fumigacion" style="display:none;">
+                    <label>Fecha de Fumigación</label>
+                    <input type="date" id="m-fecha-fumigacion">
+                </div>
+
+                <label>Notas / Observaciones</label>
+                <input type="text" id="m-notas" placeholder="Ej: Húmedo, dañado...">
+            </div>
+
+            <button class="btn-save" onclick="guardarSilo()">💾 GUARDAR DATOS</button>
+            <button class="btn-close" onclick="cerrarModal('modal-silo')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL: OTROS ALMACENAJES -->
+    <div id="modal-otro" class="modal">
+        <div class="modal-box">
+            <h2>Agregar Almacenaje Temporal</h2>
+            <label>Nombre / Identificación</label>
+            <input type="text" id="o-nombre" placeholder="Ej: Tolva Balanza 2">
+            <label>Tipo</label>
+            <select id="o-tipo">
+                <option>Tolva</option><option>Balanza</option><option>Caño</option><option>Tanque</option><option>Otro</option>
+            </select>
+            <label>Cereal</label>
+            <select id="o-cereal"></select>
+            <label>Calidad</label>
+            <input type="text" id="o-calidad" placeholder="Ej: G1">
+            <label>Tonelaje</label>
+            <input type="number" id="o-tonelaje" placeholder="0">
+            <label>Fecha</label>
+            <input type="date" id="o-fecha">
+            <button class="btn-save" onclick="guardarOtro()">💾 Guardar Almacenaje</button>
+            <button class="btn-close" onclick="cerrarModal('modal-otro')">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN BASE Y LÓGICA DE DATOS ---
+        const PH_BASE = 80;
+        const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
+        const TABLA_ENTRESILOS = [[0,311.5],[0.5,307.25],[1,303],[1.5,298.75],[2,294.5],[2.5,290.25],[3,286],[3.5,281.75],[4,277.5],[4.5,273.25],[5,269],[5.5,264.75],[6,260.5],[6.5,256.25],[7,252],[7.5,247.75],[8,243.5],[8.5,239.25],[9,235],[9.5,230.75],[10,226.5],[10.5,222.25],[11,218],[11.5,213.75],[12,209.5],[12.5,205.25],[13,201],[13.5,196.75],[14,192.5],[14.5,188.25],[15,184],[15.5,179.75],[16,175.5],[16.5,171.25],[17,167],[17.5,162.75],[18,158.5],[18.5,154.25],[19,150],[19.5,145.75],[20,141.5],[20.5,137.25],[21,133],[21.5,128.75],[22,124.5],[22.5,120.25],[23,116],[23.5,111.75],[24,107.5],[24.5,103.25],[25,99],[25.5,94.75],[26,90.5],[26.5,86.25],[27,82],[27.5,77.75],[28,73.5],[28.5,69.25],[29,65],[29.5,60.75],[30,56.5],[30.5,52.25],[31,48],[31.5,43.75],[32,39.5],[32.5,35.25],[33,31],[33.5,26.75],[34,22.5],[34.5,18.25],[35,14],[35.5,9.75],[36,6.5],[36.5,3.75],[37,1.25],[37.5,0.6]];
+
+        const SILOS_MANUALES = [701, 703, 704, 706, 707, 709, 710, 712, 713, 715, 716, 718];
+        const MIN_14 = [702, 705, 708, 711, 714, 717];
+        const MIN_10 = [502, 505, 508, 511, 514, 517];
+
+        // Estructura de las Cintas de la Unidad 7
+        const CINTAS = {
+            C1: { nombre: "Cinta 1 (700s y 600s)", silos: [] },
+            C2: { nombre: "Cinta 2 (500s y Pares 400s)", silos: [] },
+            C3: { nombre: "Cinta 3 (300s e Impares 400s)", silos: [] },
+            C4: { nombre: "Cinta 4 (100s y 200s)", silos: [] }
+        };
+        for(let i=701; i<=718; i++) CINTAS.C1.silos.push(i);
+        for(let i=601; i<=617; i++) CINTAS.C1.silos.push(i);
+        for(let i=501; i<=518; i++) CINTAS.C2.silos.push(i);
+        for(let i=402; i<=416; i+=2) CINTAS.C2.silos.push(i);
+        for(let i=301; i<=318; i++) CINTAS.C3.silos.push(i);
+        for(let i=401; i<=417; i+=2) CINTAS.C3.silos.push(i);
+        for(let i=101; i<=118; i++) CINTAS.C4.silos.push(i);
+        for(let i=201; i<=217; i++) CINTAS.C4.silos.push(i);
+
+        // Variables Globales
+        let db = { cereales: [], silos: {}, otros: [] };
+        let siloEditando = null;
+        let estadoTemp = 'VACIO';
+
+        // --- INICIALIZACIÓN ---
+        function init() {
+            let guardado = localStorage.getItem('unidad7_db_v1');
+            if(guardado) {
+                db = JSON.parse(guardado);
+            } else {
+                // Datos por defecto
+                db.cereales = [
+                    {id:'MAIZ', nombre:'MAÍZ', ph:76, color:'#e67e22'},
+                    {id:'SORGO', nombre:'SORGO', ph:72, color:'#2980b9'},
+                    {id:'SOJA', nombre:'SOJA', ph:71, color:'#f1c40f'},
+                    {id:'CEBADA', nombre:'CEBADA', ph:66, color:'#d35400'},
+                    {id:'GIRASOL', nombre:'GIRASOL', ph:42, color:'#ecf0f1'},
+                    {id:'TRIGO', nombre:'TRIGO', ph:78, color:'#27ae60'},
+                    {id:'MEZCLA', nombre:'MEZCLA', ph:75, color:'#e84393'}
+                ];
+                guardarDB();
+            }
+            actualizarSelects();
+            dibujarTablero();
+            dibujarAdmin();
+        }
+
+        function guardarDB() { localStorage.setItem('unidad7_db_v1', JSON.stringify(db)); }
+
+        function cambiarTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(btn) btn.classList.add('active');
+
+            if(id === 'existencias') actualizarExistencias();
+            if(id === 'bajosilo') dibujarBajoSilo();
+            if(id === 'otros') dibujarOtros();
+        }
+
+        // --- LÓGICA DE CÁLCULO ---
+        function interpolar(tabla, metros) {
+            if(metros <= tabla[0][0]) return tabla[0][1];
+            if(metros >= tabla[tabla.length-1][0]) return tabla[tabla.length-1][1];
+            for(let i=0; i<tabla.length-1; i++) {
+                let a = tabla[i], b = tabla[i+1];
+                if(metros >= a[0] && metros <= b[0]) {
+                    return a[1] + (b[1]-a[1]) * ((metros - a[0]) / (b[0] - a[0]));
+                }
+            }
+            return 0;
+        }
+
+        function getSiloData(num) {
+            if(!db.silos[num]) db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, metros: '', fecha: '', origen: 'CAMIONES', fumigacion: 'SIN_FUMIGAR', fecha_fumigacion: '', notas: '', fecha_antigua: '' };
+            return db.silos[num];
+        }
+
+        // --- DIBUJAR TABLERO ---
+        function dibujarTablero() {
+            const contenedor = document.getElementById('contenedor-tablero');
+            const filtro = document.getElementById('filtro-tablero').value;
+            contenedor.innerHTML = '';
+
+            for(let key in CINTAS) {
+                let cinta = CINTAS[key];
+                let htmlSilos = '';
+
+                cinta.silos.forEach(num => {
+                    let data = getSiloData(num);
+                    
+                    // Aplicar filtro
+                    if(filtro !== 'TODOS' && data.cereal !== filtro && data.estado !== 'VACIO') return;
+
+                    let colorBg = 'bg-VACIO';
+                    let textoInfo = data.estado === 'VACIO' ? 'VACÍO' : (data.estado === 'CON_CARGA' ? data.cereal : data.estado.replace('_',' '));
+                    
+                    if(data.estado !== 'VACIO') {
+                        let cObj = db.cereales.find(c => c.id === data.cereal);
+                        if(cObj) colorBg = 'bg-OTROS'; // fallback
+                        if(data.cereal === 'MAIZ') colorBg = 'bg-MAIZ';
+                        if(data.cereal === 'SOJA') colorBg = 'bg-SOJA';
+                        if(data.cereal === 'SORGO') colorBg = 'bg-SORGO';
+                        if(data.cereal === 'TRIGO') colorBg = 'bg-TRIGO';
+                        if(data.cereal === 'MEZCLA') colorBg = 'bg-MEZCLA';
+                        if(data.cereal === 'GIRASOL') colorBg = 'bg-GIRASOL';
+                        if(cObj && cObj.color && !['MAIZ','SOJA','SORGO','TRIGO','MEZCLA','GIRASOL'].includes(data.cereal)) {
+                            // Si es un cereal personalizado, inyectar color
+                            colorBg = ''; 
+                            htmlSilos += `<div class="tarjeta" style="background:${cObj.color}; color:${cObj.color === '#ecf0f1' ? '#111' : 'white'};" onclick="abrirModalSilo(${num})">`;
+                        } else {
+                            htmlSilos += `<div class="tarjeta ${colorBg}" onclick="abrirModalSilo(${num})">`;
+                        }
+                    } else {
+                        htmlSilos += `<div class="tarjeta ${colorBg}" onclick="abrirModalSilo(${num})">`;
+                    }
+
+                    // Estados especiales
+                    if(data.estado === 'EN_USO') htmlSilos += `<div class="estado-enuso" style="position:absolute;top:0;left:0;right:0;bottom:0;border-radius:8px;pointer-events:none;"></div>`;
+                    
+                    // Alertas
+                    let alertaHtml = '';
+                    if(tieneAlerta(num)) alertaHtml = `<div class="t-alerta">!</div>`;
+
+                    htmlSilos += `
+                        ${alertaHtml}
+                        <div class="t-num">${num}</div>
+                        <div class="t-info">${textoInfo}</div>
+                        <div class="t-info" style="font-weight:normal; font-size:0.6rem;">${data.tonelaje > 0 ? data.tonelaje+'t' : ''}</div>
+                    </div>`;
+                });
+
+                if(htmlSilos !== '') {
+                    contenedor.innerHTML += `<div class="fila-cinta"><div class="titulo-cinta">${cinta.nombre}</div><div class="grid-tarjetas">${htmlSilos}</div></div>`;
+                }
+            }
+        }
+
+        // --- MODAL SILO ---
+        function abrirModalSilo(num) {
+            siloEditando = num;
+            let data = getSiloData(num);
+            estadoTemp = data.estado;
+            document.getElementById('m-titulo').innerText = 'Unidad ' + num;
+            
+            actualizarBotonesEstado();
+            document.getElementById('m-cereal').value = data.cereal;
+            document.getElementById('m-calidad').value = data.calidad;
+            document.getElementById('m-metros').value = data.metros;
+            document.getElementById('m-tonelaje').value = data.tonelaje || '';
+            document.getElementById('m-origen').value = data.origen;
+            document.getElementById('m-fecha').value = data.fecha;
+            document.getElementById('m-fumigacion').value = data.fumigacion;
+            document.getElementById('m-fecha-fumigacion').value = data.fecha_fumigacion;
+            document.getElementById('m-notas').value = data.notas;
+            
+            cambiarOrigen();
+            cambiarFumigacion();
+            verificarCamposCarga();
+            
+            // Alertas en modal
+            let alertHtml = '';
+            if(tieneAlerta(num)) {
+                alertHtml = `<div class="alerta-box">⚠️ Esta unidad tiene alertas activas. Revisá las fechas y fumigación.</div>`;
+            }
+            document.getElementById('m-alertas').innerHTML = alertHtml;
+
+            document.getElementById('modal-silo').classList.add('active');
+        }
+
+        function setEstado(est) {
+            estadoTemp = est;
+            actualizarBotonesEstado();
+            verificarCamposCarga();
+        }
+
+        function actualizarBotonesEstado() {
+            document.querySelectorAll('.btn-estado').forEach(b => b.classList.remove('sel'));
+            if(estadoTemp === 'VACIO') document.getElementById('e-vacio').classList.add('sel');
+            if(estadoTemp === 'CON_CARGA') document.getElementById('e-carga').classList.add('sel');
+            if(estadoTemp === 'EN_USO') document.getElementById('e-uso').classList.add('sel');
+            if(estadoTemp === 'TAPADA') document.getElementById('e-tapado').classList.add('sel');
+            if(estadoTemp === 'FUERA_SERVICIO') document.getElementById('e-fuera').classList.add('sel');
+        }
+
+        function verificarCamposCarga() {
+            let div = document.getElementById('campos-carga');
+            if(estadoTemp === 'VACIO') {
+                div.style.display = 'none';
+            } else {
+                div.style.display = 'block';
+            }
+            // Si está en uso o tapado, bloquear o advertir según lógica
+            if(estadoTemp === 'EN_USO') document.getElementById('m-msj-calc').innerText = "En Uso: Ingresá tonelaje cuando lo midan.";
+        }
+
+        function cambiarOrigen() {
+            let val = document.getElementById('m-origen').value;
+            document.getElementById('campos-transile').style.display = (val === 'TRANSILE') ? 'block' : 'none';
+        }
+
+        function cambiarFumigacion() {
+            let val = document.getElementById('m-fumigacion').value;
+            document.getElementById('campos-fumigacion').style.display = (val !== 'SIN_FUMIGAR') ? 'block' : 'none';
+        }
+
+        function calcularTonelaje() {
+            if(siloEditando === null) return;
+            let cerealId = document.getElementById('m-cereal').value;
+            let metros = parseFloat(document.getElementById('m-metros').value);
+            let msj = document.getElementById('m-msj-calc');
+            
+            if(!cerealId || isNaN(metros)) { msj.innerText = ''; return; }
+
+            if(SILOS_MANUALES.includes(siloEditando)) {
+                msj.innerText = "⚠️ Silo de capacidad reducida. El tonelaje es MANUAL.";
+                msj.style.color = "#e67e22";
+                return; // No autocalcular
+            }
+
+            let cereal = db.cereales.find(c => c.id === cerealId);
+            let tipo = ((siloEditando >= 101 && siloEditando <= 118) || (siloEditando >= 301 && siloEditando <= 318) || (siloEditando >= 501 && siloEditando <= 518) || (siloEditando >= 701 && siloEditando <= 718)) ? 'SILO' : 'ENTRESILO';
+            
+            if(MIN_14.includes(siloEditando) && metros < 14) { msj.innerText = "Mínimo 14m."; return; }
+            if(MIN_10.includes(siloEditando) && metros < 10) { msj.innerText = "Mínimo 10m."; return; }
+
+            let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
+            let tons = Math.round(phRef * cereal.ph / PH_BASE);
+            
+            document.getElementById('m-tonelaje').value = tons;
+            msj.innerText = `Calculado (PH ${cereal.ph}): ${tons} t`;
+            msj.style.color = "var(--primary)";
+        }
+
+        function guardarSilo() {
+            let data = getSiloData(siloEditando);
+            data.estado = estadoTemp;
+            
+            if(estadoTemp !== 'VACIO') {
+                data.cereal = document.getElementById('m-cereal').value;
+                data.calidad = document.getElementById('m-calidad').value;
+                data.metros = document.getElementById('m-metros').value;
+                data.tonelaje = document.getElementById('m-tonelaje').value;
+                data.origen = document.getElementById('m-origen').value;
+                data.fecha = document.getElementById('m-fecha').value;
+                data.fumigacion = document.getElementById('m-fumigacion').value;
+                data.fecha_fumigacion = document.getElementById('m-fecha-fumigacion').value;
+                data.notas = document.getElementById('m-notas').value;
+                
+                // Guardar fecha antigua para alertas si no existe
+                if(!data.fecha_antigua && data.fecha) data.fecha_antigua = data.fecha;
+            } else {
+                data.cereal = ''; data.calidad = ''; data.tonelaje = 0; data.metros = ''; data.notas = '';
+            }
+
+            guardarDB();
+            cerrarModal('modal-silo');
+            dibujarTablero();
+        }
+
+        // --- BAJO SILO ---
+        function dibujarBajoSilo() {
+            let cont = document.getElementById('contenedor-bajosilo');
+            let selectMulti = document.getElementById('filtro-bajosilo');
+            
+            let seleccionados = Array.from(selectMulti.selectedOptions).map(o => o.value);
+            
+            cont.innerHTML = '';
+            let abiertosOlvidados = [];
+
+            for(let key in CINTAS) {
+                CINTAS[key].silos.forEach(num => {
+                    let d = getSiloData(num);
+                    if(d.estado === 'VACIO' || d.estado === 'FUERA_SERVICIO') return; // No mostrar
+                    if(seleccionados.length > 0 && !seleccionados.includes(d.cereal)) return;
+                    
+                    if(d.estado === 'ABIERTO') abiertosOlvidados.push(num);
+
+                    let info = d.estado === 'TAPADA' ? 'TAPADO' : (d.cereal + ' ' + d.calidad);
+                    cont.innerHTML += `
+                        <div class="tarjeta" style="width:100%; height:auto; padding:10px;" onclick="toggleBajoSilo(${num})">
+                            <div class="t-num">${num}</div>
+                            <div class="t-info">${info}</div>
+                            <div class="t-info">${d.tonelaje}t</div>
+                        </div>
+                    `;
+                });
+            }
+
+            let alertDiv = document.getElementById('alerta-olvidos');
+            if(abiertosOlvidados.length > 0) {
+                alertDiv.style.display = 'block';
+                alertDiv.innerHTML = `🚨 ATENCIÓN: Unidades ABIERTAS (Verificar): ${abiertosOlvidados.join(', ')}`;
+            } else {
+                alertDiv.style.display = 'none';
+            }
+        }
+
+        function toggleBajoSilo(num) {
+            let d = getSiloData(num);
+            if(d.estado === 'TAPADA') return alert("La unidad está TAPADA. No se puede operar.");
+            
+            if(d.estado === 'ABIERTO') d.estado = 'CERRADO';
+            else d.estado = 'ABIERTO';
+            
+            guardarDB();
+            dibujarBajoSilo();
+            dibujarTablero();
+        }
+
+        // --- EXISTENCIAS Y ALERTAS ---
+        function actualizarExistencias() {
+            let counts = { VACIO:0, CON_CARGA:0, EN_USO:0, TAPADA:0, FUERA_SERVICIO:0 };
+            
+            for(let key in CINTAS) {
+                CINTAS[key].silos.forEach(num => {
+                    let d = getSiloData(num);
+                    counts[d.estado] = (counts[d.estado] || 0) + 1;
+                });
+            }
+
+            document.getElementById('st-vacios').innerText = counts.VACIO;
+            document.getElementById('st-carga').innerText = counts.CON_CARGA;
+            document.getElementById('st-uso').innerText = counts.EN_USO;
+            document.getElementById('st-tapados').innerText = counts.TAPADA;
+            document.getElementById('st-fuera').innerText = counts.FUERA_SERVICIO;
+
+            calcularStock();
+        }
+
+        function calcularStock() {
+            let cerealId = document.getElementById('sel-cereal-stock').value;
+            if(!cerealId) return;
+
+            let total = 0;
+            let porCalidad = {};
+            let porCinta = { C1:0, C2:0, C3:0, C4:0 };
+
+            for(let key in CINTAS) {
+                CINTAS[key].silos.forEach(num => {
+                    let d = getSiloData(num);
+                    if(d.cereal === cerealId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'EN_USO')) {
+                        let t = parseFloat(d.tonelaje) || 0;
+                        total += t;
+                        porCinta[key] += t;
+                        porCalidad[d.calidad || 'S/C'] = (porCalidad[d.calidad || 'S/C'] || 0) + t;
+                    }
+                });
+            }
+            
+            // Sumar Otros Almacenajes
+            let totalOtros = 0;
+            db.otros.forEach(o => {
+                if(o.cereal === cerealId) totalOtros += parseFloat(o.tonelaje) || 0;
+            });
+            total += totalOtros;
+
+            let html = `<h3>Total ${cerealId}: ${total} t</h3>`;
+            html += `<p><b>En Silos:</b> ${total - totalOtros} t | <b>Otros:</b> ${totalOtros} t</p>`;
+            html += `<p><b>Distribución por Cinta:</b><br>`;
+            for(let c in porCinta) if(porCinta[c] > 0) html += `- ${CINTAS[c].nombre}: ${porCinta[c]} t<br>`;
+            html += `</p><p><b>Por Calidad:</b><br>`;
+            for(let cal in porCalidad) html += `- ${cal}: ${porCalidad[cal]} t<br>`;
+            html += `</p>`;
+
+            document.getElementById('resultado-stock').innerHTML = html;
+        }
+
+        // --- ALERTAS ---
+        function tieneAlerta(num) {
+            let d = getSiloData(num);
+            if(d.estado === 'VACIO' || d.estado === 'FUERA_SERVICIO') return false;
+            
+            // 1. Fumigación
+            if(d.fumigacion === 'SIN_FUMIGAR') return true;
+            
+            // 2. Antigüedad (>90 días)
+            if(d.fecha_antigua) {
+                let diff = (new Date() - new Date(d.fecha_antigua)) / (1000 * 60 * 60 * 24);
+                if(diff > 90) return true;
+            }
+            
+            // 3. Refumigación (>60 días)
+            if(d.fecha_fumigacion && d.fumigacion !== 'SIN_FUMIGAR') {
+                let diff = (new Date() - new Date(d.fecha_fumigacion)) / (1000 * 60 * 60 * 24);
+                if(diff > 60) return true;
+            }
+            
+            // 4. Tapada (alerta visual)
+            if(d.estado === 'TAPADA') return true;
+
+            return false;
+        }
+
+        // --- OTROS ALMACENAJE ---
+        function dibujarOtros() {
+            let cont = document.getElementById('lista-otros');
+            cont.innerHTML = '';
+            db.otros.forEach((o, index) => {
+                cont.innerHTML += `
+                    <div class="card-panel" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <b>${o.nombre}</b> (${o.tipo})<br>
+                            ${o.cereal} - ${o.calidad} - ${o.tonelaje}t
+                        </div>
+                        <button style="background:#e74c3c; color:white; border:none; padding:8px; border-radius:5px;" onclick="borrarOtro(${index})">X</button>
+                    </div>
+                `;
+            });
+        }
+
+        function abrirModalOtro() {
+            document.getElementById('o-fecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modal-otro').classList.add('active');
+        }
+
+        function guardarOtro() {
+            let o = {
+                nombre: document.getElementById('o-nombre').value,
+                tipo: document.getElementById('o-tipo').value,
+                cereal: document.getElementById('o-cereal').value,
+                calidad: document.getElementById('o-calidad').value,
+                tonelaje: document.getElementById('o-tonelaje').value,
+                fecha: document.getElementById('o-fecha').value
+            };
+            if(!o.nombre || !o.tonelaje) return alert("Completá nombre y tonelaje");
+            db.otros.push(o);
+            guardarDB();
+            cerrarModal('modal-otro');
+            dibujarOtros();
+        }
+
+        function borrarOtro(index) {
+            if(confirm("¿Eliminar este almacenaje?")) {
+                db.otros.splice(index, 1);
+                guardarDB();
+                dibujarOtros();
+            }
+        }
+
+        // --- ADMINISTRACIÓN ---
+        function dibujarAdmin() {
+            let cont = document.getElementById('lista-admin-cereales');
+            cont.innerHTML = '';
+            db.cereales.forEach(c => {
+                cont.innerHTML += `
+                    <div class="card-panel" style="margin-bottom:5px; display:flex; justify-content:space-between;">
+                        <div><b>${c.nombre}</b> (PH: ${c.ph})</div>
+                    </div>
+                `;
+            });
+        }
+
+        function agregarCerealNuevo() {
+            let nom = document.getElementById('new-cereal-nombre').value.toUpperCase();
+            let ph = parseFloat(document.getElementById('new-cereal-ph').value);
+            let color = document.getElementById('new-cereal-color').value;
+
+            if(!nom || isNaN(ph)) return alert("Completá nombre y PH");
+            
+            db.cereales.push({id: nom, nombre: nom, ph: ph, color: color});
+            guardarDB();
+            actualizarSelects();
+            dibujarAdmin();
+            document.getElementById('new-cereal-nombre').value = '';
+            document.getElementById('new-cereal-ph').value = '';
+        }
+
+        // --- HELPERS ---
+        function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function actualizarSelects() {
+            // Filtros y selectores de cereal
+            let opt = '<option value="">-- Elegir --</option>';
+            let optTodos = '<option value="TODOS">Todos los Cereales</option>';
+            let optMulti = '';
+
+            db.cereales.forEach(c => {
+                opt += `<option value="${c.id}">${c.nombre}</option>`;
+                optTodos += `<option value="${c.id}">${c.nombre}</option>`;
+                optMulti += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+
+            document.getElementById('m-cereal').innerHTML = opt;
+            document.getElementById('o-cereal').innerHTML = opt;
+            document.getElementById('filtro-tablero').innerHTML = optTodos;
+            document.getElementById('sel-cereal-stock').innerHTML = opt;
+            document.getElementById('filtro-bajosilo').innerHTML = optMulti;
+        }
+
+        function exportarDatos() {
+            let dataStr = JSON.stringify(db);
+            let blob = new Blob([dataStr], {type: "application/json"});
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = "respaldo_unidad7.json";
+            a.click();
+        }
+
+        function importarDatos(event) {
+            let file = event.target.files[0];
+            if(!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let data = JSON.parse(e.target.result);
+                    if(confirm("Esto sobreescribirá los datos actuales. ¿Continuar?")) {
+                        db = data;
+                        guardarDB();
+                        location.reload();
+                    }
+                } catch(err) { alert("Archivo inválido"); }
+            };
+            reader.readAsText(file);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

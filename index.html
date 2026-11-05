@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SPC - Gestión de Silos Unidad 7</title>
+    
+    <!-- Etiquetas PWA para instalación -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2917/2917297.png">
+    
     <style>
         :root {
             --primary: #1e293b; --secondary: #334155; --bg: #f1f5f9; --card: #ffffff;
@@ -201,7 +207,6 @@
                 </div>
             </div>
 
-            <!-- PANEL DE DETALLE -->
             <div id="panel-detalle-estado" class="card-panel" style="display:none; background: #f8fafc;">
                 <h3 class="detalle-titulo" id="detalle-titulo-text">Detalle</h3>
                 <div class="table-responsive">
@@ -447,6 +452,15 @@
     </div>
 
     <script>
+        // --- ACTIVAR MODO APP OFFLINE (PWA) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(registration => console.log('Service Worker registrado!', registration.scope))
+                .catch(err => console.log('Error al registrar Service Worker', err));
+            });
+        }
+
         const PH_BASE = 80;
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
         const TABLA_ENTRESILOS = [[0,311.5],[0.5,307.25],[1,303],[1.5,298.75],[2,294.5],[2.5,290.25],[3,286],[3.5,281.75],[4,277.5],[4.5,273.25],[5,269],[5.5,264.75],[6,260.5],[6.5,256.25],[7,252],[7.5,247.75],[8,243.5],[8.5,239.25],[9,235],[9.5,230.75],[10,226.5],[10.5,222.25],[11,218],[11.5,213.75],[12,209.5],[12.5,205.25],[13,201],[13.5,196.75],[14,192.5],[14.5,188.25],[15,184],[15.5,179.75],[16,175.5],[16.5,171.25],[17,167],[17.5,162.75],[18,158.5],[18.5,154.25],[19,150],[19.5,145.75],[20,141.5],[20.5,137.25],[21,133],[21.5,128.75],[22,124.5],[22.5,120.25],[23,116],[23.5,111.75],[24,107.5],[24.5,103.25],[25,99],[25.5,94.75],[26,90.5],[26.5,86.25],[27,82],[27.5,77.75],[28,73.5],[28.5,69.25],[29,65],[29.5,60.75],[30,56.5],[30.5,52.25],[31,48],[31.5,43.75],[32,39.5],[32.5,35.25],[33,31],[33.5,26.75],[34,22.5],[34.5,18.25],[35,14],[35.5,9.75],[36,6.5],[36.5,3.75],[37,1.25],[37.5,0.6]];
@@ -716,14 +730,12 @@
             data.lastUpdate = Date.now(); 
             guardarDB(); cerrarModal('modal-silo'); dibujarTablero();
             
-            // Refrescar panel de detalle si está abierto
             if(estadoSeleccionadoDetalle) {
                 let box = document.querySelector(`.stat-box[onclick*="${estadoSeleccionadoDetalle}"]`);
                 if(box) mostrarDetalleEstado(estadoSeleccionadoDetalle, box);
             }
         }
 
-        // --- HISTORIAL MANUAL ---
         function abrirModalHistManual() {
             document.getElementById('hm-sub').innerText = siloEditando;
             document.getElementById('hm-fecha').value = new Date().toISOString().split('T')[0];
@@ -751,7 +763,6 @@
             alert("Historial manual agregado.");
         }
 
-        // --- RECIRCULACION ---
         function abrirModalRecirculacion() {
             document.getElementById('recir-sub').innerText = 'Unidad ' + siloEditando;
             document.getElementById('recir-fecha').value = new Date().toISOString().split('T')[0];
@@ -776,14 +787,12 @@
             alert("Recirculación registrada.");
         }
 
-        // --- HISTORIAL Y BORRADO ---
         function abrirHistorial() {
             let data = getSiloData(siloEditando);
             document.getElementById('h-sub').innerText = 'Unidad ' + siloEditando;
             let cont = document.getElementById('lista-historial');
             cont.innerHTML = '';
             
-            // Usamos un bucle for inverso para mantener los índices reales para el borrado
             for(let i = data.historial.length - 1; i >= 0; i--) {
                 let h = data.historial[i];
                 
@@ -824,12 +833,9 @@
             data.historial.splice(index, 1);
             data.lastUpdate = Date.now();
             guardarDB();
-            
-            // Volver a dibujar el modal
             abrirHistorial();
         }
 
-        // --- BAJO SILO (Todo arranca CERRADO) ---
         function dibujarBajoSilo() {
             let cont = document.getElementById('contenedor-bajosilo');
             let resumenDiv = document.getElementById('resumen-bajosilo');
@@ -921,7 +927,6 @@
             dibujarBajoSilo(); 
         }
 
-        // --- EXISTENCIAS Y ALERTAS ---
         function dibujarAlertas() {
             let tbody = document.querySelector('#tabla-alertas tbody');
             tbody.innerHTML = '';
@@ -1118,7 +1123,6 @@
             return false;
         }
 
-        // --- OTROS Y ADMIN ---
         function dibujarOtros() {
             let cont = document.getElementById('lista-otros'); cont.innerHTML = '';
             db.otros.forEach((o, index) => {

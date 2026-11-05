@@ -57,7 +57,6 @@
         .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; }
         .bg-vacio { background: #f8fafc; border-style: dashed; border-color: #cbd5e1; }
 
-        /* BAJO SILO */
         .bs-dimmed { opacity: 0.3; filter: grayscale(100%); }
         .bs-badge { position: absolute; bottom: 0px; left: 0; right: 0; padding: 2px 0; font-size: 0.5rem; font-weight: bold; color: white; text-align: center; text-transform: uppercase;}
         .bs-A { background: #10b981; } .bs-C { background: #ef4444; } .bs-V { background: #64748b; } .bs-T { background: #f59e0b; }
@@ -91,7 +90,9 @@
         .btn-manual { background: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; padding: 12px; width: 100%; border-radius: 6px; font-size: 0.9rem; font-weight: 600; margin-top: 10px; cursor: pointer; text-align: center; }
 
         .card-panel { background: white; padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .stat-box { display: flex; flex-direction: column; gap: 5px; }
+        .stat-box { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 10px; border-radius: 6px; transition: background 0.2s;}
+        .stat-box:hover { background: #f1f5f9; }
+        .stat-box.active-stat { background: #e2e8f0; border: 1px solid #cbd5e1; }
         .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--primary); line-height: 1; }
         .stat-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;}
         
@@ -118,6 +119,8 @@
 
         .seccion-historial { background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 25px; border: 1px dashed #cbd5e1;}
         .seccion-historial h3 { font-size: 0.9rem; color: var(--text-light); margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .detalle-titulo { font-size: 1.1rem; font-weight: 600; margin-top: 0; margin-bottom: 10px; color: var(--primary); border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;}
     </style>
 </head>
 <body>
@@ -176,16 +179,37 @@
             </div>
 
             <div class="card-panel">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light); border-bottom:1px solid var(--border); padding-bottom:10px;">Estado General de la Planta</h3>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:15px;">
-                    <div class="stat-box"><span class="stat-num" id="st-vacios">0</span><span class="stat-lbl">Vacíos</span></div>
-                    <div class="stat-box"><span class="stat-num" id="st-carga">0</span><span class="stat-lbl">Con Carga</span></div>
-                    <div class="stat-box"><span class="stat-num" id="st-uso">0</span><span class="stat-lbl">En Uso</span></div>
-                    <div class="stat-box"><span class="stat-num" id="st-tapados">0</span><span class="stat-lbl">Tapados</span></div>
-                    <div class="stat-box"><span class="stat-num" id="st-fuera">0</span><span class="stat-lbl">F. Servicio</span></div>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light); border-bottom:1px solid var(--border); padding-bottom:10px;">Estado General de la Planta (Toca para ver detalle)</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:10px;">
+                    <div class="stat-box" onclick="mostrarDetalleEstado('VACIO', this)">
+                        <span class="stat-num" id="st-vacios">0</span><span class="stat-lbl">Vacíos</span>
+                    </div>
+                    <div class="stat-box" onclick="mostrarDetalleEstado('CON_CARGA', this)">
+                        <span class="stat-num" id="st-carga">0</span><span class="stat-lbl">Con Carga</span>
+                    </div>
+                    <div class="stat-box" onclick="mostrarDetalleEstado('EN_USO', this)">
+                        <span class="stat-num" id="st-uso">0</span><span class="stat-lbl">En Uso</span>
+                    </div>
+                    <div class="stat-box" onclick="mostrarDetalleEstado('TAPADA', this)">
+                        <span class="stat-num" id="st-tapados">0</span><span class="stat-lbl">Tapados</span>
+                    </div>
+                    <div class="stat-box" onclick="mostrarDetalleEstado('FUERA_SERVICIO', this)">
+                        <span class="stat-num" id="st-fuera">0</span><span class="stat-lbl">F. Servicio</span>
+                    </div>
                 </div>
             </div>
-            
+
+            <!-- NUEVO PANEL DE DETALLE -->
+            <div id="panel-detalle-estado" class="card-panel" style="display:none; background: #f8fafc;">
+                <h3 class="detalle-titulo" id="detalle-titulo-text">Detalle</h3>
+                <div class="table-responsive">
+                    <table class="data-table" id="tabla-detalle">
+                        <thead><tr><th>Unidad</th><th>Cereal</th><th>Calidad</th><th>Tonelaje</th><th>Acción</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="card-panel">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light); border-bottom:1px solid var(--border); padding-bottom:10px;">Stock y Ocupación por Cereal</h3>
                 <select id="sel-cereal-stock" class="filtro-cereal" onchange="calcularStock()"></select>
@@ -329,7 +353,6 @@
                 </div>
             </div>
 
-            <!-- SECCION SIEMPRE VISIBLE PARA HISTORIALES -->
             <div class="seccion-historial">
                 <h3>Libreta de Seguimiento</h3>
                 <button class="btn-recir" onclick="abrirModalRecirculacion()">🔄 Registrar Recirculación</button>
@@ -458,6 +481,9 @@
         let bsSiloSeleccionado = null;
         let capacidadPlantaTotal = 0;
 
+        // Variables para el detalle de Existencias
+        let estadoSeleccionadoDetalle = null;
+
         function init() {
             let guardado = localStorage.getItem('unidad7_db_v1');
             if(guardado) { db = JSON.parse(guardado); } 
@@ -538,7 +564,7 @@
                 let htmlSilos = '';
                 
                 for(let num = sector.rango[0]; num <= sector.rango[1]; num++) {
-                    if(num >= 400 && num < 500 && num % 2 !== 0) continue; // Omitir impares del 400
+                    if(num >= 400 && num < 500 && num % 2 !== 0) continue; 
 
                     let data = getSiloData(num);
                     if(filtro !== 'TODOS' && data.cereal !== filtro && data.estado !== 'VACIO') continue;
@@ -591,7 +617,6 @@
             let alertHtml = tieneAlerta(num) ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:4px; font-size:0.85rem; font-weight:600; margin-top:15px;">⚠️ UNIDAD CON ALERTAS ACTIVAS.</div>` : '';
             document.getElementById('m-alertas').innerHTML = alertHtml;
             
-            // Siempre mostrar los botones, sin importar el estado
             document.getElementById('modal-silo').classList.add('active');
         }
 
@@ -689,6 +714,9 @@
 
             data.lastUpdate = Date.now(); 
             guardarDB(); cerrarModal('modal-silo'); dibujarTablero();
+            
+            // Si estamos viendo un detalle en existencias, lo actualizamos
+            if(estadoSeleccionadoDetalle) mostrarDetalleEstado(estadoSeleccionadoDetalle, document.querySelector(`.stat-box[onclick*="${estadoSeleccionadoDetalle}"]`));
         }
 
         // --- HISTORIAL MANUAL ---
@@ -801,7 +829,6 @@
                         totalesCinta[cintaKey] += parseFloat(dbData.tonelaje) || 0;
                     }
 
-                    // LOGICA BAJO SILO: Si no hay estado local, ES CERRADO por defecto.
                     let estadoLocal = bajoSiloLocal[num] || 'CERRADO';
                     if(estadoLocal === 'ABIERTO') abiertos.push(num);
 
@@ -813,7 +840,6 @@
                     let franjaClass = isVacio ? 'f-VACIO' : getFranjaClass(dbData.cereal);
                     let dimClass = (cerealFiltro !== 'TODOS' && !esDelCereal) ? 'bs-dimmed' : '';
                     
-                    // Etiqueta de estado
                     let badge = `<div class="bs-badge bs-${estadoLocal[0]}">${estadoLocal}</div>`;
 
                     htmlSilos += `
@@ -852,14 +878,13 @@
         function abrirModalBajoSilo(num) {
             bsSiloSeleccionado = num;
             let dbData = getSiloData(num);
-            let estadoLocal = bajoSiloLocal[num] || 'CERRADO'; // Por defecto Cerrado
+            let estadoLocal = bajoSiloLocal[num] || 'CERRADO';
             document.getElementById('bs-titulo').innerText = 'Unidad ' + num;
             document.getElementById('bs-info').innerHTML = `Producto: <b>${dbData.cereal || 'Vacío'}</b> (${dbData.calidad || 'S/C'})<br>Tonelaje: <b>${dbData.tonelaje}t</b><br>Estado actual: <b>${estadoLocal}</b>`;
             document.getElementById('modal-bajosilo').classList.add('active');
         }
 
         function setBajoSiloState(estado) { 
-            // Si ya estaba en ese estado, no hace nada (o lo desmarca)
             if(bajoSiloLocal[bsSiloSeleccionado] === estado && estado === 'ABIERTO') {
                 bajoSiloLocal[bsSiloSeleccionado] = 'CERRADO';
             } else {
@@ -925,7 +950,70 @@
             bar.style.width = porcentaje + '%'; bar.innerText = porcentaje + '%';
             if(porcentaje > 90) bar.style.backgroundColor = '#ef4444'; else if(porcentaje > 75) bar.style.backgroundColor = '#f59e0b'; else bar.style.backgroundColor = '#3b82f6';
 
+            // Si había un detalle abierto, lo mantenemos actualizado o lo cerramos
+            if(estadoSeleccionadoDetalle) {
+                let box = document.querySelector(`.stat-box[onclick*="${estadoSeleccionadoDetalle}"]`);
+                if(box) mostrarDetalleEstado(estadoSeleccionadoDetalle, box);
+            }
+
             calcularStock();
+        }
+
+        // --- NUEVA FUNCION PARA MOSTRAR EL DETALLE ---
+        function mostrarDetalleEstado(estado, element) {
+            // Si hacemos click en el mismo que ya estaba, lo cerramos
+            if(estadoSeleccionadoDetalle === estado && document.getElementById('panel-detalle-estado').style.display === 'block') {
+                document.getElementById('panel-detalle-estado').style.display = 'none';
+                document.querySelectorAll('.stat-box').forEach(b => b.classList.remove('active-stat'));
+                estadoSeleccionadoDetalle = null;
+                return;
+            }
+
+            estadoSeleccionadoDetalle = estado;
+            
+            // Estilos visuales
+            document.querySelectorAll('.stat-box').forEach(b => b.classList.remove('active-stat'));
+            if(element) element.classList.add('active-stat');
+
+            let titulos = {
+                'VACIO': 'Vacíos',
+                'CON_CARGA': 'Con Carga',
+                'EN_USO': 'En Uso',
+                'TAPADA': 'Tapados',
+                'FUERA_SERVICIO': 'Fuera de Servicio'
+            };
+
+            document.getElementById('detalle-titulo-text').innerText = 'Detalle: Unidades ' + titulos[estado];
+            
+            let tbody = document.querySelector('#tabla-detalle tbody');
+            tbody.innerHTML = '';
+            let hay = false;
+
+            // Recorremos todos los sectores para mantener un orden lógico
+            SECTORES.forEach(sector => {
+                for(let num = sector.rango[0]; num <= sector.rango[1]; num++) {
+                    if(num >= 400 && num < 500 && num % 2 !== 0) continue;
+                    
+                    let d = getSiloData(num);
+                    if(d.estado === estado) {
+                        hay = true;
+                        let btn = `<button class="btn-sm" onclick="cerrarModal('panel-detalle-estado'); abrirModalSilo(${num})">Editar</button>`;
+                        tbody.innerHTML += `<tr>
+                            <td style="font-weight:600;">${num}</td>
+                            <td>${d.cereal || '-'}</td>
+                            <td>${d.calidad || '-'}</td>
+                            <td>${d.tonelaje > 0 ? d.tonelaje + ' t' : '-'}</td>
+                            <td>${btn}</td>
+                        </tr>`;
+                    }
+                }
+            });
+
+            if(!hay) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-light);">No hay unidades en este estado.</td></tr>';
+            }
+
+            document.getElementById('panel-detalle-estado').style.display = 'block';
         }
 
         function calcularStock() {

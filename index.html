@@ -37,25 +37,28 @@
         
         .fila-cinta { margin-bottom: 20px; }
         .titulo-cinta { font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
         
-        .tarjeta { height: 75px; border-radius: 4px; background: white; border: 1px solid #cbd5e1; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s; overflow: hidden; }
+        /* TARJETAS ULTRA COMPACTAS */
+        .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 6px; }
+        .tarjeta { height: 75px; border-radius: 4px; background: white; border: 1px solid #cbd5e1; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s; overflow: hidden; padding-bottom: 2px; }
         .tarjeta:hover { border-color: #94a3b8; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
         .franja { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
         .f-MAIZ { background: var(--c-maiz); } .f-SOJA { background: var(--c-soja); } .f-SORGO { background: var(--c-sorgo); } .f-TRIGO { background: var(--c-trigo); } .f-MEZCLA { background: var(--c-mezcla); } .f-GIRASOL { background: var(--c-girasol); } .f-OTROS { background: var(--c-otros); } .f-VACIO { background: transparent; }
 
-        .t-num { font-size: 1.2rem; font-weight: 700; color: var(--primary); line-height: 1; margin-top: 4px; }
-        .t-info { font-size: 0.65rem; font-weight: 600; text-align: center; line-height: 1; margin-top: 4px; color: var(--text-light); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
-        .t-info-2 { font-size: 0.6rem; font-weight: 400; color: var(--text-light); margin-top: 2px;}
+        .t-num { font-size: 1.1rem; font-weight: 700; color: var(--primary); line-height: 1; margin-top: 6px; }
+        .t-info { font-size: 0.55rem; font-weight: 700; text-align: center; line-height: 1; margin-top: 2px; color: var(--text-light); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
+        .t-info-3 { font-size: 0.5rem; font-weight: 600; color: #333; margin-top: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
+        .t-info-2 { font-size: 0.5rem; font-weight: 400; color: var(--text-light); margin-top: 1px;}
         
-        .t-alerta { position: absolute; top: 6px; right: 6px; background: #ef4444; color: white; width: 14px; height: 14px; border-radius: 50%; font-size: 9px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .t-alerta { position: absolute; top: 4px; right: 4px; background: #ef4444; color: white; width: 12px; height: 12px; border-radius: 50%; font-size: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
         .estado-borde { border: 2px solid #f59e0b; }
         .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; }
         .bg-vacio { background: #f8fafc; border-style: dashed; border-color: #cbd5e1; }
 
+        /* BAJO SILO */
         .bs-dimmed { opacity: 0.3; filter: grayscale(100%); }
-        .bs-badge { position: absolute; bottom: 0px; left: 0; right: 0; padding: 2px 0; font-size: 0.55rem; font-weight: bold; color: white; text-align: center;}
+        .bs-badge { position: absolute; bottom: 0px; left: 0; right: 0; padding: 1px 0; font-size: 0.45rem; font-weight: bold; color: white; text-align: center;}
         .bs-A { background: #10b981; } .bs-C { background: #ef4444; } .bs-V { background: #64748b; } .bs-T { background: #f59e0b; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
@@ -74,7 +77,6 @@
         .btn-save { background: var(--primary); color: white; padding: 14px; width: 100%; border: none; border-radius: 4px; font-size: 1rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
         .btn-save:hover { background: var(--secondary); }
         .btn-close { background: white; color: var(--text); border: 1px solid #cbd5e1; padding: 12px; width: 100%; border-radius: 4px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
-        .btn-sync { background: #ef4444; color: white; padding: 14px; width: 100%; border: none; border-radius: 4px; font-size: 1rem; font-weight: 600; margin-bottom: 20px; cursor: pointer; display: none; }
         .btn-hist { background: #f8fafc; color: var(--primary); border: 1px solid var(--border); padding: 10px; width: 100%; border-radius: 4px; font-size: 0.9rem; font-weight: 600; margin-top: 10px; cursor: pointer; text-align: center; }
 
         .card-panel { background: white; padding: 20px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
@@ -95,6 +97,8 @@
         
         .hist-item { border-left: 2px solid #cbd5e1; padding-left: 10px; margin-bottom: 15px; font-size: 0.85rem; }
         .hist-date { font-weight: bold; color: var(--primary); font-size: 0.8rem; }
+        
+        .bs-alert-banner { display: none; background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 4px; font-weight: 600; margin-bottom: 15px; border: 1px solid #f87171; }
     </style>
 </head>
 <body>
@@ -122,14 +126,18 @@
         <!-- PESTAÑA: BAJO SILO -->
         <div id="bajosilo" class="tab-content">
             <h2>Operación Bajo Silo</h2>
-            <div id="resumen-bajosilo" class="card-panel" style="display:none; padding:15px;"></div>
             
-            <button id="btn-sincronizar" class="btn-sync" onclick="sincronizarBajoSilo()">CONFIRMAR CAMBIOS AL TABLERO</button>
+            <div id="bs-alert-banner" class="bs-alert-banner">
+                ⚠️ Unidades ABIERTAS: <span id="bs-cant-abiertos"></span><br><span style="font-size:0.8rem; font-weight:normal;">(Verificá si olvidaste cerrarlas)</span>
+            </div>
+            
+            <div id="resumen-bajosilo" class="card-panel" style="display:none; padding:15px;"></div>
             
             <label>Seleccionar Cereal a Operar:</label>
             <select id="filtro-bajosilo" class="filtro-cereal" onchange="dibujarBajoSilo()">
                 <option value="TODOS">Todos los Cereales</option>
             </select>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-top:0;">Toca las unidades para marcarlas temporalmente. No afecta al Tablero.</p>
             <div id="contenedor-bajosilo"></div>
         </div>
 
@@ -190,7 +198,7 @@
             <div class="card-panel">
                 <label>Seleccionar Cereal:</label>
                 <select id="sel-cereal-relleno" class="filtro-cereal" onchange="calcularRellenos()"></select>
-                <p style="font-size:0.8rem; color:var(--text-light); margin-top:15px;">* Solo se muestran unidades con mercadería parcial (para rellenar). Silos con ⚠️ requieren medición manual.</p>
+                <p style="font-size:0.8rem; color:var(--text-light); margin-top:15px;">* Solo se muestran unidades con carga parcial del mismo cereal. Silos con ⚠️ requieren medición manual.</p>
                 <table class="data-table" id="tabla-rellenos">
                     <thead><tr><th>Unidad</th><th>Cinta</th><th>Estado</th><th>Espacio Disp.</th></tr></thead>
                     <tbody></tbody>
@@ -378,8 +386,11 @@
         let db = { cereales: [], silos: {}, otros: [] };
         let siloEditando = null;
         let estadoTemp = 'VACIO';
-        let bajoSiloLocal = {};
+        
+        // Memoria exclusiva para la herramienta Bajo Silo (no afecta al Tablero)
+        let bajoSiloLocal = {}; 
         let bsSiloSeleccionado = null;
+        
         let capacidadPlantaTotal = 0;
 
         function init() {
@@ -394,6 +405,11 @@
                 ];
                 guardarDB();
             }
+            
+            // Cargar memoria de Bajo Silo
+            let bsGuardado = localStorage.getItem('unidad7_bajosilo');
+            if(bsGuardado) bajoSiloLocal = JSON.parse(bsGuardado);
+
             calcularCapacidadPlanta();
             actualizarSelects(); dibujarTablero(); dibujarAdmin();
         }
@@ -411,6 +427,7 @@
         }
 
         function guardarDB() { localStorage.setItem('unidad7_db_v1', JSON.stringify(db)); }
+        function guardarBajoSiloLocal() { localStorage.setItem('unidad7_bajosilo', JSON.stringify(bajoSiloLocal)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -459,18 +476,23 @@
                     let data = getSiloData(num);
                     if(filtro !== 'TODOS' && data.cereal !== filtro && data.estado !== 'VACIO') return;
 
-                    let textoInfo = data.estado === 'VACIO' ? 'VACÍO' : (data.estado === 'CON_CARGA' ? data.cereal : data.estado.replace('_',' '));
-                    let franjaClass = (data.estado === 'VACIO') ? 'f-VACIO' : getFranjaClass(data.cereal);
+                    let isVacio = data.estado === 'VACIO';
+                    let textoCereal = isVacio ? 'VACÍO' : (data.estado === 'FUERA_SERVICIO' ? 'F. SERVICIO' : data.cereal);
+                    let textoCalidad = isVacio ? '' : (data.calidad || '');
+                    let textoTon = data.tonelaje > 0 ? data.tonelaje + 't' : '';
+                    
+                    let franjaClass = isVacio ? 'f-VACIO' : getFranjaClass(data.cereal);
                     let borderClass = (data.estado === 'EN_USO') ? 'estado-borde' : ((data.estado === 'FUERA_SERVICIO') ? 'estado-fuera' : '');
                     let alertaHtml = tieneAlerta(num) ? `<div class="t-alerta">!</div>` : '';
 
                     htmlSilos += `
-                        <div class="tarjeta ${data.estado==='VACIO'?'bg-vacio':''} ${borderClass}" onclick="abrirModalSilo(${num})">
+                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${borderClass}" onclick="abrirModalSilo(${num})">
                             <div class="franja ${franjaClass}"></div>
                             ${alertaHtml}
                             <div class="t-num">${num}</div>
-                            <div class="t-info">${textoInfo}</div>
-                            <div class="t-info-2">${data.tonelaje > 0 ? data.tonelaje+'t' : ''}</div>
+                            <div class="t-info">${textoCereal}</div>
+                            <div class="t-info-3">${textoCalidad}</div>
+                            <div class="t-info-2">${textoTon}</div>
                         </div>`;
                 });
                 if(htmlSilos !== '') contenedor.innerHTML += `<div class="fila-cinta"><div class="titulo-cinta">${CINTAS[key].nombre}</div><div class="grid-tarjetas">${htmlSilos}</div></div>`;
@@ -592,7 +614,7 @@
                 let ahora = new Date();
                 let fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 data.historial.push({ fecha: fechaStr, estado: data.estado, cereal: data.cereal || 'Vacío', calidad: data.calidad || '-', tonelaje: data.tonelaje });
-                if(data.historial.length > 30) data.historial.shift(); // Límite de 30
+                if(data.historial.length > 30) data.historial.shift();
             }
 
             guardarDB(); cerrarModal('modal-silo'); dibujarTablero();
@@ -615,13 +637,14 @@
             document.getElementById('modal-historial').classList.add('active');
         }
 
-        // --- BAJO SILO ---
+        // --- BAJO SILO (HERRAMIENTA INDEPENDIENTE) ---
         function dibujarBajoSilo() {
             let cont = document.getElementById('contenedor-bajosilo');
             let resumenDiv = document.getElementById('resumen-bajosilo');
             let cerealFiltro = document.getElementById('filtro-bajosilo').value;
             cont.innerHTML = '';
             let totalesCinta = { C1:0, C2:0, C3:0, C4:0 };
+            let abiertos = [];
 
             for(let key in CINTAS) {
                 let htmlSilos = '';
@@ -634,21 +657,38 @@
                         totalesCinta[key] += parseFloat(dbData.tonelaje) || 0;
                     }
 
-                    let colorBg = (dbData.estado === 'VACIO') ? 'bg-vacio' : '';
-                    let franjaClass = (dbData.estado === 'VACIO') ? 'f-VACIO' : getFranjaClass(dbData.cereal);
+                    // Rastreo de unidades abiertas temporalmente
+                    if(bajoSiloLocal[num] === 'ABIERTO') abiertos.push(num);
+
+                    let isVacio = dbData.estado === 'VACIO';
+                    let textoCereal = isVacio ? 'VACÍO' : (dbData.estado === 'FUERA_SERVICIO' ? 'F. SERVICIO' : dbData.cereal);
+                    let textoCalidad = isVacio ? '' : (dbData.calidad || '');
+                    let textoTon = dbData.tonelaje > 0 ? dbData.tonelaje + 't' : '';
+
+                    let franjaClass = isVacio ? 'f-VACIO' : getFranjaClass(dbData.cereal);
                     let dimClass = (cerealFiltro !== 'TODOS' && !esDelCereal) ? 'bs-dimmed' : '';
                     let badge = bajoSiloLocal[num] ? `<div class="bs-badge bs-${bajoSiloLocal[num][0]}">${bajoSiloLocal[num]}</div>` : '';
 
                     htmlSilos += `
-                        <div class="tarjeta ${colorBg} ${dimClass}" onclick="abrirModalBajoSilo(${num})">
+                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${dimClass}" onclick="abrirModalBajoSilo(${num})">
                             <div class="franja ${franjaClass}"></div>
                             <div class="t-num">${num}</div>
-                            <div class="t-info">${dbData.cereal || 'VACÍO'}</div>
-                            <div class="t-info-2">${dbData.tonelaje}t</div>
+                            <div class="t-info">${textoCereal}</div>
+                            <div class="t-info-3">${textoCalidad}</div>
+                            <div class="t-info-2">${textoTon}</div>
                             ${badge}
                         </div>`;
                 });
                 if(htmlSilos !== '') cont.innerHTML += `<div class="fila-cinta"><div class="titulo-cinta">${CINTAS[key].nombre}</div><div class="grid-tarjetas">${htmlSilos}</div></div>`;
+            }
+
+            // Alerta de unidades abiertas
+            let alertBanner = document.getElementById('bs-alert-banner');
+            if(abiertos.length > 0) {
+                alertBanner.style.display = 'block';
+                document.getElementById('bs-cant-abiertos').innerText = abiertos.join(', ');
+            } else {
+                alertBanner.style.display = 'none';
             }
 
             if(cerealFiltro !== 'TODOS') {
@@ -658,41 +698,22 @@
                 html += `</div>`;
                 resumenDiv.innerHTML = html;
             } else { resumenDiv.style.display = 'none'; }
-            document.getElementById('btn-sincronizar').style.display = Object.keys(bajoSiloLocal).length > 0 ? 'block' : 'none';
         }
 
         function abrirModalBajoSilo(num) {
             bsSiloSeleccionado = num;
             let dbData = getSiloData(num);
+            let estadoLocal = bajoSiloLocal[num] || 'CERRADO';
             document.getElementById('bs-titulo').innerText = 'Unidad ' + num;
-            document.getElementById('bs-info').innerHTML = `Producto: <b>${dbData.cereal || 'Vacío'}</b> (${dbData.calidad || 'S/C'})<br>Tonelaje registrado: <b>${dbData.tonelaje}t</b>`;
+            document.getElementById('bs-info').innerHTML = `Producto: <b>${dbData.cereal || 'Vacío'}</b> (${dbData.calidad || 'S/C'})<br>Tonelaje: <b>${dbData.tonelaje}t</b><br>Estado actual: <b>${estadoLocal}</b>`;
             document.getElementById('modal-bajosilo').classList.add('active');
         }
 
-        function setBajoSiloState(estado) { bajoSiloLocal[bsSiloSeleccionado] = estado; cerrarModal('modal-bajosilo'); dibujarBajoSilo(); }
-
-        function sincronizarBajoSilo() {
-            if(!confirm("¿Confirmar y volcar estos cambios al Tablero principal?")) return;
-            for(let num in bajoSiloLocal) {
-                let estadoLocal = bajoSiloLocal[num];
-                let dbData = getSiloData(num);
-                let estadoAnterior = dbData.estado;
-                let tonelajeAnterior = dbData.tonelaje;
-
-                if(estadoLocal === 'VACIADO') { dbData.estado = 'VACIO'; dbData.tonelaje = 0; dbData.cereal = ''; dbData.calidad = ''; }
-                else if(estadoLocal === 'TAPADO') dbData.estado = 'TAPADA';
-                else if(estadoLocal === 'ABIERTO') dbData.estado = 'EN_USO';
-                else if(estadoLocal === 'CERRADO') { if(dbData.estado !== 'VACIO' && dbData.estado !== 'TAPADA') dbData.estado = 'CON_CARGA'; }
-
-                if(estadoAnterior !== dbData.estado || tonelajeAnterior != dbData.tonelaje) {
-                    let ahora = new Date();
-                    let fechaStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    dbData.historial.push({ fecha: fechaStr, estado: dbData.estado, cereal: dbData.cereal || 'Vacío', calidad: dbData.calidad || '-', tonelaje: dbData.tonelaje });
-                    if(dbData.historial.length > 30) dbData.historial.shift();
-                }
-            }
-            guardarDB(); bajoSiloLocal = {}; dibujarBajoSilo(); dibujarTablero();
-            alert("Tablero actualizado correctamente.");
+        function setBajoSiloState(estado) { 
+            bajoSiloLocal[bsSiloSeleccionado] = estado; 
+            guardarBajoSiloLocal();
+            cerrarModal('modal-bajosilo'); 
+            dibujarBajoSilo(); 
         }
 
         // --- EXISTENCIAS Y ALERTAS ---
@@ -794,8 +815,9 @@
             for(let key in CINTAS) {
                 CINTAS[key].silos.forEach(num => {
                     let d = getSiloData(num);
-                    // SOLO MOSTRAR SI TIENE CARGA PARCIAL (no vacíos ni fuera de servicio)
                     if(d.estado === 'CON_CARGA' || d.estado === 'EN_USO' || d.estado === 'TAPADA') {
+                        if(d.cereal !== cerealId) return; // Solo mostrar si es el mismo cereal
+
                         let tipo = ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO';
                         let capMaxPhRef = (tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS)[0][1];
                         let capMaxTon = Math.round(capMaxPhRef * cereal.ph / PH_BASE);
@@ -805,23 +827,19 @@
                         if(falta > 10) {
                             hayDisponibles = true;
                             let manualTag = SILOS_MANUALES.includes(num) ? ' ⚠️' : '';
-                            let estadoTag = d.cereal === cerealId ? d.estado : 'Mezcla/otro';
+                            let estadoTag = d.estado;
                             
-                            // Solo mostrar si el silo tiene el mismo cereal, o si está vacío de otro cereal (pero eso implicaría limpieza).
-                            // Para ser precisos, mostramos si el cereal coincide O si está en carga.
-                            if(d.cereal === cerealId) {
-                                tbody.innerHTML += `<tr>
-                                    <td style="font-weight:600;">${num}${manualTag}</td>
-                                    <td>${CINTAS[key].nombre}</td>
-                                    <td><span style="color:var(--text-light); font-size:0.85rem;">${estadoTag} (${d.cereal})</span></td>
-                                    <td style="font-weight:600; color:#16a34a;">~${falta} t</td>
-                                </tr>`;
-                            }
+                            tbody.innerHTML += `<tr>
+                                <td style="font-weight:600;">${num}${manualTag}</td>
+                                <td>${CINTAS[key].nombre}</td>
+                                <td><span style="color:var(--text-light); font-size:0.85rem;">${estadoTag} (${d.cereal})</span></td>
+                                <td style="font-weight:600; color:#16a34a;">~${falta} t</td>
+                            </tr>`;
                         }
                     }
                 });
             }
-            if(!hayDisponibles) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">Sin espacio disponible para este cereal en unidades con carga parcial.</td></tr>';
+            if(!hayDisponibles) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">Sin espacio disponible para este cereal.</td></tr>';
         }
 
         function tieneAlerta(num) {

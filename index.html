@@ -98,7 +98,6 @@
         .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
         .btn-save:active { background: var(--secondary); }
         .btn-close { background: white; color: var(--text); border: 1px solid #cbd5e1; padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
-        .btn-sync { background: #10b981; color: white; border: none; padding: 16px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; text-align: center; }
 
         .card-panel { background: white; padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .stat-box { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 10px; border-radius: 6px; transition: background 0.2s; border: 1px solid transparent;}
@@ -259,14 +258,6 @@
         <div id="admin" class="tab-content">
             <h2>Administración</h2>
             
-            <div class="card-panel" style="border: 2px solid #10b981; background: #f0fdf4;">
-                <h3 style="margin-top:0; font-size:1.1rem; color:#065f46;">Sincronización PC <-> Celular</h3>
-                <p style="font-size:0.85rem; color:#065f46; margin-bottom:15px;">Usá este método rápido para pasar los datos de la PC al Celular (o viceversa) sin descargar archivos. Usa WhatsApp para transferir el texto.</p>
-                
-                <button class="btn-sync" onclick="copiarDatosSync()">📋 1. Copiar Datos (En la PC)</button>
-                <button class="btn-sync" style="background:#3b82f6; margin-top:10px;" onclick="pegarDatosSync()">📥 2. Pegar y Fusionar (En el Celular)</button>
-            </div>
-
             <div class="card-panel">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Parámetros de Cereales</h3>
                 <div id="lista-admin-cereales"></div>
@@ -287,12 +278,6 @@
                 <button class="btn-save" style="background:var(--secondary);" onclick="exportarDatos()">Descargar Copia de Seguridad (.json)</button>
                 <label style="margin-top:20px;">Importar Archivo:</label>
                 <input type="file" id="import-file" accept=".json" onchange="importarDatos(event)" style="background:white; padding:15px 10px;">
-            </div>
-
-            <div class="card-panel" style="border: 2px dashed #ef4444; background: #fef2f2;">
-                <h3 style="margin-top:0; font-size:1rem; color:#b91c1c;">Zona de Peligro</h3>
-                <p style="font-size:0.85rem; color:#b91c1c;">Si la app se tilda o no responde, tocá este botón para borrar la memoria y empezar de cero. Perderás los datos cargados.</p>
-                <button class="btn-save" style="background:#ef4444;" onclick="borrarTodoElSistema()">BORRAR TODO Y REINICIAR</button>
             </div>
         </div>
     </div>
@@ -372,11 +357,17 @@
                     <label for="m-recirculado">¿Se Recirculó?</label>
                 </div>
 
-                <!-- NUEVO CAMPO PARA FECHA DE RECIRCULACION/FUMIGACION -->
+                <!-- NUEVO CAMPO COMPLETO PARA RECIRCULACION/FUMIGACION -->
                 <div id="campos-recirculacion" style="display:none; background:#e0f2fe; border:1px solid #7dd3fc; padding:15px; border-radius:6px; margin-top:10px;">
-                    <label style="color:#0369a1; margin-top:0;">Fecha de Recirculación / Fumigación</label>
+                    <label style="color:#0369a1; margin-top:0;">¿Se fumigó en esta recirculación?</label>
+                    <select id="m-recir-fumigo" style="background:white;">
+                        <option value="SI">Sí, se fumigó</option>
+                        <option value="NO">No se fumigó</option>
+                    </select>
+
+                    <label style="color:#0369a1; margin-top:10px;">Fecha de Recirculación / Fumigación</label>
                     <input type="date" id="m-fecha-recirculacion" style="background:white;">
-                    <p style="font-size:0.75rem; color:#0369a1; margin-top:5px; margin-bottom:0;">Al guardar, esta fecha reiniciará el contador de 60 días de la alerta de fumigación.</p>
+                    <p style="font-size:0.75rem; color:#0369a1; margin-top:5px; margin-bottom:0;">Si se fumigó, esta fecha reinicia la alerta de 60 días.</p>
                 </div>
                 
                 <div class="check-alerta" style="background:#fee2e2; border-color:#f87171;">
@@ -483,7 +474,7 @@
 
         function init() {
             try {
-                let guardado = localStorage.getItem('unidad7_db_v3'); // Versión 3 para limpiar todo
+                let guardado = localStorage.getItem('unidad7_db_v4');
                 if(guardado) { 
                     db = JSON.parse(guardado); 
                 } else {
@@ -505,7 +496,7 @@
             if (!db.otros || !Array.isArray(db.otros)) db.otros = [];
             
             try {
-                let bsGuardado = localStorage.getItem('unidad7_bajosilo_v3');
+                let bsGuardado = localStorage.getItem('unidad7_bajosilo_v4');
                 if(bsGuardado) bajoSiloLocal = JSON.parse(bsGuardado);
             } catch(e) { bajoSiloLocal = {}; }
 
@@ -514,14 +505,6 @@
             actualizarSelects(); 
             dibujarTablero(); 
             dibujarAdmin();
-        }
-
-        function borrarTodoElSistema() {
-            if(confirm("⚠️ ATENCIÓN: Se borrarán TODOS los datos guardados y la app volverá a cero. ¿Estás seguro?")) {
-                localStorage.removeItem('unidad7_db_v3');
-                localStorage.removeItem('unidad7_bajosilo_v3');
-                location.reload();
-            }
         }
 
         function calcularCapacidadPlanta() {
@@ -537,73 +520,10 @@
         }
 
         function guardarDB() { 
-            try { localStorage.setItem('unidad7_db_v3', JSON.stringify(db)); } catch(e) {} 
+            try { localStorage.setItem('unidad7_db_v4', JSON.stringify(db)); } catch(e) {} 
         }
         function guardarBajoSiloLocal() { 
-            try { localStorage.setItem('unidad7_bajosilo_v3', JSON.stringify(bajoSiloLocal)); } catch(e) {} 
-        }
-
-        function copiarDatosSync() {
-            try {
-                let str = JSON.stringify(db);
-                let encoded = btoa(unescape(encodeURIComponent(str)));
-                
-                navigator.clipboard.writeText(encoded).then(() => {
-                    alert("✅ ¡Datos copiados al portapapeles!\n\nAhora andá a WhatsApp Web, pegá este texto en tu chat personal y envialo a tu celular.");
-                }).catch(err => {
-                    prompt("No se pudo copiar automáticamente. Copiá este código a mano y envialo:", encoded);
-                });
-            } catch(e) {
-                alert("Error al generar los datos para copiar.");
-            }
-        }
-
-        function pegarDatosSync() {
-            navigator.clipboard.readText().then(text => {
-                if(!text) return alert("El portapapeles está vacío.");
-                procesarTextoImportado(text);
-            }).catch(err => {
-                let manualText = prompt("Tu navegador no permite leer el portapapeles automáticamente. Pegá el código acá:");
-                if(manualText) procesarTextoImportado(manualText);
-            });
-        }
-
-        function procesarTextoImportado(encodedStr) {
-            try {
-                let decodedStr = decodeURIComponent(escape(atob(encodedStr.trim())));
-                let data = JSON.parse(decodedStr);
-                
-                if(!data.silos) throw new Error("Formato inválido");
-
-                if(confirm("✅ Código válido detectado.\n¿Querés FUSIONAR estos datos con los que ya tenés? (Se mantendrán los datos más recientes de cada silo).")) {
-                    let importados = 0;
-                    
-                    data.cereales.forEach(cImp => {
-                        if(!db.cereales.find(c => c.id === cImp.id)) { db.cereales.push(cImp); importados++; }
-                    });
-                    
-                    for(let num in data.silos) {
-                        let dbSilo = getSiloData(num);
-                        let impSilo = data.silos[num];
-                        if(impSilo.lastUpdate && impSilo.lastUpdate > (dbSilo.lastUpdate || 0)) {
-                            db.silos[num] = impSilo;
-                            importados++;
-                        }
-                    }
-                    
-                    data.otros.forEach(oImp => {
-                        if(!db.otros.find(o => o.nombre === oImp.nombre && o.fecha === oImp.fecha)) {
-                            db.otros.push(oImp); importados++;
-                        }
-                    });
-
-                    guardarDB(); 
-                    alert(`🎉 Sincronización exitosa. Se actualizaron ${importados} registros.`);
-                    location.reload();
-                }
-            } catch(e) {
-                alert("❌ Error: El texto pegado no es válido o está incompleto. Asegurate de haber copiado TODO el mensaje de WhatsApp.");
-            }
+            try { localStorage.setItem('unidad7_bajosilo_v4', JSON.stringify(bajoSiloLocal)); } catch(e) {} 
         }
 
         function cambiarTab(id, btn) {
@@ -629,10 +549,11 @@
 
         function getSiloData(num) {
             if(!db.silos[num]) {
-                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, metros: '', fecha: '', origen: 'CAMIONES', fumigacion: 'SIN_FUMIGAR', fecha_fumigacion: '', notas: '', alerta_manual: false, recirculado: false, fecha_recirculacion: '', lastUpdate: 0 };
+                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, metros: '', fecha: '', origen: 'CAMIONES', fumigacion: 'SIN_FUMIGAR', fecha_fumigacion: '', notas: '', alerta_manual: false, recirculado: false, recir_fumigo: 'SI', fecha_recirculacion: '', lastUpdate: 0 };
             }
             if(!db.silos[num].lastUpdate) db.silos[num].lastUpdate = 0;
             if(db.silos[num].recirculado === undefined) db.silos[num].recirculado = false;
+            if(db.silos[num].recir_fumigo === undefined) db.silos[num].recir_fumigo = 'SI';
             if(db.silos[num].fecha_recirculacion === undefined) db.silos[num].fecha_recirculacion = '';
             return db.silos[num];
         }
@@ -708,8 +629,8 @@
             document.getElementById('m-notas').value = data.notas;
             document.getElementById('m-alerta-manual').checked = data.alerta_manual || false;
             
-            // Reconfigurar recirculación
             document.getElementById('m-recirculado').checked = data.recirculado || false;
+            document.getElementById('m-recir-fumigo').value = data.recir_fumigo || 'SI';
             document.getElementById('m-fecha-recirculacion').value = data.fecha_recirculacion || '';
             toggleRecirculacion(); 
             
@@ -720,7 +641,6 @@
             document.getElementById('modal-silo').classList.add('active');
         }
 
-        // NUEVA FUNCION PARA MOSTRAR/OCULTAR FECHA DE RECIRCULACION
         function toggleRecirculacion() {
             let check = document.getElementById('m-recirculado').checked;
             let div = document.getElementById('campos-recirculacion');
@@ -807,13 +727,13 @@
                 
                 // Guardar Recirculación
                 data.recirculado = document.getElementById('m-recirculado').checked;
+                data.recir_fumigo = document.getElementById('m-recir-fumigo').value;
                 data.fecha_recirculacion = document.getElementById('m-fecha-recirculacion').value;
                 
-                // Lógica: Si se recirculó y se puso fecha, actualizamos la fecha de fumigación para reiniciar la alerta de 60 días
-                if(data.recirculado && data.fecha_recirculacion) {
-                    data.fumigacion = 'FUMIGADO'; // Asumimos que si recirculó, se fumigó
+                // Logica: Si se recirculó y se fumigó, actualizamos la fecha de fumigación para reiniciar la alerta de 60 días
+                if(data.recirculado && data.recir_fumigo === 'SI' && data.fecha_recirculacion) {
+                    data.fumigacion = 'FUMIGADO';
                     data.fecha_fumigacion = data.fecha_recirculacion;
-                    // La fecha de primera carga (data.fecha) NO se toca, así la antigüedad sigue corriendo.
                 }
                 
                 if(estadoTemp !== 'EN_USO') {
@@ -956,13 +876,8 @@
                     
                     if(d.alerta_manual) motivos.push("Alerta Calidad/Obs");
                     if(d.fumigacion === 'SIN_FUMIGAR') motivos.push("Sin Fumigar");
-                    
-                    // Alerta de Antigüedad (>90 días desde PRIMERA CARGA)
                     if(d.fecha && (new Date() - new Date(d.fecha)) / (1000 * 60 * 60 * 24) > 90) motivos.push(`>90 días antigüedad`);
-                    
-                    // Alerta de Refumigación (>60 días desde ÚLTIMA FUMIGACIÓN)
                     if(d.fecha_fumigacion && d.fumigacion !== 'SIN_FUMIGAR' && (new Date() - new Date(d.fecha_fumigacion)) / (1000 * 60 * 60 * 24) > 60) motivos.push(`Refumigar`);
-                    
                     if(d.estado === 'TAPADA') motivos.push("Tapado");
 
                     if(motivos.length > 0) {
@@ -1137,9 +1052,7 @@
             if(d.estado === 'VACIO' || d.estado === 'FUERA_SERVICIO') return false;
             if(d.alerta_manual) return true;
             if(d.fumigacion === 'SIN_FUMIGAR') return true;
-            // Alerta Antigüedad desde fecha de primera carga
             if(d.fecha && (new Date() - new Date(d.fecha)) / (1000 * 60 * 60 * 24) > 90) return true;
-            // Alerta Refumigación desde la última fumigación (que se actualiza si recirculó)
             if(d.fecha_fumigacion && d.fumigacion !== 'SIN_FUMIGAR' && (new Date() - new Date(d.fecha_fumigacion)) / (1000 * 60 * 60 * 24) > 60) return true;
             if(d.estado === 'TAPADA') return true;
             return false;

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'silos-u7-v9'; // <--- Versión nueva para forzar limpieza
+const CACHE_NAME = 'silos-u7-v10'; // <--- Versión 10 para forzar limpieza total
 const urlsToCache = [
     './',
     './index.html',
@@ -7,7 +7,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Fuerza la instalación inmediata
+    self.skipWaiting(); // Fuerza la instalación inmediata sin esperar
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
     );
@@ -28,10 +28,10 @@ self.addEventListener('activate', event => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        return caches.delete(cacheName);
+                        return caches.delete(cacheName); // Borra las versiones viejas
                     }
                 })
             );
-        }).then(() => self.clients.claim()) // Toma el control de las pestañas abiertas
+        }).then(() => self.clients.claim()) // Toma el control de la pantalla
     );
 });

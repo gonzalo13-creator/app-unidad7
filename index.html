@@ -18,24 +18,16 @@
             --c-maiz: #d97706; --c-soja: #ca8a04; --c-sorgo: #2563eb; --c-trigo: #16a34a;
             --c-mezcla: #db2777; --c-girasol: #94a3b8; --c-otros: #dc2626;
         }
-
-        /* MODO OSCURO (MODO SOL) */
         body.dark-mode {
             --primary: #0f172a; --secondary: #1e293b; --bg: #020617; --card: #1e293b;
             --text: #f8fafc; --text-light: #94a3b8; --border: #334155;
         }
-
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; -webkit-text-size-adjust: 100%; transition: background 0.3s; }
+        body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; transition: background 0.3s; }
         
-        #error-box { display: none; position: fixed; top: 0; left: 0; right: 0; background: #ef4444; color: white; padding: 15px; z-index: 9999; font-weight: bold; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-
         .sidebar { width: 240px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
         .nav-btn { padding: 16px 20px; border: none; background: none; color: #cbd5e1; font-size: 0.95rem; text-align: left; cursor: pointer; border-bottom: 1px solid var(--secondary); font-weight: 500; display: flex; align-items: center; gap: 10px; position: relative;}
-        .nav-btn:hover { background: var(--secondary); color: white; }
-        .nav-btn.active { background: var(--secondary); color: white; border-left: 4px solid #38bdf8; }
-        
-        /* BADGE DE ALERTAS */
+        .nav-btn:hover, .nav-btn.active { background: var(--secondary); color: white; border-left: 4px solid #38bdf8; }
         .badge { background: #ef4444; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; margin-left: auto; }
 
         .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -44,10 +36,10 @@
 
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; height: 65px; flex-direction: row; overflow-x: auto; justify-content: flex-start; border-top: 1px solid #0f172a; padding-bottom: env(safe-area-inset-bottom); position: fixed; bottom: 0; z-index: 1000; -webkit-overflow-scrolling: touch; }
+            .sidebar { width: 100%; height: 65px; flex-direction: row; overflow-x: auto; justify-content: flex-start; border-top: 1px solid #0f172a; padding-bottom: env(safe-area-inset-bottom); position: fixed; bottom: 0; z-index: 1000; }
             .sidebar::-webkit-scrollbar { display: none; }
-            .nav-btn { padding: 12px 10px; font-size: 0.7rem; border-bottom: none; border-right: 1px solid var(--secondary); white-space: nowrap; flex-direction: column; justify-content: center; align-items: center; gap: 4px; flex: 1; min-width: 60px; }
-            .nav-btn.active { border-left: none; border-top: 3px solid #38bdf8; background: #0f172a;}
+            .nav-btn { padding: 12px 10px; font-size: 0.7rem; border-bottom: none; border-right: 1px solid var(--secondary); white-space: nowrap; flex-direction: column; justify-content: center; align-items: center; gap: 4px; flex: 1; min-width: 60px; border-left: none !important; }
+            .nav-btn.active { border-top: 3px solid #38bdf8; background: #0f172a;}
             .badge { position: absolute; top: 5px; right: 5px; margin: 0; padding: 2px 4px; font-size: 0.6rem; }
             .content { height: calc(100% - 65px); padding-bottom: 0; }
             .tab-content { padding: 15px; }
@@ -56,37 +48,29 @@
             .tarjeta { min-height: 95px; }
             .t-num { font-size: 1.4rem; }
             .modal { align-items: flex-end; padding: 0; }
-            .modal-box { border-radius: 20px 20px 0 0; max-height: 92vh; padding: 20px; padding-bottom: 30px; animation: slideUp 0.3s ease-out; }
-            @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-            .btn-group { flex-direction: column; }
-            .btn-estado { padding: 16px; font-size: 1rem; text-align: center; }
-            .btn-save, .btn-close { padding: 18px; font-size: 1.1rem; }
-            .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px;}
-            .data-table { min-width: 600px; }
+            .modal-box { border-radius: 20px 20px 0 0; max-height: 92vh; padding: 20px; padding-bottom: 30px; }
+            .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 10px;}
             .sector-tabs { overflow-x: auto; padding-bottom: 5px; }
-            .sector-tabs::-webkit-scrollbar { display: none; }
         }
 
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--text); font-weight: 600; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        
-        /* BUSCADOR Y SECTOR TABS */
         .top-controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;}
-        .buscador { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); font-size: 1rem; outline: none;}
-        .filtro-cereal { padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); font-weight: 500; outline: none;}
+        .buscador { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); outline: none;}
         
         .sector-tabs { display: flex; gap: 5px; margin-bottom: 20px; }
         .sector-btn { padding: 8px 15px; border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.85rem; white-space: nowrap;}
         .sector-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
+        /* MOVIMIENTOS (PLANILLA) */
+        .row-inputs { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; background: var(--card); padding: 10px; border-radius: 6px; border: 1px solid var(--border); flex-wrap: wrap;}
+        .row-inputs input, .row-inputs select { padding: 8px; font-size: 0.85rem; margin: 0; flex: 1; min-width: 80px;}
+        .row-inputs .btn-del { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer;}
+        
+        /* TABLERO TARJETAS */
         .fila-sector { margin-bottom: 25px; }
-        .titulo-sector { font-size: 0.9rem; color: var(--text-light); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid var(--primary); padding-left: 8px;}
-        
-        /* NUEVO DISEÑO DE TARJETA (MÁS LIMPIA) */
+        .titulo-sector { font-size: 0.9rem; color: var(--text-light); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
         .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
-        .tarjeta { min-height: 85px; border-radius: 6px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s; overflow: hidden; padding-bottom: 4px; }
-        .tarjeta:active { transform: scale(0.96); }
-        
-        /* Borde superior de color */
+        .tarjeta { min-height: 85px; border-radius: 6px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 4px; }
         .franja { position: absolute; top: 0; left: 0; right: 0; height: 6px; }
         .f-MAIZ { background: var(--c-maiz); } .f-SOJA { background: var(--c-soja); } .f-SORGO { background: var(--c-sorgo); } .f-TRIGO { background: var(--c-trigo); } .f-MEZCLA { background: var(--c-mezcla); } .f-GIRASOL { background: var(--c-girasol); } .f-OTROS { background: var(--c-otros); } .f-VACIO { background: transparent; }
 
@@ -94,7 +78,6 @@
         .t-info { font-size: 0.65rem; font-weight: 800; text-align: center; line-height: 1; margin-top: 4px; color: var(--text-light); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
         .t-info-3 { font-size: 0.6rem; font-weight: 600; color: var(--text-light); margin-top: 2px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
         .t-info-2 { font-size: 0.6rem; font-weight: 500; color: var(--text-light); margin-top: 2px;}
-        
         .t-alerta { position: absolute; top: 6px; right: 6px; background: #ef4444; color: white; width: 16px; height: 16px; border-radius: 50%; font-size: 10px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
         .t-fumigado { position: absolute; top: 6px; left: 6px; font-size: 12px; }
         
@@ -102,157 +85,770 @@
         .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; opacity: 0.7;}
         .bg-vacio { background: var(--bg); border-style: dashed; opacity: 0.6;}
 
-        /* BAJO SILO */
-        .bs-dimmed { opacity: 0.2; filter: grayscale(100%); }
-        .bs-badge { position: absolute; bottom: 0px; left: 0; right: 0; padding: 2px 0; font-size: 0.5rem; font-weight: bold; color: white; text-align: center; text-transform: uppercase;}
-        .bs-A { background: #10b981; } .bs-C { background: #ef4444; } .bs-V { background: #64748b; } .bs-T { background: #f59e0b; }
-        .bs-edit-btn { position: absolute; bottom: 2px; right: 2px; background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 2px 4px; font-size: 10px; cursor: pointer; }
-        
-        .bs-alert-banner { display: none; background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 6px; font-weight: 600; margin-bottom: 15px; border: 1px solid #f87171; }
-
+        /* MODALES Y PANELES */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 2000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-box { background: var(--card); width: 100%; max-width: 500px; border-radius: 8px; padding: 24px; max-height: 92vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 1px solid var(--border); }
+        .modal-box { background: var(--card); width: 100%; max-width: 500px; border-radius: 8px; padding: 24px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--border); }
         
-        /* TABS INTERNAS DEL MODAL */
-        .modal-tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .modal-tab-btn { flex: 1; padding: 10px; border: none; background: var(--bg); color: var(--text); font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.85rem;}
-        .modal-tab-btn.active { background: var(--primary); color: white; }
-
-        label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin: 16px 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;}
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); outline: none; transition: border 0.2s;}
-        input:focus, select:focus { border-color: var(--secondary); }
-        input:disabled { background: var(--border); color: var(--text-light); cursor: not-allowed; }
-        
-        .btn-group { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-        .btn-estado { flex: 1; padding: 14px 5px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600; color: var(--text); background: var(--card); cursor: pointer; min-width: 80px; font-size: 0.8rem; transition: all 0.2s;}
-        .btn-estado.sel { background: var(--primary); color: white; border-color: var(--primary); }
-        
-        .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
-        .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
-
-        .card-panel { background: var(--card); padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .stat-box { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 10px; border-radius: 6px; transition: background 0.2s; border: 1px solid transparent;}
-        .stat-box:hover { background: var(--bg); }
-        .stat-box.active-stat { background: var(--bg); border: 1px solid var(--border); }
+        .card-panel { background: var(--card); padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; }
+        .stat-box { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-radius: 6px;}
         .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1; }
         .stat-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;}
-        
-        .progress-container { width: 100%; background-color: var(--border); border-radius: 4px; margin-top: 10px; height: 20px; overflow: hidden; }
-        .progress-bar { height: 100%; background-color: #3b82f6; color: white; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: width 0.5s ease; }
 
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-responsive { width: 100%; overflow-x: auto; }
         .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; min-width: 500px; }
         .data-table th { text-align: left; padding: 12px 10px; background: var(--bg); border-bottom: 2px solid var(--border); color: var(--text-light); font-weight: 600; font-size: 0.8rem; text-transform: uppercase;}
         .data-table td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        .alert-row { color: #b91c1c; font-weight: 500; font-size: 0.85rem; }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; text-decoration: none; color: white; background: var(--secondary); border: none; cursor: pointer; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin: 16px 0 6px 0; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); outline: none;}
+        .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
+        .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
-        .check-alerta { display: flex; align-items: center; gap: 10px; margin-top: 15px; background: #fff3cd; padding: 12px; border-radius: 6px; border: 1px solid #ffe69c;}
-        .check-alerta input { width: 24px; height: 24px; margin: 0; cursor: pointer; }
-        .check-alerta label { margin: 0; color: #856404; font-size: 0.85rem; text-transform: none; }
+        .hist-item { border-left: 3px solid var(--primary); background: var(--bg); padding: 10px; margin-bottom: 8px; border-radius: 0 6px 6px 0; font-size: 0.85rem; }
+        .alerta-txt { color: #ef4444; font-weight: bold; }
         
-        .detalle-titulo { font-size: 1.1rem; font-weight: 600; margin-top: 0; margin-bottom: 10px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 5px;}
+        /* Sub Pestañas Rellenos */
+        .sub-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
+        .sub-tab-btn { background: none; border: none; font-size: 1rem; font-weight: bold; color: var(--text-light); cursor: pointer; padding-bottom: 5px;}
+        .sub-tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        
+        @media print {
+            .sidebar, .top-controls, .sector-tabs, .btn-save, .btn-close, .sub-tabs { display: none !important; }
+            body { background: white; display: block; height: auto; }
+            .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
+            .data-table { min-width: 100%; border: 1px solid #000; }
+            .data-table th, .data-table td { border: 1px solid #000; padding: 8px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="error-box">Error: <span id="error-msg"></span></div>
-
     <div class="sidebar">
         <button class="nav-btn" onclick="toggleDarkMode()" style="background:var(--secondary); color:white; justify-content:center; border-bottom: 2px solid #000;">🌙 / ☀️ Modo Sol</button>
         <button class="nav-btn active" onclick="cambiarTab('tablero', this)">📋<br>Tablero</button>
-        <button class="nav-btn" onclick="cambiarTab('bajosilo', this)">🚜<br>Bajo Silo</button>
+        <button class="nav-btn" onclick="cambiarTab('movimientos', this)">📝<br>Movimientos</button>
         <button class="nav-btn" onclick="cambiarTab('existencias', this)">📊<br>Existencias</button>
         <button class="nav-btn" onclick="cambiarTab('alertas', this)">🚨<br>Alertas <span id="badge-alertas" class="badge" style="display:none;">0</span></button>
         <button class="nav-btn" onclick="cambiarTab('rellenos', this)">⛽<br>Rellenos</button>
-        <button class="nav-btn" onclick="cambiarTab('otros', this)">📦<br>Otros</button>
         <button class="nav-btn" onclick="cambiarTab('admin', this)">⚙️<br>Admin</button>
     </div>
 
     <div class="content">
         
-        <!-- PESTAÑA: TABLERO -->
+        <!-- PESTAÑA: TABLERO (SOLO LECTURA) -->
         <div id="tablero" class="tab-content active">
             <h2>Estado de Unidades</h2>
             
             <div class="top-controls">
                 <input type="text" id="buscador-silo" class="buscador" placeholder="🔍 Buscar N° de silo..." oninput="dibujarTablero()">
-                <select id="filtro-tablero" class="filtro-cereal" onchange="dibujarTablero()">
+                <select id="filtro-tablero" class="buscador" style="flex:0 1 200px;" onchange="dibujarTablero()">
                     <option value="TODOS">Todos los Cereales</option>
                 </select>
             </div>
 
-            <div class="sector-tabs" id="sector-tabs-container">
-                <!-- Botones de sector generados por JS -->
-            </div>
-
+            <div class="sector-tabs" id="sector-tabs-container"></div>
             <div id="contenedor-tablero"></div>
         </div>
 
-        <!-- PESTAÑA: BAJO SILO -->
-        <div id="bajosilo" class="tab-content">
-            <h2>Operación Bajo Silo</h2>
-            <div id="bs-alert-banner" class="bs-alert-banner">
-                ⚠️ Unidades ABIERTAS: <span id="bs-cant-abiertos"></span><br><span style="font-size:0.8rem; font-weight:normal;">(Verificá si olvidaste cerrarlas)</span>
-            </div>
-            <div id="resumen-bajosilo" class="card-panel" style="display:none; padding:15px;"></div>
+        <!-- PESTAÑA: MOVIMIENTOS (CARGA RÁPIDA) -->
+        <div id="movimientos" class="tab-content">
+            <h2>Registrar Movimientos</h2>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:20px;">Cargá aquí los datos. Si ponés la misma fecha en el mismo silo, se sobrescribe el dato de ese día.</p>
             
-            <label>Seleccionar Cereal a Operar:</label>
-            <select id="filtro-bajosilo" class="filtro-cereal" style="width:100%; margin-bottom:20px;" onchange="dibujarBajoSilo()">
-                <option value="TODOS">Todos los Cereales</option>
-            </select>
-            <p style="font-size:0.85rem; color:var(--text-light); margin-top:0;">Tocá una unidad para cambiar su estado. El lápiz (✏️) abre la ficha del Tablero.</p>
-            <div id="contenedor-bajosilo"></div>
+            <div id="lista-movimientos">
+                <!-- Filas dinámicas -->
+            </div>
+            
+            <button class="btn-save" style="background:var(--secondary); margin-top:10px;" onclick="agregarFilaMovimiento()">+ Agregar Otra Fila</button>
+            <button class="btn-save" style="background:#10b981; margin-top:20px;" onclick="procesarMovimientos()">✅ GUARDAR TODOS LOS MOVIMIENTOS</button>
         </div>
 
         <!-- PESTAÑA: EXISTENCIAS -->
         <div id="existencias" class="tab-content">
-            <h2>Resumen Ejecutivo y Existencias</h2>
-            <div class="card-panel" style="border-left: 4px solid #3b82f6;">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light); border-bottom:1px solid var(--border); padding-bottom:10px;">Ocupación de la Planta</h3>
-                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                    <div class="stat-box">
-                        <span class="stat-num" id="oc-up">0 t</span>
-                        <span class="stat-lbl">Toneladas Actuales</span>
-                    </div>
-                    <div class="stat-box" style="text-align:right;">
-                        <span class="stat-num" id="oc-total" style="color:var(--text-light); font-size:1.2rem;">0 t</span>
-                        <span class="stat-lbl">Capacidad Teórica</span>
-                    </div>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="oc-bar" style="width: 0%;">0%</div>
+            <h2>Resumen y Existencias</h2>
+            
+            <div class="card-panel">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Estado General</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:10px;">
+                    <div class="stat-box"><span class="stat-num" id="st-vacios">0</span><span class="stat-lbl">Vacíos</span></div>
+                    <div class="stat-box"><span class="stat-num" id="st-carga">0</span><span class="stat-lbl">Con Carga</span></div>
+                    <div class="stat-box"><span class="stat-num" id="st-uso">0</span><span class="stat-lbl">En Uso</span></div>
+                    <div class="stat-box"><span class="stat-num" id="st-tapados">0</span><span class="stat-lbl">Tapados</span></div>
+                    <div class="stat-box"><span class="stat-num" id="st-fuera">0</span><span class="stat-lbl">F. Servicio</span></div>
                 </div>
             </div>
 
             <div class="card-panel">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light); border-bottom:1px solid var(--border); padding-bottom:10px;">Estado General (Toca para ver detalle)</h3>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:10px;">
-                    <div class="stat-box" onclick="mostrarDetalleEstado('VACIO', this)">
-                        <span class="stat-num" id="st-vacios">0</span><span class="stat-lbl">Vacíos</span>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Toneladas por Extracción (Cinta)</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:10px;">
+                    <div class="stat-box" style="background:var(--bg);">
+                        <span class="stat-lbl">Extracción 1 (700s y 600s)</span>
+                        <span class="stat-num" id="ext-1" style="color:var(--c-maiz);">0 t</span>
                     </div>
-                    <div class="stat-box" onclick="mostrarDetalleEstado('CON_CARGA', this)">
-                        <span class="stat-num" id="st-carga">0</span><span class="stat-lbl">Con Carga</span>
+                    <div class="stat-box" style="background:var(--bg);">
+                        <span class="stat-lbl">Extracción 2 (500s y 400s Pares)</span>
+                        <span class="stat-num" id="ext-2" style="color:var(--c-sorgo);">0 t</span>
                     </div>
-                    <div class="stat-box" onclick="mostrarDetalleEstado('EN_USO', this)">
-                        <span class="stat-num" id="st-uso">0</span><span class="stat-lbl">En Uso</span>
+                    <div class="stat-box" style="background:var(--bg);">
+                        <span class="stat-lbl">Extracción 3 (300s y 400s Impares)</span>
+                        <span class="stat-num" id="ext-3" style="color:var(--c-trigo);">0 t</span>
                     </div>
-                    <div class="stat-box" onclick="mostrarDetalleEstado('TAPADA', this)">
-                        <span class="stat-num" id="st-tapados">0</span><span class="stat-lbl">Tapados</span>
-                    </div>
-                    <div class="stat-box" onclick="mostrarDetalleEstado('FUERA_SERVICIO', this)">
-                        <span class="stat-num" id="st-fuera">0</span><span class="stat-lbl">F. Servicio</span>
+                    <div class="stat-box" style="background:var(--bg);">
+                        <span class="stat-lbl">Extracción 4 (100s y 200s)</span>
+                        <span class="stat-num" id="ext-4" style="color:var(--c-soja);">0 t</span>
                     </div>
                 </div>
             </div>
 
-            <div id="panel-detalle-estado" class="card-panel" style="display:none; background: var(--bg);">
-                <h3 class="detalle-titulo" id="detalle-titulo-text">Detalle</h3>
+            <div class="card-panel">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Stock por Cereal</h3>
+                <select id="sel-cereal-stock" class="buscador" style="margin-bottom:10px;" onchange="calcularStock()"></select>
+                <div id="resultado-stock"></div>
+                <button style="margin-top:20px; background:var(--card); border:1px solid var(--border); color:var(--text); padding:12px; border-radius:6px; width:100%; font-weight:600; cursor:pointer;" onclick="window.print()">IMPRIMIR REPORTE</button>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: ALERTAS -->
+        <div id="alertas" class="tab-content">
+            <h2>Centro de Alertas</h2>
+            <div class="card-panel">
                 <div class="table-responsive">
-                    <table class="data-table" id="tabla-detalle">
-                        <thead><tr><th>Unidad</th><th>Cereal</th><th>Calidad</th><th>Tonelaje</th></tr></thead>
+                    <table class="data-table" id="tabla-alertas">
+                        <thead><tr><th>Unidad</th><th>Cereal</th><th>Motivo de Alerta</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: RELLENOS -->
+        <div id="rellenos" class="tab-content">
+            <h2>Disponibilidad (Rellenos)</h2>
+            
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="cambiarSubTab('sub-relleno-lista', this)">Tabla de Rellenos</button>
+                <button class="sub-tab-btn" onclick="cambiarSubTab('sub-calculadora', this)">Calculadora de Medidas</button>
+            </div>
+
+            <!-- Sub Pestaña: Tabla de Rellenos -->
+            <div id="sub-relleno-lista" style="display:block;">
+                <div class="card-panel">
+                    <label>Filtrar por Cereal:</label>
+                    <select id="sel-cereal-relleno" class="buscador" style="margin-bottom:10px;" onchange="calcularRellenos()"></select>
+                    <p style="font-size:0.8rem; color:var(--text-light); margin-top:5px;">* Solo se muestran silos con carga parcial del mismo cereal. Silos con ⚠️ (700s) deben medirse a mano.</p>
+                    <div class="table-responsive">
+                        <table class="data-table" id="tabla-rellenos">
+                            <thead><tr><th>Unidad</th><th>Cinta</th><th>Calidad</th><th>Fumigación</th><th>Espacio Disp.</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub Pestaña: Calculadora de Medidas -->
+            <div id="sub-calculadora" style="display:none;">
+                <div class="card-panel">
+                    <label>N° de Silo / Entresilo:</label>
+                    <input type="number" id="calc-silo" placeholder="Ej: 315" oninput="calcularMedidaRapida()">
+                    
+                    <label>Cereal:</label>
+                    <select id="calc-cereal" onchange="calcularMedidaRapida()"></select>
+                    
+                    <label>Metros de Vacío:</label>
+                    <input type="number" id="calc-metros" step="0.5" placeholder="Ej: 15.5" oninput="calcularMedidaRapida()">
+                    
+                    <div id="calc-msj" style="font-size:0.85rem; font-weight:bold; margin-top:10px;"></div>
+                    <div class="stat-box" style="background:var(--primary); color:white; margin-top:15px; text-align:center; border-radius:8px;">
+                        <span class="stat-num" id="calc-resultado" style="color:white; font-size:2.5rem;">0 t</span>
+                        <span class="stat-lbl" style="color:#cbd5e1;">Cálculo Teórico</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: ADMIN -->
+        <div id="admin" class="tab-content">
+            <h2>Administración</h2>
+            <div class="card-panel">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Parámetros de Cereales</h3>
+                <div id="lista-admin-cereales"></div>
+                <h3 style="margin-top:30px; font-size:1rem; border-top:1px solid var(--border); padding-top:20px;">Agregar Nuevo Cereal</h3>
+                <input type="text" id="new-cereal-nombre" placeholder="Ej: ARVEJA" style="margin-bottom:5px;">
+                <input type="number" id="new-cereal-ph" placeholder="PH (Ej: 75)" style="margin-bottom:5px;">
+                <input type="color" id="new-cereal-color" value="#dc2626" style="height:40px; margin-bottom:10px;">
+                <button class="btn-save" onclick="agregarCerealNuevo()">Guardar Parámetro</button>
+            </div>
+            
+            <div class="card-panel">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Respaldos</h3>
+                <button class="btn-save" style="background:var(--secondary);" onclick="exportarDatos()">Descargar Copia de Seguridad (.json)</button>
+                <label style="margin-top:20px;">Importar Archivo:</label>
+                <input type="file" id="import-file" accept=".json" onchange="importarDatos(event)" style="background:var(--bg); padding:10px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: HISTORIAL DE SILO (SOLO LECTURA) -->
+    <div id="modal-historial" class="modal">
+        <div class="modal-box">
+            <h2 id="h-titulo" style="border:none; margin-bottom:5px;">Historial Silo 101</h2>
+            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Registro de movimientos por día.</p>
+            <div id="lista-historial"></div>
+            <button class="btn-close" onclick="cerrarModal('modal-historial')">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            alert("Ocurrió un error en la app. Refrescá la página.");
+            return false;
+        };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(r => console.log('SW Listo'));
+            });
+        }
+
+        const PH_BASE = 80;
+        const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
+        const TABLA_ENTRESILOS = [[0,311.5],[0.5,307.25],[1,303],[1.5,298.75],[2,294.5],[2.5,290.25],[3,286],[3.5,281.75],[4,277.5],[4.5,273.25],[5,269],[5.5,264.75],[6,260.5],[6.5,256.25],[7,252],[7.5,247.75],[8,243.5],[8.5,239.25],[9,235],[9.5,230.75],[10,226.5],[10.5,222.25],[11,218],[11.5,213.75],[12,209.5],[12.5,205.25],[13,201],[13.5,196.75],[14,192.5],[14.5,188.25],[15,184],[15.5,179.75],[16,175.5],[16.5,171.25],[17,167],[17.5,162.75],[18,158.5],[18.5,154.25],[19,150],[19.5,145.75],[20,141.5],[20.5,137.25],[21,133],[21.5,128.75],[22,124.5],[22.5,120.25],[23,116],[23.5,111.75],[24,107.5],[24.5,103.25],[25,99],[25.5,94.75],[26,90.5],[26.5,86.25],[27,82],[27.5,77.75],[28,73.5],[28.5,69.25],[29,65],[29.5,60.75],[30,56.5],[30.5,52.25],[31,48],[31.5,43.75],[32,39.5],[32.5,35.25],[33,31],[33.5,26.75],[34,22.5],[34.5,18.25],[35,14],[35.5,9.75],[36,6.5],[36.5,3.75],[37,1.25],[37.5,0.6]];
+
+        const SILOS_MANUALES = [701, 703, 704, 706, 707, 709, 710, 712, 713, 715, 716, 718];
+        const MIN_14 = [702, 705, 708, 711, 714, 717];
+        const MIN_10 = [502, 505, 508, 511, 514, 517];
+        
+        const SECTORES_TABLERO = [
+            { id: 'todos', nombre: "Todos", rango: [100, 799] },
+            { id: 's700', nombre: "Sector 700", rango: [701, 718] },
+            { id: 's600', nombre: "Sector 600", rango: [601, 617] },
+            { id: 's500', nombre: "Sector 500", rango: [501, 518] },
+            { id: 's400', nombre: "Sector 400", rango: [401, 417] },
+            { id: 's300', nombre: "Sector 300", rango: [301, 318] },
+            { id: 's200', nombre: "Sector 200", rango: [201, 217] },
+            { id: 's100', nombre: "Sector 100", rango: [101, 118] }
+        ];
+
+        let db = { cereales: [], silos: {} };
+        let sectorActual = 'todos';
+
+        function init() {
+            if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+            
+            try {
+                let saved = localStorage.getItem('unidad7_db_v6'); // v6 para arrancar limpio
+                if(saved) { db = JSON.parse(saved); }
+            } catch(e) { db = { cereales: [], silos: {} }; }
+
+            if (!db.cereales || db.cereales.length === 0) {
+                db.cereales = [
+                    {id:'MAIZ', nombre:'MAÍZ', ph:76, color:'#d97706'}, {id:'SORGO', nombre:'SORGO', ph:72, color:'#2563eb'},
+                    {id:'SOJA', nombre:'SOJA', ph:71, color:'#ca8a04'}, {id:'CEBADA', nombre:'CEBADA', ph:66, color:'#b45309'},
+                    {id:'GIRASOL', nombre:'GIRASOL', ph:42, color:'#94a3b8'}, {id:'TRIGO', nombre:'TRIGO', ph:78, color:'#16a34a'},
+                    {id:'MEZCLA', nombre:'MEZCLA', ph:75, color:'#db2777'}
+                ];
+            }
+            if (!db.silos) db.silos = {};
+            
+            guardarDB();
+            actualizarSelects(); 
+            dibujarSectorTabs();
+            dibujarTablero(); 
+            dibujarAdmin();
+            agregarFilaMovimiento(); // Inicia con una fila vacía
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        function guardarDB() { localStorage.setItem('unidad7_db_v6', JSON.stringify(db)); }
+
+        function cambiarTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); if(btn) btn.classList.add('active');
+            if(id === 'existencias') actualizarExistencias();
+            if(id === 'alertas') dibujarAlertas();
+            if(id === 'rellenos') calcularRellenos();
+            if(id === 'tablero') dibujarTablero();
+        }
+
+        function cambiarSubTab(id, btn) {
+            document.querySelectorAll('#rellenos > div[id^="sub-"]').forEach(d => d.style.display = 'none');
+            document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).style.display = 'block';
+            btn.classList.add('active');
+        }
+
+        function interpolar(tabla, metros) {
+            if(metros <= tabla[0][0]) return tabla[0][1];
+            if(metros >= tabla[tabla.length-1][0]) return tabla[tabla.length-1][1];
+            for(let i=0; i<tabla.length-1; i++) {
+                let a = tabla[i], b = tabla[i+1];
+                if(metros >= a[0] && metros <= b[0]) return a[1] + (b[1]-a[1]) * ((metros - a[0]) / (b[0] - a[0]));
+            }
+            return 0;
+        }
+
+        function getSiloData(num) {
+            if(!db.silos[num]) {
+                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null };
+            }
+            if(!db.silos[num].historial) db.silos[num].historial = [];
+            return db.silos[num];
+        }
+        
+        function esSiloTipo(num) {
+            return ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO';
+        }
+
+        // --- PESTAÑA: MOVIMIENTOS ---
+        function agregarFilaMovimiento() {
+            let div = document.createElement('div');
+            div.className = 'row-inputs';
+            div.innerHTML = `
+                <input type="number" placeholder="Silo (Ej: 501)" class="m-silo" oninput="autoCalcularFila(this)">
+                <input type="date" class="m-fecha" title="Fecha">
+                <select class="m-cereal" onchange="autoCalcularFila(this)">
+                    <option value="">Cereal...</option>
+                    ${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}
+                </select>
+                <input type="text" placeholder="Calidad" class="m-calidad">
+                <input type="number" placeholder="Metros" step="0.5" class="m-metros" style="max-width:70px;" oninput="autoCalcularFila(this)">
+                <input type="number" placeholder="Tons" class="m-tons" style="max-width:80px;">
+                <select class="m-estado" style="max-width:100px;">
+                    <option value="CON_CARGA">Con Carga</option>
+                    <option value="EN_USO">En Uso</option>
+                    <option value="RECIRCULACION">Recircular</option>
+                    <option value="VACIO">Vaciar</option>
+                </select>
+                <select class="m-fumigo" style="max-width:100px;">
+                    <option value="NO">No Fumig.</option>
+                    <option value="SI">Fumigado</option>
+                </select>
+                <input type="text" placeholder="Obs..." class="m-obs">
+                <button class="btn-del" onclick="this.parentElement.remove()">X</button>
+            `;
+            document.getElementById('lista-movimientos').appendChild(div);
+        }
+
+        function autoCalcularFila(input) {
+            let row = input.parentElement;
+            let silo = parseInt(row.querySelector('.m-silo').value);
+            let cerealId = row.querySelector('.m-cereal').value;
+            let metros = parseFloat(row.querySelector('.m-metros').value);
+            let tonsInput = row.querySelector('.m-tons');
+
+            if(!silo || !cerealId || isNaN(metros) || metros < 0) { tonsInput.value = ''; return; }
+            
+            // Si es silo manual, no calcular, dejar vacío para que lo llenen
+            if(SILOS_MANUALES.includes(silo)) {
+                tonsInput.placeholder = "Manual!";
+                return;
+            }
+
+            let cereal = db.cereales.find(c => c.id === cerealId);
+            let tipo = esSiloTipo(silo);
+            
+            if(MIN_14.includes(silo) && metros < 14) { tonsInput.value = ''; return; }
+            if(MIN_10.includes(silo) && metros < 10) { tonsInput.value = ''; return; }
+
+            let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
+            let tons = Math.round(phRef * cereal.ph / PH_BASE);
+            tonsInput.value = tons;
+        }
+
+        function procesarMovimientos() {
+            let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
+            let procesados = 0;
+
+            filas.forEach(row => {
+                let silo = parseInt(row.querySelector('.m-silo').value);
+                let fecha = row.querySelector('.m-fecha').value;
+                let cereal = row.querySelector('.m-cereal').value;
+                let calidad = row.querySelector('.m-calidad').value.toUpperCase();
+                let tons = parseFloat(row.querySelector('.m-tons').value) || 0;
+                let estadoOp = row.querySelector('.m-estado').value;
+                let fumigo = row.querySelector('.m-fumigo').value;
+                let obs = row.querySelector('.m-obs').value;
+
+                if(!silo || !fecha) return; // Ignorar filas vacías
+
+                let d = getSiloData(silo);
+                
+                // Lógica del estado
+                if(estadoOp === 'VACIO') {
+                    d.estado = 'VACIO'; d.cereal = ''; d.calidad = ''; d.tonelaje = 0;
+                } else if(estadoOp === 'RECIRCULACION') {
+                    d.estado = d.estado === 'VACIO' ? 'CON_CARGA' : d.estado; // Si estaba vacío, pasa a con carga
+                    if(fumigo === 'SI') d.fumigacion_fecha = fecha; // Reinicia fumigación
+                } else {
+                    d.estado = estadoOp;
+                    d.cereal = cereal;
+                    d.calidad = calidad;
+                    d.tonelaje = tons;
+                    if(fumigo === 'SI') d.fumigacion_fecha = fecha;
+                }
+
+                // Lógica del Historial (Pisa el mismo día)
+                let histIndex = d.historial.findIndex(h => h.fecha === fecha);
+                let registro = {
+                    fecha: fecha, cereal: cereal, calidad: calidad, tons: tons, 
+                    estado: estadoOp, fumigo: fumigo, obs: obs
+                };
+
+                if(histIndex >= 0) {
+                    d.historial[histIndex] = registro; // Sobrescribe
+                } else {
+                    d.historial.push(registro); // Agrega nuevo
+                }
+                
+                // Guardamos si es la primera carga (para antigüedad)
+                if(!d.fecha_primera_carga && tons > 0) d.fecha_primera_carga = fecha;
+
+                procesados++;
+            });
+
+            if(procesados > 0) {
+                guardarDB();
+                alert(`✅ Se procesaron ${procesados} movimientos correctamente.`);
+                document.getElementById('lista-movimientos').innerHTML = '';
+                agregarFilaMovimiento();
+                dibujarTablero();
+            } else {
+                alert("No hay datos válidos para guardar.");
+            }
+        }
+
+        // --- TABLERO (SOLO LECTURA) ---
+        function dibujarSectorTabs() {
+            let cont = document.getElementById('sector-tabs-container');
+            cont.innerHTML = '';
+            SECTORES_TABLERO.forEach(sec => {
+                let btn = document.createElement('button');
+                btn.className = 'sector-btn ' + (sectorActual === sec.id ? 'active' : '');
+                btn.innerText = sec.nombre;
+                btn.onclick = () => { sectorActual = sec.id; dibujarSectorTabs(); dibujarTablero(); };
+                cont.appendChild(btn);
+            });
+        }
+
+        function dibujarTablero() {
+            const contenedor = document.getElementById('contenedor-tablero');
+            const filtro = document.getElementById('filtro-tablero').value;
+            const busqueda = document.getElementById('buscador-silo').value.trim();
+            let htmlTotal = '';
+
+            SECTORES_TABLERO.forEach(sector => {
+                if(sectorActual !== 'todos' && sector.id !== sectorActual && busqueda === '') return;
+                if(busqueda !== '' && (parseInt(busqueda) < sector.rango[0] || parseInt(busqueda) > sector.rango[1])) return;
+                
+                let htmlSilos = '';
+                for(let num = sector.rango[0]; num <= sector.rango[1]; num++) {
+                    if(busqueda !== '' && num.toString() !== busqueda) continue;
+                    
+                    let d = getSiloData(num);
+                    if(filtro !== 'TODOS' && d.cereal !== filtro && d.estado !== 'VACIO') continue;
+
+                    let isVacio = d.estado === 'VACIO';
+                    let textoCereal = isVacio ? 'VACÍO' : d.cereal;
+                    let franjaClass = isVacio ? 'f-VACIO' : 'f-'+d.cereal;
+                    let alertaHtml = tieneAlerta(num) ? `<div class="t-alerta">!</div>` : '';
+                    let fumigadoHtml = (d.fumigacion_fecha) ? `<div class="t-fumigado">🧪</div>` : '';
+
+                    htmlSilos += `
+                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${d.estado==='EN_USO'?'estado-borde':''}" onclick="verHistorial(${num})">
+                            <div class="franja ${franjaClass}"></div>
+                            ${alertaHtml} ${fumigadoHtml}
+                            <div class="t-num" style="color: ${isVacio?'var(--text-light)':'var(--text)'}">${num}</div>
+                            <div class="t-info">${textoCereal}</div>
+                            <div class="t-info-3">${d.calidad||''}</div>
+                            <div class="t-info-2">${d.tonelaje>0?d.tonelaje+'t':''}</div>
+                        </div>`;
+                }
+                if(htmlSilos !== '') htmlTotal += `<div class="fila-sector"><div class="titulo-sector">${sector.nombre}</div><div class="grid-tarjetas">${htmlSilos}</div></div>`;
+            });
+            contenedor.innerHTML = htmlTotal || '<p style="text-align:center; color:var(--text-light);">No se encontraron silos.</p>';
+            
+            // Contador de alertas
+            let countAlertas = 0;
+            Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) countAlertas++; });
+            let b = document.getElementById('badge-alertas');
+            if(countAlertas > 0) { b.innerText = countAlertas; b.style.display = 'inline-block'; } else { b.style.display = 'none'; }
+        }
+
+        function verHistorial(num) {
+            let d = getSiloData(num);
+            document.getElementById('h-titulo').innerText = 'Historial Unidad ' + num;
+            let cont = document.getElementById('lista-historial');
+            cont.innerHTML = '';
+            
+            if(d.historial.length === 0) {
+                cont.innerHTML = '<p style="text-align:center;">Sin movimientos registrados.</p>';
+            } else {
+                // Ordenar del más reciente al más viejo
+                let hist = [...d.historial].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+                hist.forEach(h => {
+                    cont.innerHTML += `
+                        <div class="hist-item">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <b>${h.fecha.split('-').reverse().join('/')}</b>
+                                <span style="font-weight:bold; color:var(--primary);">${h.tons} t</span>
+                            </div>
+                            <div><b>${h.cereal}</b> - Calidad: ${h.calidad||'-'}</div>
+                            <div style="margin-top:5px; font-size:0.8rem;">
+                                Estado: ${h.estado.replace('_',' ')} | Fumigación: ${h.fumigo}
+                            </div>
+                            ${h.obs ? `<div style="margin-top:5px; color:#b45309; font-size:0.8rem;">📝 ${h.obs}</div>` : ''}
+                        </div>`;
+                });
+            }
+            document.getElementById('modal-historial').classList.add('active');
+        }
+
+        // --- LÓGICA DE ALERTAS ---
+        function tieneAlerta(num) {
+            let d = getSiloData(num);
+            if(d.estado === 'VACIO' || d.estado === 'FUERA_SERVICIO') return false;
+            
+            let hoy = new Date();
+            
+            // 1. Sin Fumigar
+            if(!d.fumigacion_fecha) return true;
+            
+            // 2. Refumigación (>60 días)
+            let fumDate = new Date(d.fumigacion_fecha);
+            let diffFum = (hoy - fumDate) / (1000 * 60 * 60 * 24);
+            if(diffFum > 60) return true;
+            
+            // 3. Antigüedad (>90 días)
+            if(d.fecha_primera_carga) {
+                let cargaDate = new Date(d.fecha_primera_carga);
+                let diffCarga = (hoy - cargaDate) / (1000 * 60 * 60 * 24);
+                if(diffCarga > 90) return true;
+            }
+            
+            return false;
+        }
+
+        function dibujarAlertas() {
+            let tbody = document.querySelector('#tabla-alertas tbody');
+            tbody.innerHTML = '';
+            let hay = false;
+            
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if(d.estado === 'VACIO' || d.estado === 'FUERA_SERVICIO') return;
+                
+                let motivos = [];
+                let hoy = new Date();
+                
+                if(!d.fumigacion_fecha) motivos.push("Sin Fumigar");
+                else {
+                    let diffFum = (hoy - new Date(d.fumigacion_fecha)) / (1000 * 60 * 60 * 24);
+                    if(diffFum > 60) motivos.push(`Refumigar (${Math.floor(diffFum)}d)`);
+                }
+                
+                if(d.fecha_primera_carga) {
+                    let diffCarga = (hoy - new Date(d.fecha_primera_carga)) / (1000 * 60 * 60 * 24);
+                    if(diffCarga > 90) motivos.push(`>90 días (${Math.floor(diffCarga)}d)`);
+                }
+                
+                if(d.estado === 'TAPADA') motivos.push("Tapado");
+                
+                if(motivos.length > 0) {
+                    hay = true;
+                    tbody.innerHTML += `<tr><td style="font-weight:600;">${num}</td><td>${d.cereal}</td><td class="alerta-txt">${motivos.join(' | ')}</td></tr>`;
+                }
+            });
+            if(!hay) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay alertas activas.</td></tr>';
+        }
+
+        // --- RELLENOS ---
+        function calcularRellenos() {
+            let cerealId = document.getElementById('sel-cereal-relleno').value;
+            let tbody = document.querySelector('#tabla-rellenos tbody');
+            tbody.innerHTML = '';
+            if(!cerealId) return;
+
+            let cereal = db.cereales.find(c => c.id === cerealId);
+            let hay = false;
+
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return;
+                
+                let espacio = 0;
+                let manual = false;
+                
+                if(SILOS_MANUALES.includes(parseInt(num))) {
+                    manual = true;
+                    espacio = d.relleno_manual || 0; // Usa el guardado a mano
+                } else {
+                    let tipo = esSiloTipo(parseInt(num));
+                    let capMaxRef = (tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS)[0][1];
+                    let capMaxTon = Math.round(capMaxRef * cereal.ph / PH_BASE);
+                    espacio = capMaxTon - (parseFloat(d.tonelaje) || 0);
+                }
+
+                if(espacio > 10 || manual) {
+                    hay = true;
+                    let fumStr = d.fumigacion_fecha ? '🧪 Fumigado' : '⚠️ Sin Fumigar';
+                    
+                    let inputEspacio = manual 
+                        ? `<input type="number" value="${d.relleno_manual||''}" placeholder="Manual" style="width:80px; padding:4px;" onchange="guardarRellenoManual(${num}, this.value)"> t`
+                        : `<b style="color:#16a34a;">~${espacio} t</b>`;
+
+                    tbody.innerHTML += `<tr>
+                        <td><b>${num}</b> ${manual?'⚠️':''}</td>
+                        <td>${num >= 700 ? 'C1' : (num >= 500 ? 'C2' : (num >= 300 ? 'C3' : 'C4'))}</td>
+                        <td>${d.calidad}</td>
+                        <td style="font-size:0.8rem;">${fumStr}</td>
+                        <td>${inputEspacio}</td>
+                    </tr>`;
+                }
+            });
+            if(!hay) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Sin silos parciales para este cereal.</td></tr>';
+        }
+
+        function guardarRellenoManual(num, valor) {
+            let d = getSiloData(num);
+            d.relleno_manual = parseFloat(valor) || 0;
+            guardarDB();
+        }
+
+        function calcularMedidaRapida() {
+            let silo = parseInt(document.getElementById('calc-silo').value);
+            let cerealId = document.getElementById('calc-cereal').value;
+            let metros = parseFloat(document.getElementById('calc-metros').value);
+            let msj = document.getElementById('calc-msj');
+            let res = document.getElementById('calc-resultado');
+
+            if(!silo || !cerealId || isNaN(metros)) { res.innerText = '0 t'; msj.innerText = ''; return; }
+
+            if(SILOS_MANUALES.includes(silo)) {
+                msj.innerText = "⚠️ Silo de capacidad reducida. El cálculo teórico es de referencia.";
+                msj.style.color = "#d97706";
+            } else {
+                msj.innerText = "";
+            }
+
+            let cereal = db.cereales.find(c => c.id === cerealId);
+            let tipo = esSiloTipo(silo);
+
+            let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
+            let tons = Math.round(phRef * cereal.ph / PH_BASE);
+            res.innerText = `${tons} t`;
+        }
+
+        // --- EXISTENCIAS ---
+        function actualizarExistencias() {
+            let counts = { VACIO:0, CON_CARGA:0, EN_USO:0, TAPADA:0, FUERA_SERVICIO:0 };
+            let tonExtr = [0, 0, 0, 0]; // 1, 2, 3, 4
+
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                counts[d.estado]++;
+                
+                if(d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'EN_USO') {
+                    let tons = parseFloat(d.tonelaje) || 0;
+                    let n = parseInt(num);
+                    
+                    if(n >= 600) tonExtr[0] += tons; // 700s y 600s
+                    else if(n >= 500 || (n >= 400 && n % 2 === 0)) tonExtr[1] += tons; // 500s y 400s pares
+                    else if(n >= 300 || (n >= 400 && n % 2 !== 0)) tonExtr[2] += tons; // 300s y 400s impares
+                    else tonExtr[3] += tons; // 100s y 200s
+                }
+            });
+
+            document.getElementById('st-vacios').innerText = counts.VACIO;
+            document.getElementById('st-carga').innerText = counts.CON_CARGA;
+            document.getElementById('st-uso').innerText = counts.EN_USO;
+            document.getElementById('st-tapados').innerText = counts.TAPADA;
+            document.getElementById('st-fuera').innerText = counts.FUERA_SERVICIO;
+            
+            document.getElementById('ext-1').innerText = tonExtr[0].toLocaleString() + ' t';
+            document.getElementById('ext-2').innerText = tonExtr[1].toLocaleString() + ' t';
+            document.getElementById('ext-3').innerText = tonExtr[2].toLocaleString() + ' t';
+            document.getElementById('ext-4').innerText = tonExtr[3].toLocaleString() + ' t';
+
+            calcularStock();
+        }
+
+        function calcularStock() {
+            let cerealId = document.getElementById('sel-cereal-stock').value;
+            if(!cerealId) { document.getElementById('resultado-stock').innerHTML = ''; return; }
+            
+            let total = 0, porCalidad = {};
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if(d.cereal === cerealId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'EN_USO')) {
+                    let t = parseFloat(d.tonelaje) || 0;
+                    total += t;
+                    porCalidad[d.calidad || 'S/C'] = (porCalidad[d.calidad || 'S/C'] || 0) + t;
+                }
+            });
+
+            let html = `<div class="stat-box" style="margin-bottom:15px;"><span class="stat-lbl">Stock Total ${cerealId}</span><span class="stat-num">${total} t</span></div>`;
+            html += `<h4 style="margin-top:15px; font-size:0.9rem; color:var(--text-light);">Por Calidad</h4><table class="data-table"><tbody>`;
+            for(let cal in porCalidad) html += `<tr><td>${cal}</td><td>${porCalidad[cal]} t</td></tr>`;
+            html += `</tbody></table>`;
+            document.getElementById('resultado-stock').innerHTML = html;
+        }
+
+        // --- ADMIN / UTILS ---
+        function dibujarAdmin() {
+            let cont = document.getElementById('lista-admin-cereales'); cont.innerHTML = '';
+            db.cereales.forEach(c => { cont.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);"><b>${c.nombre}</b> <span>PH: ${c.ph}</span></div>`; });
+        }
+
+        function agregarCerealNuevo() {
+            let nom = document.getElementById('new-cereal-nombre').value.toUpperCase();
+            let ph = parseFloat(document.getElementById('new-cereal-ph').value);
+            let color = document.getElementById('new-cereal-color').value;
+            if(!nom || isNaN(ph)) return alert("Complete nombre y PH");
+            db.cereales.push({id: nom, nombre: nom, ph: ph, color: color});
+            guardarDB(); actualizarSelects(); dibujarAdmin();
+            document.getElementById('new-cereal-nombre').value = ''; document.getElementById('new-cereal-ph').value = '';
+        }
+
+        function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        function actualizarSelects() {
+            let opt = '<option value="">-- Seleccionar --</option>';
+            let optTodos = '<option value="TODOS">Todos los Cereales</option>';
+            db.cereales.forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
+            
+            document.getElementById('filtro-tablero').innerHTML = optTodos;
+            document.getElementById('sel-cereal-stock').innerHTML = opt;
+            document.getElementById('sel-cereal-relleno').innerHTML = opt;
+            document.getElementById('calc-cereal').innerHTML = opt;
+        }
+
+        function exportarDatos() {
+            let dataStr = JSON.stringify(db); 
+            let blob = new Blob([dataStr], {type: "application/json"});
+            let url = URL.createObjectURL(blob); 
+            let a = document.createElement('a'); a.href = url; a.download = "spc_respaldo.json"; a.click();
+        }
+
+        function importarDatos(event) {
+            let file = event.target.files[0]; if(!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) { 
+                try { 
+                    let data = JSON.parse(e.target.result); 
+                    if(confirm("Esto borrará los datos actuales. ¿Continuar?")) {
+                        db = data; guardarDB(); location.reload();
+                    }
+                } catch(err) { alert("Archivo inválido"); }
+            };
+            reader.readAsText(file);
+        }
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -17,8 +17,8 @@
             --c-mezcla: #db2777; --c-girasol: #94a3b8; --c-otros: #dc2626;
         }
         body.dark-mode {
-            --primary: #0f172a; --secondary: #1e293b; --bg: #020617; --card: #1e293b;
-            --text: #f8fafc; --text-light: #94a3b8; --border: #334155;
+            --primary: #0f172a; --secondary: #1e293b; --bg: #0f172a; --card: #1e293b;
+            --text: #f8fafc; --text-light: #cbd5e1; --border: #334155;
         }
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; transition: background 0.3s; }
@@ -34,7 +34,7 @@
 
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; height: 65px; flex-direction: row; overflow-x: auto; justify-content: flex-start; border-top: 1px solid #0f172a; padding-bottom: env(safe-area-inset-bottom); position: fixed; bottom: 0; z-index: 1000; }
+            .sidebar { width: 100%; height: 65px; flex-direction: row; overflow-x: auto; justify-content: flex-start; border-top: 1px solid #000; padding-bottom: env(safe-area-inset-bottom); position: fixed; bottom: 0; z-index: 1000; }
             .sidebar::-webkit-scrollbar { display: none; }
             .nav-btn { padding: 12px 10px; font-size: 0.7rem; border-bottom: none; border-right: 1px solid var(--secondary); white-space: nowrap; flex-direction: column; justify-content: center; align-items: center; gap: 4px; flex: 1; min-width: 60px; border-left: none !important; }
             .nav-btn.active { border-top: 3px solid #38bdf8; background: #0f172a;}
@@ -43,13 +43,13 @@
             .tab-content { padding: 15px; }
             input, select, textarea { font-size: 16px !important; padding: 12px; } 
             
-            /* TARJETAS MAS PEQUEÑAS PARA CELULAR */
-            .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); gap: 4px; }
-            .tarjeta { min-height: 65px; }
-            .t-num { font-size: 1.1rem; }
-            .t-info { font-size: 0.55rem; }
-            .t-info-3 { font-size: 0.5rem; }
-            .t-info-2 { font-size: 0.5rem; }
+            /* TARJETAS ULTRA COMPACTAS */
+            .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 4px; }
+            .tarjeta { min-height: 60px; }
+            .t-num { font-size: 1rem; }
+            .t-info { font-size: 0.5rem; }
+            .t-info-3 { font-size: 0.45rem; }
+            .t-info-2 { font-size: 0.45rem; }
             
             .modal { align-items: flex-end; padding: 0; }
             .modal-box { border-radius: 20px 20px 0 0; max-height: 92vh; padding: 20px; padding-bottom: 30px; }
@@ -65,27 +65,27 @@
         .sector-btn { padding: 8px 15px; border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.85rem; white-space: nowrap;}
         .sector-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* MOVIMIENTOS (PLANILLA) */
+        /* MOVIMIENTOS */
         .row-inputs { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; background: var(--card); padding: 10px; border-radius: 6px; border: 1px solid var(--border); flex-wrap: wrap;}
-        .row-inputs input, .row-inputs select { padding: 8px; font-size: 0.85rem; margin: 0; flex: 1; min-width: 80px;}
+        .row-inputs input, .row-inputs select { padding: 8px; font-size: 0.85rem; margin: 0; flex: 1; min-width: 70px;}
         .row-inputs .btn-del { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer;}
         
         /* TABLERO TARJETAS */
         .fila-sector { margin-bottom: 15px; }
         .titulo-sector { font-size: 0.85rem; color: var(--text-light); font-weight: 700; margin-bottom: 5px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
         
-        /* TARJETAS MAS PEQUEÑAS TAMBIEN EN PC */
-        .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 6px; }
-        .tarjeta { min-height: 75px; border-radius: 6px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 4px; }
+        /* TARJETAS MAS CHICAS PARA QUE ENTREN EN UNA LINEA */
+        .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; }
+        .tarjeta { min-height: 65px; border-radius: 6px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 4px; }
         .franja { position: absolute; top: 0; left: 0; right: 0; height: 5px; }
         .f-MAIZ { background: var(--c-maiz); } .f-SOJA { background: var(--c-soja); } .f-SORGO { background: var(--c-sorgo); } .f-TRIGO { background: var(--c-trigo); } .f-MEZCLA { background: var(--c-mezcla); } .f-GIRASOL { background: var(--c-girasol); } .f-OTROS { background: var(--c-otros); } .f-VACIO { background: transparent; }
 
-        .t-num { font-size: 1.1rem; font-weight: 800; color: var(--text); line-height: 1; margin-top: 6px; }
-        .t-info { font-size: 0.6rem; font-weight: 800; text-align: center; line-height: 1; margin-top: 3px; color: var(--text-light); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
-        .t-info-3 { font-size: 0.55rem; font-weight: 600; color: var(--text-light); margin-top: 2px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
-        .t-info-2 { font-size: 0.55rem; font-weight: 500; color: var(--text-light); margin-top: 2px;}
-        .t-alerta { position: absolute; top: 6px; right: 6px; background: #ef4444; color: white; width: 14px; height: 14px; border-radius: 50%; font-size: 9px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        .t-fumigado { position: absolute; top: 6px; left: 6px; font-size: 11px; }
+        .t-num { font-size: 1.1rem; font-weight: 800; color: var(--text); line-height: 1; margin-top: 5px; }
+        .t-info { font-size: 0.55rem; font-weight: 800; text-align: center; line-height: 1; margin-top: 2px; color: var(--text-light); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
+        .t-info-3 { font-size: 0.5rem; font-weight: 600; color: var(--text-light); margin-top: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
+        .t-info-2 { font-size: 0.5rem; font-weight: 500; color: var(--text-light); margin-top: 1px;}
+        .t-alerta { position: absolute; top: 4px; right: 4px; background: #ef4444; color: white; width: 12px; height: 12px; border-radius: 50%; font-size: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .t-fumigado { position: absolute; top: 4px; left: 4px; font-size: 10px; }
         
         .estado-borde { border: 2px solid #f59e0b; }
         .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; opacity: 0.7;}
@@ -94,7 +94,7 @@
         /* MODALES Y PANELES */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 2000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-box { background: var(--card); width: 100%; max-width: 500px; border-radius: 8px; padding: 24px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--border); }
+        .modal-box { background: var(--card); width: 100%; max-width: 500px; border-radius: 8px; padding: 24px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
         
         .card-panel { background: var(--card); padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; }
         .stat-box { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-radius: 6px;}
@@ -111,7 +111,11 @@
         .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
         .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
-        .hist-item { border-left: 3px solid var(--primary); background: var(--bg); padding: 10px; margin-bottom: 8px; border-radius: 0 6px 6px 0; font-size: 0.85rem; }
+        /* HISTORIAL MEJORADO */
+        .hist-item { border-left: 3px solid var(--primary); background: var(--bg); padding: 12px; margin-bottom: 10px; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: var(--text); border: 1px solid var(--border);}
+        .hist-date { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1rem; display: flex; justify-content: space-between;}
+        .hist-details { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; font-size: 0.85rem; color: var(--text-light);}
+        .hist-details span b { color: var(--text); }
         .alerta-txt { color: #ef4444; font-weight: bold; }
         
         .sub-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
@@ -120,7 +124,7 @@
         
         @media print {
             .sidebar, .top-controls, .sector-tabs, .btn-save, .btn-close, .sub-tabs { display: none !important; }
-            body { background: white; display: block; height: auto; }
+            body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; }
             .data-table th, .data-table td { border: 1px solid #000; padding: 8px; }
@@ -213,7 +217,6 @@
                 <button class="sub-tab-btn" onclick="cambiarSubTab('sub-calculadora', this)">Calculadora</button>
             </div>
 
-            <!-- Sub Pestaña: Tabla de Rellenos -->
             <div id="sub-relleno-lista" style="display:block;">
                 <div class="card-panel">
                     <label>Filtrar por Cereal:</label>
@@ -228,17 +231,16 @@
                 </div>
             </div>
 
-            <!-- Sub Pestaña: Calculadora de Medidas -->
             <div id="sub-calculadora" style="display:none;">
                 <div class="card-panel">
                     <label>N° de Silo:</label>
-                    <input type="number" id="calc-silo" placeholder="Ej: 315" oninput="calcularMedidaRapida()">
+                    <input type="number" id="calc-silo" placeholder="Ej: 315" min="1" oninput="calcularMedidaRapida()">
                     
                     <label>Cereal:</label>
                     <select id="calc-cereal" onchange="calcularMedidaRapida()"></select>
                     
                     <label>Metros de Vacío:</label>
-                    <input type="number" id="calc-metros" step="0.5" placeholder="Ej: 15.5" oninput="calcularMedidaRapida()">
+                    <input type="number" id="calc-metros" step="0.5" min="0" placeholder="Ej: 15.5" oninput="calcularMedidaRapida()">
                     
                     <div id="calc-msj" style="font-size:0.85rem; font-weight:bold; margin-top:10px;"></div>
                     <div class="stat-box" style="background:var(--primary); color:white; margin-top:15px; text-align:center; border-radius:8px;">
@@ -301,7 +303,6 @@
         const MIN_14 = [702, 705, 708, 711, 714, 717];
         const MIN_10 = [502, 505, 508, 511, 514, 517];
         
-        // LISTADO EXACTO DE SECTORES PARA QUE NO APAREZCAN SILOS FANTASMAS
         const SECTORES_REALES = [
             { id: 's700', nombre: "Sector 700", silos: [701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718] },
             { id: 's600', nombre: "Sector 600", silos: [601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617] },
@@ -319,7 +320,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v7'); // v7 para forzar limpieza
+                let saved = localStorage.getItem('unidad7_db_v8'); // v8
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -346,7 +347,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v7', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v8', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -392,15 +393,15 @@
             let div = document.createElement('div');
             div.className = 'row-inputs';
             div.innerHTML = `
-                <input type="number" placeholder="Silo" class="m-silo" style="max-width:70px;" oninput="autoCalcularFila(this)">
+                <input type="number" placeholder="Silo" class="m-silo" style="max-width:70px;" min="1" oninput="autoCalcularFila(this)">
                 <input type="date" class="m-fecha" title="Fecha">
                 <select class="m-cereal" onchange="autoCalcularFila(this)">
                     <option value="">Cereal...</option>
                     ${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}
                 </select>
                 <input type="text" placeholder="Calidad" class="m-calidad">
-                <input type="number" placeholder="Mts" step="0.5" class="m-metros" style="max-width:60px;" oninput="autoCalcularFila(this)">
-                <input type="number" placeholder="Tons" class="m-tons" style="max-width:70px;">
+                <input type="number" placeholder="Mts" step="0.5" min="0" class="m-metros" style="max-width:60px;" oninput="autoCalcularFila(this)">
+                <input type="number" placeholder="Tons" min="0" class="m-tons" style="max-width:70px;">
                 <select class="m-estado" style="max-width:100px;">
                     <option value="CON_CARGA">Con Carga</option>
                     <option value="EN_USO">En Uso</option>
@@ -418,7 +419,6 @@
                 <input type="text" placeholder="Obs..." class="m-obs">
                 <button class="btn-del" onclick="this.parentElement.remove()">X</button>
             `;
-            // Setear fecha de hoy por defecto
             div.querySelector('.m-fecha').value = new Date().toISOString().split('T')[0];
             document.getElementById('lista-movimientos').appendChild(div);
         }
@@ -430,14 +430,19 @@
             let metros = parseFloat(row.querySelector('.m-metros').value);
             let tonsInput = row.querySelector('.m-tons');
 
-            if(!silo || !cerealId || isNaN(metros) || metros < 0) { tonsInput.value = ''; return; }
+            if(!silo || silo < 0) {
+                row.style.border = "2px solid #ef4444"; 
+                tonsInput.value = ''; return;
+            }
+            row.style.border = "1px solid var(--border)";
+
+            if(!cerealId || isNaN(metros) || metros < 0) { tonsInput.value = ''; return; }
             
             if(SILOS_MANUALES.includes(silo)) {
                 tonsInput.placeholder = "Manual!";
                 return;
             }
 
-            // Validación visual
             if(MIN_14.includes(silo) && metros < 14) { 
                 row.style.border = "2px solid #ef4444"; 
                 tonsInput.value = ''; return; 
@@ -446,8 +451,7 @@
                 row.style.border = "2px solid #ef4444"; 
                 tonsInput.value = ''; return; 
             }
-            row.style.border = "1px solid var(--border)"; // Reset
-
+            
             let cereal = db.cereales.find(c => c.id === cerealId);
             let tipo = esSiloTipo(silo);
 
@@ -460,12 +464,13 @@
             let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
             let procesados = 0;
             let errores = 0;
+            let errorMsj = "";
 
             filas.forEach(row => {
                 let silo = parseInt(row.querySelector('.m-silo').value);
                 let fecha = row.querySelector('.m-fecha').value;
                 let cereal = row.querySelector('.m-cereal').value;
-                let calidad = row.querySelector('.m-calidad').value.toUpperCase();
+                let calidad = row.querySelector('.m-calidad').value.toUpperCase().trim();
                 let metros = parseFloat(row.querySelector('.m-metros').value) || 0;
                 let tons = parseFloat(row.querySelector('.m-tons').value) || 0;
                 let estadoOp = row.querySelector('.m-estado').value;
@@ -473,15 +478,26 @@
                 let alertaManual = row.querySelector('.m-alerta-manual').value;
                 let obs = row.querySelector('.m-obs').value;
 
-                if(!silo || !fecha) return; // Ignorar filas vacías
+                if(!silo || !fecha) return; 
 
-                // VALIDACIONES ESTRICTAS AL GUARDAR
-                if(MIN_14.includes(silo) && metros < 14) { alert(`ERROR: El silo ${silo} requiere un mínimo de 14 metros.`); errores++; return; }
-                if(MIN_10.includes(silo) && metros < 10) { alert(`ERROR: El silo ${silo} requiere un mínimo de 10 metros.`); errores++; return; }
+                if(silo < 0 || metros < 0 || tons < 0) { errorMsj = "No se permiten valores negativos."; errores++; return; }
+                if(MIN_14.includes(silo) && metros < 14) { errorMsj = `El silo ${silo} requiere un mínimo de 14 metros.`; errores++; return; }
+                if(MIN_10.includes(silo) && metros < 10) { errorMsj = `El silo ${silo} requiere un mínimo de 10 metros.`; errores++; return; }
 
                 let d = getSiloData(silo);
                 
-                // Lógica del estado
+                // INTELIGENCIA: Validar mezcla de cereales
+                if(d.cereal && d.cereal !== cereal && estadoOp !== 'VACIO' && estadoOp !== 'RECIRCULACION') {
+                    errorMsj = `El silo ${silo} ya contiene ${d.cereal}. No se puede mezclar con ${cereal}.`;
+                    errores++; return;
+                }
+
+                // INTELIGENCIA: Validar recirculación en vacío
+                if(estadoOp === 'RECIRCULACION' && d.estado === 'VACIO') {
+                    errorMsj = `El silo ${silo} está vacío. No se puede recircular.`;
+                    errores++; return;
+                }
+                
                 if(estadoOp === 'VACIO') {
                     d.estado = 'VACIO'; d.cereal = ''; d.calidad = ''; d.tonelaje = 0;
                 } else if(estadoOp === 'RECIRCULACION') {
@@ -497,36 +513,33 @@
 
                 d.alerta_manual = (alertaManual === 'SI');
 
-                // Lógica del Historial (Pisa el mismo día)
                 let histIndex = d.historial.findIndex(h => h.fecha === fecha);
                 let registro = {
-                    fecha: fecha, cereal: cereal, calidad: calidad, tons: tons, 
+                    fecha: fecha, cereal: cereal, calidad: calidad, tons: tons, metros: metros,
                     estado: estadoOp, fumigo: fumigo, obs: obs
                 };
 
-                if(histIndex >= 0) {
-                    d.historial[histIndex] = registro; 
-                } else {
-                    d.historial.push(registro); 
-                }
+                if(histIndex >= 0) { d.historial[histIndex] = registro; } 
+                else { d.historial.push(registro); }
                 
                 if(!d.fecha_primera_carga && tons > 0) d.fecha_primera_carga = fecha;
-
                 procesados++;
             });
 
-            if(errores === 0 && procesados > 0) {
+            if(errores > 0) {
+                alert("⚠️ ERROR:\n" + errorMsj);
+            } else if(procesados > 0) {
                 guardarDB();
                 alert(`✅ Se procesaron ${procesados} movimientos correctamente.`);
                 document.getElementById('lista-movimientos').innerHTML = '';
                 agregarFilaMovimiento();
                 dibujarTablero();
-            } else if(procesados === 0 && errores === 0) {
+            } else {
                 alert("No hay datos válidos para guardar.");
             }
         }
 
-        // --- TABLERO (SOLO LECTURA) ---
+        // --- TABLERO ---
         function dibujarSectorTabs() {
             let cont = document.getElementById('sector-tabs-container');
             cont.innerHTML = `<button class="sector-btn ${sectorActual === 'todos' ? 'active' : ''}" onclick="sectorActual='todos'; dibujarSectorTabs(); dibujarTablero();">Todos</button>`;
@@ -546,7 +559,6 @@
             let htmlTotal = '';
 
             SECTORES_REALES.forEach(sector => {
-                // Si estoy en un sector especifico y busco un numero, solo muestro ese sector si el numero pertenece
                 if(sectorActual !== 'todos' && sector.id !== sectorActual && busqueda === '') return;
                 if(busqueda !== '' && !sector.silos.includes(parseInt(busqueda))) return;
                 
@@ -596,15 +608,17 @@
                 hist.forEach(h => {
                     cont.innerHTML += `
                         <div class="hist-item">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                                <b>${h.fecha.split('-').reverse().join('/')}</b>
-                                <span style="font-weight:bold; color:var(--primary);">${h.tons} t</span>
+                            <div class="hist-date">
+                                <span>${h.fecha.split('-').reverse().join('/')}</span>
+                                <span style="color:var(--text);">${h.tons} t</span>
                             </div>
-                            <div><b>${h.cereal}</b> - Calidad: ${h.calidad||'-'}</div>
-                            <div style="margin-top:5px; font-size:0.8rem;">
-                                Estado: ${h.estado.replace('_',' ')} | Fumigación: ${h.fumigo}
+                            <div style="font-weight:bold; margin-bottom:5px;">${h.cereal} <span style="color:var(--text-light); font-weight:normal;">(${h.calidad||'S/C'})</span></div>
+                            <div class="hist-details">
+                                <span>Metros: <b>${h.metros || '-'} m</b></span>
+                                <span>Estado: <b>${h.estado.replace('_',' ')}</b></span>
+                                <span>Fumigado: <b>${h.fumigo}</b></span>
                             </div>
-                            ${h.obs ? `<div style="margin-top:5px; color:#b45309; font-size:0.8rem;">📝 ${h.obs}</div>` : ''}
+                            ${h.obs ? `<div style="margin-top:5px; color:#d97706; font-size:0.85rem; border-top:1px dashed var(--border); padding-top:5px;">📝 ${h.obs}</div>` : ''}
                         </div>`;
                 });
             }
@@ -615,26 +629,19 @@
         function tieneAlerta(num) {
             let d = getSiloData(num);
             if(d.estado === 'VACIO' || d.estado === 'FUERA_SERVICIO') return false;
-            
-            // 1. Alerta manual por calidad
             if(d.alerta_manual) return true;
-
-            // 2. Sin Fumigar
             if(!d.fumigacion_fecha) return true;
             
-            // 3. Refumigación (>60 días)
             let hoy = new Date();
             let fumDate = new Date(d.fumigacion_fecha);
             let diffFum = (hoy - fumDate) / (1000 * 60 * 60 * 24);
             if(diffFum > 60) return true;
             
-            // 4. Antigüedad (>90 días)
             if(d.fecha_primera_carga) {
                 let cargaDate = new Date(d.fecha_primera_carga);
                 let diffCarga = (hoy - cargaDate) / (1000 * 60 * 60 * 24);
                 if(diffCarga > 90) return true;
             }
-            
             return false;
         }
 
@@ -732,7 +739,7 @@
             let msj = document.getElementById('calc-msj');
             let res = document.getElementById('calc-resultado');
 
-            if(!silo || !cerealId || isNaN(metros)) { res.innerText = '0 t'; msj.innerText = ''; return; }
+            if(!silo || silo < 0 || !cerealId || isNaN(metros) || metros < 0) { res.innerText = '0 t'; msj.innerText = ''; return; }
 
             if(SILOS_MANUALES.includes(silo)) {
                 msj.innerText = "⚠️ Silo de capacidad reducida. El cálculo teórico es de referencia.";
@@ -771,9 +778,10 @@
             let cerealId = document.getElementById('sel-cereal-stock').value;
             if(!cerealId) { document.getElementById('resultado-stock').innerHTML = '<p style="color:var(--text-light);">Seleccione un cereal para ver el detalle.</p>'; return; }
             
+            let cObj = db.cereales.find(c => c.id === cerealId);
             let total = 0;
             let porCinta = { C1:0, C2:0, C3:0, C4:0 };
-            let calPorCinta = { C1:{}, C2:{}, C3:{}, C4:{} }; // Calidad por cinta
+            let calPorCinta = { C1:{}, C2:{}, C3:{}, C4:{} }; 
 
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
@@ -789,7 +797,7 @@
                     
                     porCinta[cinta] += t;
                     
-                    let cal = d.calidad || 'S/C';
+                    let cal = (d.calidad || 'S/C').toUpperCase(); // Agrupar calidades en mayúsculas
                     calPorCinta[cinta][cal] = (calPorCinta[cinta][cal] || 0) + t;
                 }
             });
@@ -798,10 +806,10 @@
             
             html += `<h4 style="margin-top:20px; font-size:1rem; color:var(--text);">Toneladas por Extracción</h4>`;
             html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                <div class="stat-box" style="background:var(--bg);"><span class="stat-lbl">Extr 1 (700s/600s)</span><span class="stat-num" style="font-size:1.3rem; color:var(--c-maiz);">${porCinta.C1} t</span></div>
-                <div class="stat-box" style="background:var(--bg);"><span class="stat-lbl">Extr 2 (500s/400s P)</span><span class="stat-num" style="font-size:1.3rem; color:var(--c-sorgo);">${porCinta.C2} t</span></div>
-                <div class="stat-box" style="background:var(--bg);"><span class="stat-lbl">Extr 3 (300s/400s I)</span><span class="stat-num" style="font-size:1.3rem; color:var(--c-trigo);">${porCinta.C3} t</span></div>
-                <div class="stat-box" style="background:var(--bg);"><span class="stat-lbl">Extr 4 (100s/200s)</span><span class="stat-num" style="font-size:1.3rem; color:var(--c-soja);">${porCinta.C4} t</span></div>
+                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 1 (700s/600s)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C1} t</span></div>
+                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 2 (500s/400s P)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C2} t</span></div>
+                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 3 (300s/400s I)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C3} t</span></div>
+                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 4 (100s/200s)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C4} t</span></div>
             </div>`;
 
             html += `<h4 style="margin-top:20px; font-size:1rem; color:var(--text);">Detalle por Cinta y Calidad</h4>`;

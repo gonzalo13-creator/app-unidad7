@@ -184,7 +184,6 @@
     <div class="sidebar">
         <button class="nav-btn" onclick="toggleDarkMode()" aria-label="Alternar Modo Oscuro/Claro" style="background:var(--secondary); color:white; justify-content:center; border-bottom: 2px solid #000;">🌙 / ☀️ Modo Sol</button>
         
-        <!-- NUEVO ORDEN DE PESTAÑAS -->
         <button class="nav-btn active" onclick="cambiarTab('tablero', this)">📋<br>Tablero</button>
         <button class="nav-btn" onclick="cambiarTab('movimientos', this)">📝<br>Movimientos</button>
         <button class="nav-btn" onclick="cambiarTab('alertas', this)">🚨<br>Alertas <span id="badge-alertas" class="badge" style="display:none;">0</span></button>
@@ -216,14 +215,12 @@
                             <option value="C3">Cinta 3 (300s / 400s Impares)</option>
                             <option value="C4">Cinta 4 (100s / 200s)</option>
                         </optgroup>
-                        <optgroup label="Por Fila Física">
-                            <option value="700">Fila 700s</option>
-                            <option value="600">Fila 600s</option>
-                            <option value="500">Fila 500s</option>
-                            <option value="400">Fila 400s</option>
-                            <option value="300">Fila 300s</option>
-                            <option value="200">Fila 200s</option>
-                            <option value="100">Fila 100s</option>
+                        <optgroup label="Cintas de Sobresilo">
+                            <option value="CE1">Cinta de Embarque 1 (CE1)</option>
+                            <option value="CE2">Cinta de Embarque 2 (CE2)</option>
+                            <option value="CD1">Cinta de Distribución 1 (CD1)</option>
+                            <option value="CD2">Cinta de Distribución 2 (CD2)</option>
+                            <option value="CD3">Cinta de Distribución 3 (CD3)</option>
                         </optgroup>
                     </select>
                 </div>
@@ -471,7 +468,7 @@
         let backupDB = null;
         let cintaRellenoAbierta = null;
         let cintaStockAbierta = null;
-        let cintasHerramientaAbiertas = { C1: true, C2: true, C3: true, C4: true }; // Por defecto abiertas
+        let cintasHerramientaAbiertas = { C1: true, C2: true, C3: true, C4: true };
         let silosModificadosReciente = [];
 
         function getFechaLocal() {
@@ -1029,7 +1026,18 @@
                 let htmlSilos = '';
 
                 silosFila.forEach(num => {
-                    if(filtroVista.startsWith('C')) {
+                    // LÓGICA DE FILTRADO POR CINTAS (EXTRACCIÓN) Y CINTAS DE SOBRESILO
+                    if (filtroVista === 'CE1') {
+                        if (num < 701 || num > 718) return;
+                    } else if (filtroVista === 'CE2') {
+                        if (num < 701 || num > 717) return; // Corregido: CE2 usa de 701 a 717
+                    } else if (filtroVista === 'CD1') {
+                        if (!((num >= 501 && num <= 518) || (num >= 601 && num <= 617))) return;
+                    } else if (filtroVista === 'CD2') {
+                        if (!((num >= 301 && num <= 318) || (num >= 401 && num <= 417))) return;
+                    } else if (filtroVista === 'CD3') {
+                        if (!((num >= 101 && num <= 118) || (num >= 201 && num <= 217))) return;
+                    } else if (filtroVista.startsWith('C')) {
                         let esC1 = num >= 600 && num <= 718;
                         let esC2 = (num >= 501 && num <= 518) || (num >= 402 && num <= 416 && num % 2 === 0);
                         let esC3 = (num >= 301 && num <= 318) || (num >= 401 && num <= 417 && num % 2 !== 0);
@@ -1042,9 +1050,8 @@
                         if(filtroVista === 'C4' && esC4) pertenece = true;
                         
                         if(!pertenece) return;
-                    } 
-                    else if(filtroVista !== 'TODAS' && filtroVista !== prefijo) {
-                        return;
+                    } else if (filtroVista !== 'TODAS') {
+                        if (filtroVista !== prefijo) return;
                     }
 
                     let d = getSiloData(num);
@@ -1675,7 +1682,6 @@
             }
 
             ['C1', 'C2', 'C3', 'C4'].forEach(c => {
-                // Encontrar todos los silos de esta cinta que coincidan con los cereales seleccionados
                 let silosCinta = [];
                 
                 Object.keys(db.silos).forEach(num => {
@@ -1702,7 +1708,6 @@
                         let bgColor = cObj ? cObj.color : '#64748b';
                         let alertaIcon = tieneAlerta(num) ? '🚨' : '';
                         
-                        // Lógica de advertencia: Si en el anotador está vaciado, pero en tablero tiene carga
                         let warning = '';
                         if(hState === 'VACIADO' && d.estado === 'CON_CARGA') warning = '⚠️ Falta actualizar Tablero';
                         if(hState === 'TAPADO' && d.estado === 'CON_CARGA') warning = '⚠️ Falta tapar en Tablero';
@@ -1778,7 +1783,7 @@
             if(!nom || isNaN(ph)) return alert("Complete nombre y PH");
             db.cereales.push({id: nom, nombre: nom, ph: ph, color: color});
             guardarDB(); actualizarSelects(); dibujarAdmin();
-            renderHerramientaCerealesChk(); // Actualizar los checkboxes
+            renderHerramientaCerealesChk(); 
             document.getElementById('new-cereal-nombre').value = ''; document.getElementById('new-cereal-ph').value = '';
         }
 

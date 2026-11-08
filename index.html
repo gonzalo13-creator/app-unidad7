@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Gestión de Silos</title>
+    <meta name="description" content="Aplicación de gestión de inventario de silos offline.">
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e293b">
@@ -116,7 +117,8 @@
         .data-table th { text-align: left; padding: 10px; background: var(--bg); border-bottom: 2px solid var(--border); color: var(--text-light); font-weight: 600; font-size: 0.8rem; text-transform: uppercase;}
         .data-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
+        .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; transition: opacity 0.2s;}
+        .btn-save:hover { opacity: 0.9; }
         .btn-share { background: #25D366; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; font-size: 0.95rem; font-weight: 600; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;}
         .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
@@ -141,9 +143,13 @@
         .cinta-total { font-size: 1.2rem; font-weight: 900; }
         .silo-sugerido { background: #dcfce7 !important; border-color: #22c55e !important; }
         body.dark-mode .silo-sugerido { background: #064e3b !important; }
+
+        /* TOAST DE ACTUALIZACIÓN */
+        #toast-update { display: none; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 8px; z-index: 3000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); align-items: center; gap: 15px; font-size: 0.9rem;}
+        #toast-update button { background: #38bdf8; color: #0f172a; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;}
         
         @media print {
-            .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal { display: none !important; }
+            .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, #toast-update { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; display: table !important;}
@@ -155,7 +161,7 @@
 <body>
 
     <div class="sidebar">
-        <button class="nav-btn" onclick="toggleDarkMode()" style="background:var(--secondary); color:white; justify-content:center; border-bottom: 2px solid #000;">🌙 / ☀️ Modo Sol</button>
+        <button class="nav-btn" onclick="toggleDarkMode()" aria-label="Alternar Modo Oscuro/Claro" style="background:var(--secondary); color:white; justify-content:center; border-bottom: 2px solid #000;">🌙 / ☀️ Modo Sol</button>
         <button class="nav-btn active" onclick="cambiarTab('tablero', this)">📋<br>Tablero</button>
         <button class="nav-btn" onclick="cambiarTab('movimientos', this)">📝<br>Movimientos</button>
         <button class="nav-btn" onclick="cambiarTab('existencias', this)">📊<br>Existencias</button>
@@ -199,6 +205,9 @@
             
             <button class="btn-save" style="background:var(--secondary); margin-top:10px;" onclick="agregarFilaMovimiento()">+ Agregar Otra Acción</button>
             <button class="btn-save" style="background:#10b981; margin-top:20px;" onclick="procesarMovimientos()">✅ GUARDAR TODOS LOS MOVIMIENTOS</button>
+            
+            <!-- BOTÓN DESHACER (Oculto por defecto) -->
+            <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin-top:10px;" onclick="deshacerUltimoCambio()">↩️ Deshacer Último Guardado</button>
         </div>
 
         <!-- PESTAÑA: EXISTENCIAS -->
@@ -286,7 +295,6 @@
                     <div id="detalle-relleno-container" style="margin-top:15px; display:none;">
                         <h4 style="margin-top:0; color:var(--primary);" id="detalle-relleno-titulo"></h4>
                         <div class="table-responsive">
-                            <!-- Se agregó min-width para que la tabla no se aplaste en celulares -->
                             <table class="data-table" id="tabla-rellenos" style="min-width: 700px;">
                                 <thead>
                                     <tr>
@@ -339,6 +347,12 @@
                 <button class="btn-save" onclick="agregarCerealNuevo()">Guardar Parámetro</button>
             </div>
 
+            <div class="card-panel">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Exportar Reporte</h3>
+                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Descargá una planilla de Excel con todo el stock actual.</p>
+                <button class="btn-save" style="background:#0284c7; margin-top:0;" onclick="exportarCSV()">📊 Descargar Excel (CSV)</button>
+            </div>
+
             <!-- SECCIÓN COMPARTIR (AHORA AL FINAL Y DISCRETA) -->
             <div class="card-panel" style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Compartir y Sincronizar</h3>
@@ -365,18 +379,17 @@
         </div>
     </div>
 
+    <!-- TOAST: ACTUALIZACIÓN PWA -->
+    <div id="toast-update">
+        <span>🚀 Nueva versión disponible</span>
+        <button onclick="actualizarApp()">Recargar</button>
+    </div>
+
     <script>
         window.onerror = function(msg, url, line, col, error) {
             console.error("Error crítico:", msg, {url, line, col, error});
-            alert("Ocurrió un error en la app. Refrescá la página.");
             return false;
         };
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(r => console.log('SW Listo'));
-            });
-        }
 
         const DB_VERSION = 19;
         const DB_KEY = 'unidad7_db_v19';
@@ -405,6 +418,7 @@
         for(let i=201; i<=217; i++) CINTAS.C4.silos.push(i);
 
         let db = { __version: DB_VERSION, cereales: [], silos: {} };
+        let backupDB = null; // Para deshacer
         let cintaRellenoAbierta = null;
         let cintaStockAbierta = null;
         let silosModificadosReciente = [];
@@ -424,6 +438,30 @@
             return new Date(y, m - 1, d);
         }
 
+        // --- SERVICE WORKER UPDATE ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                document.getElementById('toast-update').style.display = 'flex';
+                                window.swReg = reg;
+                            }
+                        };
+                    };
+                }).catch(err => console.log('SW Error:', err));
+            });
+        }
+
+        function actualizarApp() {
+            if (window.swReg && window.swReg.waiting) {
+                window.swReg.waiting.postMessage({ action: 'skipWaiting' });
+            }
+            window.location.reload();
+        }
+
         function init() {
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
@@ -434,7 +472,6 @@
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
-                        console.log("Migrado desde v18");
                     }
                 } else {
                     db = JSON.parse(saved);
@@ -503,7 +540,7 @@
 
         function getSiloData(num) {
             if(!db.silos[num]) {
-                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, lastUpdate: 0 };
+                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, origen: null, lastUpdate: 0 };
             }
             if(!db.silos[num].historial) db.silos[num].historial = [];
             if(!db.silos[num].lastUpdate) db.silos[num].lastUpdate = 0;
@@ -564,7 +601,7 @@
                     <input type="text" placeholder="Ej: Mercadería húmeda, cinta rota..." class="m-obs">
                 </div>
 
-                <button class="btn-del" onclick="this.parentElement.remove()">X</button>
+                <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove()">X</button>
             `;
             div.querySelector('.m-fecha').value = getFechaLocal();
             document.getElementById('lista-movimientos').appendChild(div);
@@ -784,7 +821,15 @@
             let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
             let procesados = 0;
             let errores = [];
+            let silosEnLote = new Set(); // Para evitar procesar el mismo silo dos veces
             silosModificadosReciente = [];
+
+            // Validación previa: ¿Hay algo para guardar?
+            let hayDatos = Array.from(filas).some(row => row.querySelector('.m-silo').value);
+            if(!hayDatos) { alert("No hay datos para guardar."); return; }
+
+            // Guardar backup antes de procesar
+            backupDB = JSON.parse(JSON.stringify(db));
 
             filas.forEach(row => {
                 let tipoAccion = row.querySelector('.m-tipo-accion').value;
@@ -801,7 +846,8 @@
                 if(!silo || !fecha) return; 
 
                 if(!esSiloValido(silo)) { errores.push(`Silo ${silo} no existe / fuera de rango.`); return; }
-
+                if(silosEnLote.has(silo)) { errores.push(`Silo ${silo}: Está duplicado en esta lista.`); return; }
+                
                 let d = getSiloData(silo);
                 let histRegistro = { fecha: fecha, tipo: tipoAccion, obs: obs };
 
@@ -883,6 +929,7 @@
 
                 d.historial.push(histRegistro);
                 d.lastUpdate = Date.now(); 
+                silosEnLote.add(silo);
                 silosModificadosReciente.push(silo);
                 procesados++;
             });
@@ -897,9 +944,25 @@
                 agregarFilaMovimiento();
                 dibujarTablero();
                 alert(`✅ Se guardaron ${procesados} acciones correctamente.`);
+                
+                // Mostrar botón de deshacer
+                document.getElementById('btn-desahacer').style.display = 'block';
             } else if(errores.length === 0) {
                 alert("No hay datos nuevos para guardar.");
             }
+        }
+
+        function deshacerUltimoCambio() {
+            if(!backupDB) return;
+            if(!confirm("↩️ ¿Deshacer el último guardado?\n\nSe restaurará el estado de los silos a como estaban antes de esta acción.")) return;
+            
+            db = backupDB;
+            guardarDB();
+            document.getElementById('btn-desahacer').style.display = 'none';
+            document.getElementById('lista-movimientos').innerHTML = '';
+            agregarFilaMovimiento();
+            dibujarTablero();
+            alert("✅ Cambios revertidos.");
         }
 
         // --- TABLERO ---
@@ -931,7 +994,7 @@
                     let animateClass = silosModificadosReciente.includes(num) ? 'destacado' : '';
 
                     htmlSilos += `
-                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''} ${animateClass}" onclick="verHistorial(${num})">
+                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''} ${animateClass}" onclick="verHistorial(${num})" aria-label="Ver silo ${num}, ${textoCereal}">
                             <div class="franja" style="background:${colorFranja}"></div>
                             ${alertaHtml} ${fumigadoHtml}
                             <div class="t-num" style="color: ${isVacio?'var(--text-light)':'var(--text)'}">${num}</div>
@@ -980,7 +1043,7 @@
                     
                     cont.innerHTML += `
                         <div class="hist-item">
-                            <button class="btn-del-hist" onclick="borrarHistorial(${num}, ${realIndex})" title="Eliminar Registro">🗑️</button>
+                            <button class="btn-del-hist" onclick="borrarHistorial(${num}, ${realIndex})" title="Eliminar Registro" aria-label="Eliminar registro">🗑️</button>
                             <div class="hist-date">
                                 <span>${fechaStr}</span>
                             </div>
@@ -1523,6 +1586,30 @@
             db.cereales.push({id: nom, nombre: nom, ph: ph, color: color});
             guardarDB(); actualizarSelects(); dibujarAdmin();
             document.getElementById('new-cereal-nombre').value = ''; document.getElementById('new-cereal-ph').value = '';
+        }
+
+        function exportarCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM para que Excel lea acentos bien
+            csvContent += "Silo;Estado;Cereal;Calidad;Tonelaje;Fecha Carga;Fumigacion;Origen\n";
+            
+            Object.keys(db.silos).sort((a,b) => parseInt(a) - parseInt(b)).forEach(num => {
+                let d = db.silos[num];
+                if(d.estado === 'VACIO') return; // Solo exportar los que tienen algo
+                let cName = db.cereales.find(c => c.id === d.cereal)?.nombre || d.cereal;
+                let row = [
+                    num, d.estado, cName, d.calidad || '-', d.tonelaje || 0, 
+                    d.fecha_primera_carga || '-', d.fumigacion_fecha || '-', d.origen || '-'
+                ];
+                csvContent += row.join(";") + "\n";
+            });
+
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `stock_silos_${getFechaLocal()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }

@@ -43,7 +43,6 @@
             .tab-content { padding: 15px; }
             input, select, textarea { font-size: 16px !important; padding: 12px; } 
             
-            /* TARJETAS ULTRA COMPACTAS */
             .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 3px; }
             .tarjeta { min-height: 55px; border-radius: 4px; }
             .t-num { font-size: 0.9rem; }
@@ -74,7 +73,6 @@
         .fila-sector { margin-bottom: 15px; }
         .titulo-sector { font-size: 0.85rem; color: var(--text-light); font-weight: 700; margin-bottom: 5px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
         
-        /* TARJETAS MAS CHICAS */
         .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 4px; }
         .tarjeta { min-height: 60px; border-radius: 4px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 2px; }
         .franja { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
@@ -123,7 +121,7 @@
         .sub-tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
         /* DESPLEGABLES EXISTENCIAS Y RELLENOS */
-        .cinta-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;}
+        .cinta-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; margin-bottom: 8px;}
         .cinta-card:hover { border-color: var(--primary); }
         .cinta-card.active { border-color: var(--primary); border-width: 2px; }
         .cinta-title { font-weight: bold; font-size: 1rem; }
@@ -175,7 +173,7 @@
             <button class="btn-save" style="background:#10b981; margin-top:20px;" onclick="procesarMovimientos()">✅ GUARDAR TODOS LOS MOVIMIENTOS</button>
         </div>
 
-        <!-- PESTAÑA: EXISTENCIAS -->
+        <!-- PESTAÑA: EXISTENCIAS (AHORA CON DESPLEGABLES) -->
         <div id="existencias" class="tab-content">
             <h2>Resumen y Existencias</h2>
             
@@ -192,7 +190,7 @@
 
             <div class="card-panel">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Consultar Existencias</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                     <div>
                         <label style="margin-top:0;">Cereal</label>
                         <select id="sel-cereal-stock" onchange="actualizarOpcionesStock()"></select>
@@ -203,7 +201,17 @@
                     </div>
                 </div>
                 
-                <div id="resultado-stock"></div>
+                <div id="existencias-cintas-container"></div>
+                
+                <div id="detalle-existencias-container" style="margin-top:15px; display:none;">
+                    <h4 style="margin-top:0; color:var(--primary);" id="detalle-existencias-titulo"></h4>
+                    <div class="table-responsive">
+                        <table class="data-table" id="tabla-detalle-stock">
+                            <thead><tr><th>Unidad</th><th>Calidad</th><th>Tonelaje</th><th>1° Carga</th><th>Fumigación</th><th>Mts</th><th>Alerta</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <button style="background:var(--card); border:1px solid var(--border); color:var(--text); padding:12px; border-radius:6px; width:100%; font-weight:600; cursor:pointer;" onclick="window.print()">IMPRIMIR REPORTE</button>
         </div>
@@ -247,6 +255,7 @@
                     <p style="font-size:0.8rem; color:var(--text-light); margin-top:0; margin-bottom:15px;">* Silos ⚠️ (700s) requieren medida manual.</p>
                     
                     <div id="rellenos-cintas-container"></div>
+                    
                     <div id="detalle-relleno-container" style="margin-top:15px; display:none;">
                         <h4 style="margin-top:0; color:var(--primary);" id="detalle-relleno-titulo"></h4>
                         <div class="table-responsive">
@@ -341,13 +350,14 @@
 
         let db = { cereales: [], silos: {} };
         let sectorActual = 'todos';
-        let cintaAbierta = null; // Para saber qué tarjeta de cinta está desplegada
+        let cintaRellenoAbierta = null;
+        let cintaStockAbierta = null;
 
         function init() {
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v10'); // v10 final
+                let saved = localStorage.getItem('unidad7_db_v11'); // v11
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -374,7 +384,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v10', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v11', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -518,7 +528,6 @@
                     if(fumigo === 'SI') d.fumigacion_fecha = fecha; 
                 } else if(estadoOp === 'TAPADA') {
                     d.estado = 'TAPADA';
-                    // No cambia cereal, calidad ni tonelaje
                 } else {
                     d.estado = estadoOp;
                     d.cereal = cereal;
@@ -696,6 +705,144 @@
             if(!hay) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay alertas activas.</td></tr>';
         }
 
+        // --- EXISTENCIAS (CON DESPLEGABLES) ---
+        function actualizarExistencias() {
+            let counts = { VACIO:0, CON_CARGA:0, EN_USO:0, TAPADA:0, FUERA_SERVICIO:0 };
+            Object.keys(db.silos).forEach(num => { counts[db.silos[num].estado]++; });
+
+            document.getElementById('st-vacios').innerText = counts.VACIO;
+            document.getElementById('st-carga').innerText = counts.CON_CARGA;
+            document.getElementById('st-uso').innerText = counts.EN_USO;
+            document.getElementById('st-tapados').innerText = counts.TAPADA;
+            document.getElementById('st-fuera').innerText = counts.FUERA_SERVICIO;
+        }
+
+        function actualizarOpcionesStock() {
+            let cerealId = document.getElementById('sel-cereal-stock').value;
+            let selCal = document.getElementById('sel-calidad-stock');
+            selCal.innerHTML = '<option value="TODAS">Todas</option>';
+            
+            if(cerealId) {
+                let calidades = new Set();
+                Object.keys(db.silos).forEach(num => {
+                    let d = db.silos[num];
+                    if(d.cereal === cerealId && d.calidad) calidades.add(d.calidad);
+                });
+                calidades.forEach(c => selCal.innerHTML += `<option value="${c}">${c}</option>`);
+            }
+            calcularStock();
+        }
+
+        function calcularStock() {
+            let cerealId = document.getElementById('sel-cereal-stock').value;
+            let calidadFiltro = document.getElementById('sel-calidad-stock').value;
+            let cont = document.getElementById('existencias-cintas-container');
+            let detalleCont = document.getElementById('detalle-existencias-container');
+            
+            cont.innerHTML = '';
+            detalleCont.style.display = 'none';
+            cintaStockAbierta = null;
+            
+            if(!cerealId) return;
+            
+            let cObj = db.cereales.find(c => c.id === cerealId);
+            let total = 0;
+            let porCinta = { C1:0, C2:0, C3:0, C4:0 };
+            let silosPorCinta = { C1:[], C2:[], C3:[], C4:[] }; 
+
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if(d.cereal === cerealId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'EN_USO')) {
+                    if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
+                    
+                    let n = parseInt(num);
+                    let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
+                    
+                    let t = parseFloat(d.tonelaje) || 0;
+                    total += t;
+                    porCinta[cinta] += t;
+                    
+                    silosPorCinta[cinta].push({ num: n, tonelaje: t, calidad: d.calidad || 'S/C', fecha_carga: d.fecha_primera_carga, fumigacion: d.fumigacion_fecha, metros: d.metros, alerta: tieneAlerta(n) });
+                }
+            });
+
+            let htmlTotal = `<div class="stat-box" style="margin-bottom:15px; border-left:4px solid ${cObj.color}; padding-left:10px;">
+                <span class="stat-lbl">Stock Total ${cerealId} (${calidadFiltro})</span>
+                <span class="stat-num">${total} t</span>
+            </div>`;
+
+            ['C1','C2','C3','C4'].forEach(c => {
+                let nombre = c==='C1'?'Extracción 1':(c==='C2'?'Extracción 2':(c==='C3'?'Extracción 3':'Extracción 4'));
+                let totalCinta = porCinta[c];
+                let cantSilos = silosPorCinta[c].length;
+                
+                if(totalCinta > 0 || cantSilos > 0) {
+                    htmlTotal += `
+                        <div class="cinta-card" id="card-stock-${c}" onclick="toggleDetalleStock('${c}', '${cerealId}', '${calidadFiltro}')">
+                            <div>
+                                <div class="cinta-title">${nombre}</div>
+                                <div style="font-size:0.75rem; color:var(--text-light);">${cantSilos} unidades</div>
+                            </div>
+                            <div class="cinta-total" style="color:${cObj.color};">${totalCinta} t</div>
+                        </div>
+                    `;
+                }
+            });
+
+            if(htmlTotal === '') cont.innerHTML = '<p style="text-align:center;">No hay stock para este cereal/calidad.</p>';
+            else cont.innerHTML = htmlTotal;
+        }
+
+        function toggleDetalleStock(cinta, cerealId, calFiltro) {
+            let detalleCont = document.getElementById('detalle-existencias-container');
+            let titulo = document.getElementById('detalle-existencias-titulo');
+            let tbody = document.querySelector('#tabla-detalle-stock tbody');
+            
+            if(cintaStockAbierta === cinta) {
+                detalleCont.style.display = 'none';
+                document.querySelectorAll('.cinta-card').forEach(c => c.classList.remove('active'));
+                cintaStockAbierta = null;
+                return;
+            }
+
+            cintaStockAbierta = cinta;
+            document.querySelectorAll('.cinta-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`card-stock-${cinta}`).classList.add('active');
+            
+            let nombreCinta = cinta==='C1'?'Extracción 1':(cinta==='C2'?'Extracción 2':(cinta==='C3'?'Extracción 3':'Extracción 4'));
+            titulo.innerText = `Detalle ${nombreCinta}`;
+            tbody.innerHTML = '';
+
+            let hay = false;
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA' && d.estado !== 'EN_USO')) return;
+                if(calFiltro !== 'TODAS' && d.calidad !== calFiltro) return;
+                
+                let n = parseInt(num);
+                let cintaSil = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
+                if(cintaSil !== cinta) return;
+
+                hay = true;
+                let fCarga = d.fecha_primera_carga ? d.fecha_primera_carga.split('-').reverse().join('/') : '-';
+                let fFum = d.fumigacion_fecha ? d.fumigacion_fecha.split('-').reverse().join('/') : 'Sin Fumigar';
+                let alertaTxt = tieneAlerta(n) ? '<span style="color:#ef4444; font-weight:bold;">⚠️ Sí</span>' : 'No';
+                
+                tbody.innerHTML += `<tr>
+                    <td><b>${n}</b></td>
+                    <td>${d.calidad||'S/C'}</td>
+                    <td><b>${d.tonelaje} t</b></td>
+                    <td>${fCarga}</td>
+                    <td>${fFum}</td>
+                    <td>${d.metros || '-'} m</td>
+                    <td>${alertaTxt}</td>
+                </tr>`;
+            });
+            
+            if(!hay) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin datos.</td></tr>';
+            detalleCont.style.display = 'block';
+        }
+
         // --- RELLENOS ---
         function actualizarOpcionesRelleno() {
             let cerealId = document.getElementById('sel-cereal-relleno').value;
@@ -721,7 +868,7 @@
             
             cont.innerHTML = '';
             detalleCont.style.display = 'none';
-            cintaAbierta = null;
+            cintaRellenoAbierta = null;
             
             if(!cerealId) return;
 
@@ -756,7 +903,6 @@
                 }
             });
 
-            // Dibujar tarjetas de cintas
             ['C1','C2','C3','C4'].forEach(c => {
                 let nombre = c==='C1'?'Extracción 1':(c==='C2'?'Extracción 2':(c==='C3'?'Extracción 3':'Extracción 4'));
                 let total = totalesCinta[c];
@@ -781,15 +927,14 @@
             let titulo = document.getElementById('detalle-relleno-titulo');
             let tbody = document.querySelector('#tabla-rellenos tbody');
             
-            // Si ya está abierta la misma, la cerramos
-            if(cintaAbierta === cinta) {
+            if(cintaRellenoAbierta === cinta) {
                 detalleCont.style.display = 'none';
                 document.querySelectorAll('.cinta-card').forEach(c => c.classList.remove('active'));
-                cintaAbierta = null;
+                cintaRellenoAbierta = null;
                 return;
             }
 
-            cintaAbierta = cinta;
+            cintaRellenoAbierta = cinta;
             document.querySelectorAll('.cinta-card').forEach(c => c.classList.remove('active'));
             document.getElementById(`card-${cinta}`).classList.add('active');
             
@@ -799,7 +944,6 @@
 
             let cereal = db.cereales.find(c => c.id === cerealId);
             
-            // Recolectar datos de nuevo para esta cinta específica
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
                 if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return;
@@ -842,8 +986,8 @@
             let d = getSiloData(num);
             d.relleno_manual = parseFloat(valor) || 0;
             guardarDB();
-            calcularRellenos(); // Recalcular totales
-            setTimeout(() => { toggleDetalleRelleno(cinta); }, 100); // Reabrir detalle para actualizar vista
+            calcularRellenos(); 
+            setTimeout(() => { toggleDetalleRelleno(cinta); }, 100); 
         }
 
         function calcularMedidaRapida() {
@@ -866,97 +1010,6 @@
             let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
             let tons = Math.round(phRef * cereal.ph / PH_BASE);
             res.innerText = `${tons} t`;
-        }
-
-        // --- EXISTENCIAS ---
-        function actualizarExistencias() {
-            let counts = { VACIO:0, CON_CARGA:0, EN_USO:0, TAPADA:0, FUERA_SERVICIO:0 };
-            Object.keys(db.silos).forEach(num => { counts[db.silos[num].estado]++; });
-
-            document.getElementById('st-vacios').innerText = counts.VACIO;
-            document.getElementById('st-carga').innerText = counts.CON_CARGA;
-            document.getElementById('st-uso').innerText = counts.EN_USO;
-            document.getElementById('st-tapados').innerText = counts.TAPADA;
-            document.getElementById('st-fuera').innerText = counts.FUERA_SERVICIO;
-        }
-
-        function actualizarOpcionesStock() {
-            let cerealId = document.getElementById('sel-cereal-stock').value;
-            let selCal = document.getElementById('sel-calidad-stock');
-            selCal.innerHTML = '<option value="TODAS">Todas</option>';
-            
-            if(cerealId) {
-                let calidades = new Set();
-                Object.keys(db.silos).forEach(num => {
-                    let d = db.silos[num];
-                    if(d.cereal === cerealId && d.calidad) calidades.add(d.calidad);
-                });
-                calidades.forEach(c => selCal.innerHTML += `<option value="${c}">${c}</option>`);
-            }
-            calcularStock();
-        }
-
-        function calcularStock() {
-            let cerealId = document.getElementById('sel-cereal-stock').value;
-            let calidadFiltro = document.getElementById('sel-calidad-stock').value;
-            
-            if(!cerealId) { document.getElementById('resultado-stock').innerHTML = '<p style="color:var(--text-light);">Seleccione un cereal.</p>'; return; }
-            
-            let cObj = db.cereales.find(c => c.id === cerealId);
-            let total = 0;
-            let porCinta = { C1:0, C2:0, C3:0, C4:0 };
-            let calPorCinta = { C1:{}, C2:{}, C3:{}, C4:{} }; 
-
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if(d.cereal === cerealId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'EN_USO')) {
-                    if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
-                    
-                    let n = parseInt(num);
-                    let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
-                    
-                    let t = parseFloat(d.tonelaje) || 0;
-                    total += t;
-                    porCinta[cinta] += t;
-                    
-                    let cal = (d.calidad || 'S/C').toUpperCase();
-                    calPorCinta[cinta][cal] = (calPorCinta[cinta][cal] || 0) + t;
-                }
-            });
-
-            let html = `<div class="stat-box" style="margin-bottom:15px; border-left:4px solid ${cObj.color}; padding-left:10px;">
-                <span class="stat-lbl">Stock Total ${cerealId} (${calidadFiltro})</span>
-                <span class="stat-num">${total} t</span>
-            </div>`;
-            
-            html += `<h4 style="margin-top:20px; font-size:1rem; color:var(--text);">Toneladas por Extracción</h4>`;
-            html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">`;
-            
-            ['C1','C2','C3','C4'].forEach(c => {
-                html += `<div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};">
-                    <span class="stat-lbl">${c} (${porCinta[c]} t)</span>
-                    <span class="stat-num" style="font-size:1.2rem; color:${cObj.color};">${porCinta[c]} t</span>
-                </div>`;
-            });
-            html += `</div>`;
-
-            html += `<h4 style="margin-top:20px; font-size:1rem; color:var(--text);">Detalle por Cinta y Calidad</h4>`;
-            html += `<div class="table-responsive"><table class="data-table">
-                <thead><tr><th>Cinta</th><th>Calidad</th><th>Tonelaje</th></tr></thead><tbody>`;
-            
-            ['C1','C2','C3','C4'].forEach(c => {
-                let nombreCinta = c==='C1'?'Extracción 1':(c==='C2'?'Extracción 2':(c==='C3'?'Extracción 3':'Extracción 4'));
-                let calidades = calPorCinta[c];
-                let vacio = true;
-                for(let cal in calidades) {
-                    vacio = false;
-                    html += `<tr><td>${nombreCinta}</td><td>${cal}</td><td>${calidades[cal]} t</td></tr>`;
-                }
-                if(vacio) html += `<tr><td>${nombreCinta}</td><td>-</td><td>0 t</td></tr>`;
-            });
-            html += `</tbody></table></div>`;
-
-            document.getElementById('resultado-stock').innerHTML = html;
         }
 
         // --- ADMIN / UTILS ---

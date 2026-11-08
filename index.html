@@ -55,11 +55,15 @@
         .confirm-btn-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border) !important;}
         .confirm-btn-ok { background: #ef4444; color: white;}
 
-        #dashboard-briefing { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
-        #dashboard-briefing .stat { text-align: center; flex: 1;}
-        #dashboard-briefing .stat span { display: block; font-size: 1.5rem; font-weight: 900;}
-        #dashboard-briefing .stat small { font-size: 0.75rem; color: #cbd5e1; text-transform: uppercase;}
+        /* SISTEMA DE TARJETAS DE ESTADO (STOCK) */
+        .stat-box.clickable { cursor: pointer; transition: all 0.2s; border: 2px solid transparent; background: var(--bg); }
+        .stat-box.clickable:hover { border-color: var(--primary); opacity: 0.9; }
+        .stat-box.clickable.active { border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 2px var(--primary); }
+        #lista-silos-por-estado { background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
+        .silo-tag { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; border: 1px solid var(--border); text-align: center; min-width: 50px; transition: transform 0.1s; }
+        .silo-tag:active { transform: scale(0.95); }
 
+        /* CHAT BOT */
         #btn-silobot { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #3b82f6; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; border: none; transition: transform 0.2s;}
         #btn-silobot:active { transform: scale(0.9); }
         
@@ -230,7 +234,7 @@
         .chk-cereal input { width: 18px; height: 18px; cursor: pointer;}
         
         @media print {
-            .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #btn-silobot, #silobot-modal, #dashboard-briefing { display: none !important; }
+            .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #btn-silobot, #silobot-modal, .stat-box.clickable { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; display: table !important;}
@@ -297,12 +301,6 @@
         <div id="tablero" class="tab-content active">
             <h2>Estado de Unidades</h2>
             
-            <div id="dashboard-briefing">
-                <div class="stat"><span id="brief-stock">0</span><small>Toneladas Totales</small></div>
-                <div class="stat"><span id="brief-alertas">0</span><small>Alertas</small></div>
-                <div class="stat"><span id="brief-vacios">0</span><small>Silos Vacíos</small></div>
-            </div>
-
             <div class="top-controls">
                 <div style="flex:1; min-width:200px;">
                     <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Cereal</label>
@@ -392,6 +390,26 @@
                         </table>
                     </div>
                 </div>
+            </div>
+            
+            <div class="card-panel">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Estado General (Tocá para ver silos)</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(80px, 1fr)); gap:10px;">
+                    <div class="stat-box clickable" id="st-box-vacios" onclick="mostrarSilosPorEstado('VACIO', this)">
+                        <span class="stat-num" id="st-vacios">0</span><span class="stat-lbl">Vacíos</span>
+                    </div>
+                    <div class="stat-box clickable" id="st-box-carga" onclick="mostrarSilosPorEstado('CON_CARGA', this)">
+                        <span class="stat-num" id="st-carga">0</span><span class="stat-lbl">Con Carga</span>
+                    </div>
+                    <div class="stat-box clickable" id="st-box-tapados" onclick="mostrarSilosPorEstado('TAPADA', this)">
+                        <span class="stat-num" id="st-tapados">0</span><span class="stat-lbl">Tapados</span>
+                    </div>
+                    <div class="stat-box clickable" id="st-box-fuera" onclick="mostrarSilosPorEstado('FUERA_SERVICIO', this)">
+                        <span class="stat-num" id="st-fuera">0</span><span class="stat-lbl">F. Servicio</span>
+                    </div>
+                </div>
+                <!-- CONTENEDOR PARA LISTAR SILOS POR ESTADO -->
+                <div id="lista-silos-por-estado" style="display:none;"></div>
             </div>
             
             <button style="background:var(--card); border:1px solid var(--border); color:var(--text); padding:16px; border-radius:6px; width:100%; font-weight:600; cursor:pointer;" onclick="window.print()" type="button">IMPRIMIR REPORTE</button>
@@ -561,6 +579,9 @@
             '100': [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118]
         };
 
+        let TODOS_LOS_SILOS = [];
+        Object.keys(FILAS_TABLERO).forEach(k => TODOS_LOS_SILOS = TODOS_LOS_SILOS.concat(FILAS_TABLERO[k]));
+
         const CINTAS = {
             C1: { nombre: "Extracción 1 (700s / 600s)" },
             C2: { nombre: "Extracción 2 (500s / 400s Pares)" },
@@ -575,6 +596,7 @@
         let cintasHerramientaAbiertas = { C1: true, C2: true, C3: true, C4: true };
         let silosModificadosReciente = [];
         let confirmCallback = null;
+        let estadoFiltradoActual = null;
 
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
@@ -676,7 +698,7 @@
             dibujarAdmin();
             agregarFilaMovimiento();
             renderHerramientaCerealesChk();
-            actualizarBriefing();
+            actualizarExistencias();
         }
 
         function toggleDarkMode() {
@@ -700,7 +722,7 @@
             if(id === 'existencias') { actualizarExistencias(); actualizarOpcionesStock(); }
             if(id === 'alertas') dibujarAlertas();
             if(id === 'rellenos') { actualizarOpcionesRelleno(); }
-            if(id === 'tablero') { dibujarTablero(); actualizarBriefing(); }
+            if(id === 'tablero') { dibujarTablero(); }
             if(id === 'herramienta') renderHerramientaCintas();
         }
 
@@ -745,28 +767,6 @@
             if(MIN_14.includes(num)) return 14;
             if(MIN_10.includes(num)) return 10;
             return 0;
-        }
-
-        function actualizarBriefing() {
-            let totalTon = 0;
-            let vacios = 0;
-            let alertas = 0;
-
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if(d.estado === 'VACIO') vacios++;
-                else totalTon += (parseFloat(d.tonelaje) || 0);
-                
-                if(tieneAlerta(num)) alertas++;
-            });
-
-            let bStock = document.getElementById('brief-stock');
-            let bVacios = document.getElementById('brief-vacios');
-            let bAlertas = document.getElementById('brief-alertas');
-            
-            if(bStock) bStock.innerText = totalTon.toLocaleString('es-AR');
-            if(bVacios) bVacios.innerText = vacios;
-            if(bAlertas) bAlertas.innerText = alertas;
         }
 
         function filtrarSmartSearch() {
@@ -1198,7 +1198,6 @@
             actualizarExistencias();
             if (document.getElementById('existencias').classList.contains('active')) calcularStock();
             if (document.getElementById('rellenos').classList.contains('active')) calcularRellenos();
-            actualizarBriefing();
             
             showToast(`✅ Se guardaron ${moves.length} acciones.`, "success");
             document.getElementById('btn-desahacer').style.display = 'block';
@@ -1214,7 +1213,7 @@
                 document.getElementById('lista-movimientos').innerHTML = '';
                 agregarFilaMovimiento();
                 dibujarTablero();
-                actualizarBriefing();
+                actualizarExistencias();
                 showToast("Cambios revertidos.", "success");
             });
         }
@@ -1353,7 +1352,6 @@
             guardarDB();
             verHistorial(num); 
             dibujarTablero();  
-            actualizarBriefing();
         }
 
         function borrarHistorial(num, index) {
@@ -1526,6 +1524,41 @@
             if(c) c.innerText = counts.CON_CARGA;
             if(t) t.innerText = counts.TAPADA;
             if(f) f.innerText = counts.FUERA_SERVICIO;
+        }
+
+        function mostrarSilosPorEstado(estado, el) {
+            let cont = document.getElementById('lista-silos-por-estado');
+            
+            document.querySelectorAll('.stat-box.clickable').forEach(b => b.classList.remove('active'));
+
+            if (estadoFiltradoActual === estado) {
+                cont.style.display = 'none';
+                cont.innerHTML = '';
+                estadoFiltradoActual = null;
+                return;
+            }
+            estadoFiltradoActual = estado;
+            el.classList.add('active');
+            cont.style.display = 'block';
+
+            let html = `<h4 style="margin-top:0; color:var(--text); font-size:0.95rem;">Silos en estado: ${estado.replace('_', ' ')}</h4>`;
+            html += `<div style="display:flex; flex-wrap:wrap; gap:5px;">`;
+
+            let hay = false;
+            TODOS_LOS_SILOS.forEach(num => {
+                let d = db.silos[num];
+                let st = d ? d.estado : 'VACIO';
+                if(st === estado) {
+                    hay = true;
+                    let color = d && d.cereal ? (db.cereales.find(c=>c.id===d.cereal)?.color || 'var(--card)') : 'var(--bg)';
+                    let txtColor = d && d.cereal ? 'white' : 'var(--text-light)';
+                    html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial(${num})">${num}</div>`;
+                }
+            });
+            html += `</div>`;
+            
+            if(!hay) html += '<p style="text-align:center; font-size:0.85rem;">No hay silos en este estado.</p>';
+            cont.innerHTML = html;
         }
 
         function actualizarOpcionesStock() {
@@ -2227,7 +2260,10 @@
                 response += `📤 Egresos totales: <b>${egresos}t</b><br><br>`;
                 
                 let bAlertas = document.getElementById('brief-alertas');
-                response += `🚨 Alertas activas: <b>${bAlertas ? bAlertas.innerText : '0'}</b>`;
+                // Si borramos brief-alertas del HTML, calculamos las alertas directo
+                let countAlertas = 0;
+                Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) countAlertas++; });
+                response += `🚨 Alertas activas: <b>${countAlertas}</b>`;
                 
                 addChatMessage(response, 'bot');
                 return;

@@ -16,26 +16,15 @@
             --c-maiz: #d97706; --c-soja: #ca8a04; --c-sorgo: #2563eb; --c-trigo: #16a34a;
             --c-mezcla: #db2777; --c-girasol: #94a3b8; --c-otros: #dc2626;
         }
-        
-        /* MODO OSCURO MEJORADO */
         body.dark-mode {
             --primary: #0f172a; --secondary: #1e293b; --bg: #0f172a; --card: #1e293b;
             --text: #f8fafc; --text-light: #94a3b8; --border: #334155;
         }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-            border-color: #475569 !important;
+            background-color: #1e293b !important; color: #f8fafc !important; border-color: #475569 !important;
         }
-        body.dark-mode option {
-            background-color: #1e293b;
-            color: #f8fafc;
-        }
-        body.dark-mode .btn-fecha-rapida {
-            background-color: #334155;
-            color: #f8fafc;
-            border-color: #475569;
-        }
+        body.dark-mode option { background-color: #1e293b; color: #f8fafc; }
+        body.dark-mode .btn-fecha-rapida { background-color: #334155; color: #f8fafc; border-color: #475569; }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; transition: background 0.3s; }
@@ -370,8 +359,7 @@
 
     <script>
         window.onerror = function(msg, url, line, col, error) {
-            // alert("Ocurrió un error en la app. Refrescá la página.");
-            console.error("Error capturado:", msg, "en linea", line);
+            alert("Ocurrió un error en la app. Refrescá la página.");
             return false;
         };
 
@@ -414,7 +402,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v17'); // v17
+                let saved = localStorage.getItem('unidad7_db_v18'); // v18
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -440,7 +428,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v17', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v18', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -480,6 +468,13 @@
         
         function esSiloTipo(num) {
             return ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO';
+        }
+        
+        // FUNCION AUXILIAR PARA OBTENER EL TOPE DE METROS DEL SILO
+        function obtenerTopeMetros(num) {
+            if(MIN_14.includes(num)) return 14;
+            if(MIN_10.includes(num)) return 10;
+            return 0;
         }
 
         // --- PESTAÑA: MOVIMIENTOS INTELIGENTES ---
@@ -575,7 +570,6 @@
             let container = row.querySelector('#campos-dinamicos');
             container.innerHTML = '';
             
-            // IMPORTANTE: Limpiar eventos del silo para que no llame a funciones que ya no existen
             let inputSilo = row.querySelector('.m-silo');
             inputSilo.oninput = function() { autocompletarSilo(this); };
 
@@ -765,7 +759,8 @@
                     if(nuevoTonelaje <= 0) {
                         if(!confirm(`El silo ${silo} quedará VACÍO (0t). ¿Continuar?`)) { errores++; return; }
                         d.estado = 'VACIO'; d.cereal = ''; d.calidad = ''; d.tonelaje = 0;
-                        histRegistro.detalle = `Egreso TOTAL: ${motivo} | Unidad queda VACÍA.`;
+                        d.fecha_primera_carga = null; d.fumigacion_fecha = null; d.alerta_manual = false; d.relleno_manual = null;
+                        histRegistro.detalle = `Egreso TOTAL: ${motivo} | Unidad queda VACÍA (Reiniciada).`;
                     } else {
                         d.tonelaje = nuevoTonelaje;
                         histRegistro.detalle = `Egreso PARCIAL: ${tonsBaja}t por ${motivo}. Quedan ${nuevoTonelaje}t.`;
@@ -783,13 +778,16 @@
                     let nuevoEstado = row.querySelector('.m-nuevo-estado').value;
                     
                     if(nuevoEstado === 'VACIO' && d.tonelaje > 0) {
-                        if(!confirm(`⚠️ PELIGRO:\nEl silo ${silo} tiene ${d.tonelaje}t cargadas.\nSi continuás, se BORRARÁ toda la mercadería.\n\n¿Estás seguro de vaciar el silo?`)) {
+                        if(!confirm(`⚠️ PELIGRO:\nEl silo ${silo} tiene ${d.tonelaje}t cargadas.\nSi continuás, se BORRARÁ toda la mercadería y se reiniciará.\n\n¿Estás seguro de vaciar el silo?`)) {
                             errores++; return;
                         }
                     }
 
                     d.estado = nuevoEstado;
-                    if(nuevoEstado === 'VACIO') { d.cereal = ''; d.calidad = ''; d.tonelaje = 0; }
+                    if(nuevoEstado === 'VACIO') { 
+                        d.cereal = ''; d.calidad = ''; d.tonelaje = 0; 
+                        d.fecha_primera_carga = null; d.fumigacion_fecha = null; d.alerta_manual = false; d.relleno_manual = null;
+                    }
                     histRegistro.detalle = `Cambio de estado a: ${nuevoEstado.replace('_',' ')}`;
                 }
 
@@ -1198,19 +1196,23 @@
                 
                 let espacio = 0;
                 let manual = false;
+                let n = parseInt(num);
+                let tipo = esSiloTipo(n);
                 
-                if(SILOS_MANUALES.includes(parseInt(num))) {
+                if(SILOS_MANUALES.includes(n)) {
                     manual = true;
                     espacio = d.relleno_manual || 0; 
                 } else {
-                    let tipo = esSiloTipo(parseInt(num));
-                    let capMaxRef = (tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS)[0][1];
-                    let capMaxTon = Math.round(capMaxRef * cereal.ph / PH_BASE);
-                    espacio = capMaxTon - (parseFloat(d.tonelaje) || 0);
+                    // CORRECCIÓN: Calcular capacidad máxima según el TOPE del silo (10m, 14m o 0m)
+                    let topeMetros = obtenerTopeMetros(n);
+                    let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+                    let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE);
+                    
+                    let actual = parseFloat(d.tonelaje) || 0;
+                    espacio = capMaxTonTope - actual;
                 }
 
                 if(espacio > 0 || manual) {
-                    let n = parseInt(num);
                     let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
                     
                     totalesCinta[cinta] += espacio;
@@ -1274,14 +1276,18 @@
 
                 let espacio = 0;
                 let manual = false;
+                let tipo = esSiloTipo(n);
                 
                 if(SILOS_MANUALES.includes(n)) {
                     manual = true; espacio = d.relleno_manual || 0; 
                 } else {
-                    let tipo = esSiloTipo(n);
-                    let capMaxRef = (tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS)[0][1];
-                    let capMaxTon = Math.round(capMaxRef * cereal.ph / PH_BASE);
-                    espacio = capMaxTon - (parseFloat(d.tonelaje) || 0);
+                    // CORRECCIÓN: Calcular capacidad máxima según el TOPE del silo
+                    let topeMetros = obtenerTopeMetros(n);
+                    let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+                    let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE);
+                    
+                    let actual = parseFloat(d.tonelaje) || 0;
+                    espacio = capMaxTonTope - actual;
                 }
 
                 if(espacio > 0 || manual) {

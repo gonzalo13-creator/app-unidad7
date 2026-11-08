@@ -25,8 +25,7 @@
             background-color: #1e293b !important; color: #f8fafc !important; border-color: #475569 !important;
         }
         body.dark-mode option { background-color: #1e293b; color: #f8fafc; }
-        body.dark-mode .btn-fecha-rapida { background-color: #334155; color: #f8fafc; border-color: #475569; }
-
+        
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; transition: background 0.3s; }
         
@@ -40,47 +39,49 @@
         .tab-content { display: none; flex: 1; overflow-y: auto; padding: 24px; -webkit-overflow-scrolling: touch;}
         .tab-content.active { display: block; }
 
-        /* --- OPTIMIZACIÓN MÓVIL EXTREMA --- */
+        /* --- TOASTS Y MODALES PERSONALIZADOS --- */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none;}
+        .toast { background: #1e293b; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-weight: 500; font-size: 0.95rem; opacity: 0; transform: translateY(-20px); transition: all 0.3s ease; max-width: 90vw; text-align: center;}
+        .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto;}
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+        .toast.warning { border-left: 4px solid #f59e0b; }
+
+        #custom-confirm { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 10000; justify-content: center; align-items: center; }
+        #custom-confirm.active { display: flex; }
+        .confirm-box { background: var(--card); padding: 24px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;}
+        .confirm-box h3 { margin-top: 0; color: var(--text); font-size: 1.2rem;}
+        .confirm-box p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 20px; white-space: pre-wrap;}
+        .confirm-btns { display: flex; gap: 10px; }
+        .confirm-btns button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer;}
+        .confirm-btn-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border) !important;}
+        .confirm-btn-ok { background: #ef4444; color: white;}
+
+        /* --- OPTIMIZACIÓN MÓVIL --- */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            
-            /* Barra de navegación inferior */
-            .sidebar { 
-                width: 100%; height: 65px; flex-direction: row; overflow-x: auto; 
-                justify-content: flex-start; border-top: 1px solid #000; 
-                padding-bottom: env(safe-area-inset-bottom); 
-                position: fixed; bottom: 0; z-index: 1000; 
-            }
+            .sidebar { width: 100%; height: 65px; flex-direction: row; overflow-x: auto; justify-content: flex-start; border-top: 1px solid #000; padding-bottom: env(safe-area-inset-bottom); position: fixed; bottom: 0; z-index: 1000; }
             .sidebar::-webkit-scrollbar { display: none; }
-            
-            .nav-btn { 
-                padding: 8px 6px; font-size: 0.6rem; border-bottom: none; 
-                border-right: 1px solid var(--secondary); white-space: nowrap; 
-                flex-direction: column; justify-content: center; align-items: center; 
-                gap: 2px; flex: 1; min-width: 55px; border-left: none !important; 
-                text-align: center;
-            }
+            .nav-btn { padding: 8px 6px; font-size: 0.6rem; border-bottom: none; border-right: 1px solid var(--secondary); white-space: nowrap; flex-direction: column; justify-content: center; align-items: center; gap: 2px; flex: 1; min-width: 55px; border-left: none !important; text-align: center;}
             .nav-btn.active { border-top: 3px solid #38bdf8; background: #0f172a;}
             .badge { position: absolute; top: 4px; right: 4px; margin: 0; padding: 1px 4px; font-size: 0.55rem; }
             
-            /* Contenido principal */
-            .content { height: calc(100% - 65px); padding-bottom: 10px; }
-            .tab-content { padding: 12px; }
+            .content { height: calc(100% - 65px); padding-bottom: 0; }
+            .tab-content { padding: 12px; padding-bottom: 150px; }
             h2 { font-size: 1.1rem; padding-bottom: 8px; margin-bottom: 12px;}
             
-            /* Filtros del Tablero */
             .top-controls { flex-direction: column; gap: 8px;}
             .top-controls > div { min-width: 100% !important; }
             .buscador { padding: 10px; font-size: 1rem !important; }
 
-            /* Formularios de Movimientos */
-            input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; }
+            input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
             .row-inputs { flex-direction: column; padding: 12px; gap: 10px; }
             .row-inputs .form-group { min-width: 100%; flex-basis: 100%; }
             .row-inputs .btn-del { top: 8px; right: 8px; padding: 6px 10px; font-size: 1rem; }
-            .btn-save { padding: 16px; font-size: 1.1rem; margin-top: 15px; }
+            
+            .action-buttons { position: fixed; bottom: 65px; left: 0; width: 100%; background: var(--bg); padding: 10px 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 999; display: flex; flex-direction: column; gap: 8px;}
+            .action-buttons .btn-save { margin-top: 0; padding: 14px; font-size: 1rem;}
 
-            /* Tablero de Tarjetas */
             .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 4px; }
             .tarjeta { min-height: 60px; border-radius: 6px; }
             .t-num { font-size: 1.1rem; margin-top: 0;}
@@ -88,28 +89,18 @@
             .t-info-3 { font-size: 0.45rem; }
             .t-info-2 { font-size: 0.5rem; font-weight: bold; color: var(--text); }
             
-            /* Tablas (Rellenos, Existencias, Alertas) */
             .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 15px; -webkit-overflow-scrolling: touch;}
             .data-table { min-width: 650px; font-size: 0.85rem; }
             .data-table th, .data-table td { padding: 8px; white-space: nowrap;}
             
-            /* Anotador (Tool cards) */
             #herramienta-contenedor-cintas .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 6px; }
             .tool-card { min-height: 110px; padding: 8px; }
             .tool-num { font-size: 1.1rem; }
             .tool-state-badge { font-size: 0.55rem; padding: 2px 4px;}
             .tool-body { font-size: 0.75rem; }
 
-            /* Modales */
             .modal { align-items: flex-end; padding: 0; }
-            .modal-box { 
-                border-radius: 20px 20px 0 0; 
-                max-height: 90vh; 
-                padding: 20px; 
-                padding-bottom: 30px; 
-                width: 100%;
-            }
-            
+            .modal-box { border-radius: 20px 20px 0 0; max-height: 90vh; padding: 20px; padding-bottom: 30px; width: 100%;}
             .chk-cereal { width: 100%; padding: 12px; }
             .sub-tabs { overflow-x: auto; white-space: nowrap; padding-bottom: 10px;}
             .sub-tab-btn { padding: 8px 12px; font-size: 0.9rem;}
@@ -127,7 +118,6 @@
         
         .form-group { display: flex; flex-direction: column; flex: 1; min-width: 110px; }
         .form-group.full { flex-basis: 100%; }
-        .btn-fecha-rapida { background: var(--bg); border: 1px solid var(--border); font-size: 0.7rem; padding: 6px 10px; border-radius: 4px; cursor: pointer; color: var(--text); margin-right: 5px;}
 
         .fila-cinta { margin-bottom: 10px; }
         .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 4px; }
@@ -209,21 +199,30 @@
 
         .chk-cereal { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer;}
         .chk-cereal input { width: 18px; height: 18px; cursor: pointer;}
-
-        #toast-update { display: none; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 8px; z-index: 3000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); align-items: center; gap: 15px; font-size: 0.9rem;}
-        #toast-update button { background: #38bdf8; color: #0f172a; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;}
         
         @media print {
-            .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, #toast-update { display: none !important; }
+            .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; display: table !important;}
             .data-table th, .data-table td { border: 1px solid #000; padding: 8px; }
-            .detalle-cinta-container { display: block !important; }
         }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
+    
+    <div id="custom-confirm">
+        <div class="confirm-box">
+            <h3 id="confirm-title">Atención</h3>
+            <p id="confirm-msg">¿Estás seguro?</p>
+            <div class="confirm-btns">
+                <button class="confirm-btn-cancel" onclick="closeConfirm(false)">Cancelar</button>
+                <button class="confirm-btn-ok" onclick="closeConfirm(true)">Aceptar</button>
+            </div>
+        </div>
+    </div>
 
     <div class="sidebar">
         <button class="nav-btn" onclick="toggleDarkMode()" aria-label="Modo Oscuro/Claro" style="background:var(--secondary); color:white; justify-content:center; border-bottom: 2px solid #000;">🌙 / ☀️</button>
@@ -279,10 +278,12 @@
             
             <div id="lista-movimientos"></div>
             
-            <button class="btn-save" style="background:var(--secondary); margin-top:10px;" onclick="agregarFilaMovimiento()">+ Agregar Otra Acción</button>
-            <button class="btn-save" style="background:#10b981; margin-top:15px;" onclick="procesarMovimientos()">✅ GUARDAR TODOS</button>
-            
-            <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin-top:10px;" onclick="deshacerUltimoCambio()">↩️ Deshacer Último Guardado</button>
+            <!-- BOTONES FLOTANTES PARA MÓVIL -->
+            <div class="action-buttons">
+                <button class="btn-save" style="background:var(--secondary); margin:0;" onclick="agregarFilaMovimiento()">+ Agregar Acción</button>
+                <button class="btn-save" style="background:#10b981; margin:0;" onclick="procesarMovimientos()">✅ GUARDAR TODOS</button>
+                <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin:0;" onclick="deshacerUltimoCambio()">↩️ Deshacer</button>
+            </div>
         </div>
 
         <!-- PESTAÑA: ALERTAS -->
@@ -470,11 +471,6 @@
         </div>
     </div>
 
-    <div id="toast-update">
-        <span>🚀 Nueva versión disponible</span>
-        <button onclick="actualizarApp()">Recargar</button>
-    </div>
-
     <script>
         window.onerror = function(msg, url, line, col, error) {
             console.error("Error crítico:", msg, {url, line, col, error});
@@ -514,6 +510,36 @@
         let cintaStockAbierta = null;
         let cintasHerramientaAbiertas = { C1: true, C2: true, C3: true, C4: true };
         let silosModificadosReciente = [];
+        let confirmCallback = null;
+
+        // --- SISTEMA DE TOASTS Y CONFIRMACIONES ---
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function showConfirm(title, msg, callback) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-msg').innerText = msg;
+            document.getElementById('custom-confirm').classList.add('active');
+            confirmCallback = callback;
+        }
+
+        function closeConfirm(result) {
+            document.getElementById('custom-confirm').classList.remove('active');
+            if (confirmCallback) {
+                confirmCallback(result);
+                confirmCallback = null;
+            }
+        }
 
         function getFechaLocal() {
             const d = new Date();
@@ -536,20 +562,12 @@
                         const installingWorker = reg.installing;
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                document.getElementById('toast-update').style.display = 'flex';
-                                window.swReg = reg;
+                                window.location.reload();
                             }
                         };
                     };
                 }).catch(err => console.log('SW Error:', err));
             });
-        }
-
-        function actualizarApp() {
-            if (window.swReg && window.swReg.waiting) {
-                window.swReg.waiting.postMessage({ action: 'skipWaiting' });
-            }
-            window.location.reload();
         }
 
         function init() {
@@ -599,7 +617,7 @@
             try {
                 localStorage.setItem(DB_KEY, JSON.stringify(db)); 
             } catch(e) {
-                alert("⚠️ MEMORIA LLENA:\nNo se pudieron guardar los datos. Hacé un respaldo en 'Admin' y liberá espacio en tu dispositivo.");
+                showToast("⚠️ Memoria llena. Descargá un respaldo en Admin.", "error");
             }
         }
 
@@ -680,10 +698,6 @@
                 <div class="form-group">
                     <label>Fecha</label>
                     <input type="date" class="m-fecha" style="flex:1;">
-                    <div style="margin-top:5px; display:flex; gap:5px;">
-                        <button type="button" class="btn-fecha-rapida" style="flex:1;" onclick="setFecha(this, 0)">Hoy</button>
-                        <button type="button" class="btn-fecha-rapida" style="flex:1;" onclick="setFecha(this, -1)">Ayer</button>
-                    </div>
                 </div>
 
                 <div class="campos-dinamicos" style="display:flex; gap:8px; flex-wrap:wrap; flex-basis:100%; margin-top:5px;"></div>
@@ -695,7 +709,8 @@
 
                 <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove()">X</button>
             `;
-            div.querySelector('.m-fecha').value = getFechaLocal();
+            // Fecha vacía por defecto según pedido
+            div.querySelector('.m-fecha').value = '';
             document.getElementById('lista-movimientos').appendChild(div);
             cambiarTipoAccion(div.querySelector('.m-tipo-accion'));
         }
@@ -715,18 +730,6 @@
                 inputCalidad.value = d.calidad || '';
                 validarMezclaFila(row);
             }
-        }
-
-        function setFecha(btn, offsetDays) {
-            let row = btn.closest('.row-inputs');
-            let input = row.querySelector('.m-fecha');
-            let date = new Date();
-            date.setDate(date.getDate() + offsetDays);
-            
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            input.value = `${year}-${month}-${day}`;
         }
 
         function cambiarTipoAccion(select) {
@@ -909,37 +912,36 @@
             inputTonsBaja.value = tonsRestadas;
         }
 
+        // --- PROCESAMIENTO DE MOVIMIENTOS SEGURO ---
         function procesarMovimientos() {
             let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
-            let procesados = 0;
-            let errores = [];
             let silosEnLote = new Set();
-            silosModificadosReciente = [];
+            let pendingMoves = [];
+            let errores = [];
+            let warningMsg = "";
 
-            let hayDatos = Array.from(filas).some(row => row.querySelector('.m-silo').value);
-            if(!hayDatos) { alert("No hay datos para guardar."); return; }
+            let hoy = new Date(); hoy.setHours(0,0,0,0);
 
-            backupDB = JSON.parse(JSON.stringify(db));
-
-            filas.forEach(row => {
+            for (let i = 0; i < filas.length; i++) {
+                let row = filas[i];
                 let tipoAccion = row.querySelector('.m-tipo-accion').value;
                 let inputSilo = row.querySelector('.m-silo');
                 let inputFecha = row.querySelector('.m-fecha');
                 let inputObs = row.querySelector('.m-obs');
 
-                if(!inputSilo || !inputFecha) return;
+                if(!inputSilo.value) continue; // Fila vacía, ignorar
 
                 let silo = parseInt(inputSilo.value);
                 let fecha = inputFecha.value;
                 let obs = inputObs ? inputObs.value : '';
 
-                if(!silo || !fecha) return; 
-
-                if(!esSiloValido(silo)) { errores.push(`Silo ${silo} no existe / fuera de rango.`); return; }
-                if(silosEnLote.has(silo)) { errores.push(`Silo ${silo}: Está duplicado en esta lista.`); return; }
+                // Validaciones Básicas
+                if(!esSiloValido(silo)) { errores.push(`Silo ${silo} no existe.`); continue; }
+                if(silosEnLote.has(silo)) { errores.push(`Silo ${silo} está duplicado en esta lista.`); continue; }
+                if(!fecha) { errores.push(`Silo ${silo}: Falta la fecha.`); continue; }
                 
                 let d = getSiloData(silo);
-                let histRegistro = { fecha: fecha, tipo: tipoAccion, obs: obs };
+                let moveData = { silo, fecha, tipo: tipoAccion, obs, d };
 
                 if(tipoAccion === 'INGRESO') {
                     let cereal = row.querySelector('.m-cereal').value;
@@ -950,108 +952,117 @@
                     let origen = row.querySelector('.m-origen').value;
                     let uniOrigen = row.querySelector('.m-unidad-origen') ? row.querySelector('.m-unidad-origen').value : '';
 
-                    if(silo < 0 || metros < 0 || tons <= 0) { errores.push(`Silo ${silo}: Tonelaje debe ser mayor a 0.`); return; }
-                    if(MIN_14.includes(silo) && metros < 14) { errores.push(`Silo ${silo} requiere mín. 14m.`); return; }
-                    if(MIN_10.includes(silo) && metros < 10) { errores.push(`Silo ${silo} requiere mín. 10m.`); return; }
-                    if(d.cereal && d.cereal !== cereal && d.estado === 'CON_CARGA') { errores.push(`Silo ${silo} ya contiene ${d.cereal}.`); return; }
-
-                    d.estado = 'CON_CARGA';
-                    d.cereal = cereal;
-                    d.calidad = calidad;
-                    d.tonelaje = tons;
-                    if(fumigo === 'SI') d.fumigacion_fecha = fecha;
-                    if(!d.fecha_primera_carga) d.fecha_primera_carga = fecha;
+                    if(tons <= 0) { errores.push(`Silo ${silo}: Tonelaje debe ser mayor a 0.`); continue; }
+                    if(MIN_14.includes(silo) && metros < 14) { errores.push(`Silo ${silo} requiere mín. 14m.`); continue; }
+                    if(MIN_10.includes(silo) && metros < 10) { errores.push(`Silo ${silo} requiere mín. 10m.`); continue; }
+                    if(d.cereal && d.cereal !== cereal && d.estado === 'CON_CARGA') { errores.push(`Silo ${silo} ya contiene ${d.cereal}.`); continue; }
+                    if(!calidad) { errores.push(`Silo ${silo}: Falta la calidad.`); continue; }
 
                     let detalleOrigen = origen;
                     if(origen === 'TRANSILE' && uniOrigen) detalleOrigen += ` (desde ${uniOrigen})`;
-                    d.origen = detalleOrigen;
-
-                    histRegistro.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen}`;
+                    
+                    moveData.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen}`;
+                    moveData.nuevoEstado = { estado: 'CON_CARGA', cereal, calidad, tonelaje: tons, fumigacion_fecha: fumigo === 'SI' ? fecha : d.fumigacion_fecha, fecha_primera_carga: d.fecha_primera_carga || fecha, origen: detalleOrigen };
                 } 
                 else if(tipoAccion === 'EGRESO') {
                     let metros = parseFloat(row.querySelector('.m-nuevos-metros').value) || 0;
                     let motivo = row.querySelector('.m-motivo-baja').value;
                     let tonsBaja = parseFloat(row.querySelector('.m-tons-baja').value) || 0;
                     
-                    if(tonsBaja <= 0) { errores.push(`Silo ${silo}: Tonelaje a restar debe ser mayor a 0.`); return; }
-                    if(tonsBaja > (parseFloat(d.tonelaje) || 0)) { errores.push(`Silo ${silo}: Resta (${tonsBaja}t) supera stock actual (${d.tonelaje}t).`); return; }
+                    if(tonsBaja <= 0) { errores.push(`Silo ${silo}: Tonelaje a restar debe ser mayor a 0.`); continue; }
+                    if(tonsBaja > (parseFloat(d.tonelaje) || 0)) { errores.push(`Silo ${silo}: Resta (${tonsBaja}t) supera stock actual (${d.tonelaje}t).`); continue; }
                     
-                    if(!confirm(`⚠️ ATENCIÓN:\nEstás por restar ${tonsBaja}t al silo ${silo}.\nMotivo: ${motivo}.\n\n¿Confirmás el egreso?`)) {
-                        return; 
-                    }
-
                     let nuevoTonelaje = (parseFloat(d.tonelaje) || 0) - tonsBaja;
-                    let msgDetalle = `Egreso PARCIAL: ${tonsBaja}t por ${motivo}`;
+                    if(nuevoTonelaje <= 0) warningMsg += `El silo ${silo} quedará VACÍO.\n`;
+                    else if(tonsBaja >= d.tonelaje * 0.5) warningMsg += `El silo ${silo} perderá más del 50% de su carga.\n`;
+
+                    let msgDetalle = `Egreso: ${tonsBaja}t por ${motivo}`;
                     if(metros > 0) msgDetalle += ` (Medido: ${metros}m)`;
-                    
-                    if(nuevoTonelaje <= 0) {
-                        if(!confirm(`El silo ${silo} quedará VACÍO (0t). ¿Continuar?`)) { return; }
-                        d.estado = 'VACIO'; d.cereal = ''; d.calidad = ''; d.tonelaje = 0;
-                        d.fecha_primera_carga = null; d.fumigacion_fecha = null; d.alerta_manual = false; d.relleno_manual = null; d.origen = null;
-                        histRegistro.detalle = `Egreso TOTAL: ${motivo} | Unidad queda VACÍA.`;
-                    } else {
-                        d.tonelaje = nuevoTonelaje;
-                        histRegistro.detalle = msgDetalle + `. Quedan ${nuevoTonelaje}t.`;
-                    }
+
+                    moveData.detalle = msgDetalle;
+                    moveData.nuevoEstado = nuevoTonelaje <= 0 
+                        ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, alerta_manual: false, relleno_manual: null, origen: null }
+                        : { tonelaje: nuevoTonelaje };
                 } 
                 else if(tipoAccion === 'RECIRCULACION') {
-                    if(d.estado === 'VACIO') { errores.push(`Silo ${silo}: No se puede recircular un silo vacío.`); return; }
+                    if(d.estado === 'VACIO') { errores.push(`Silo ${silo}: No se puede recircular un silo vacío.`); continue; }
                     let motivo = row.querySelector('.m-motivo-recir').value;
                     let fumigo = row.querySelector('.m-fumigo-recir').value;
                     
-                    if(fumigo === 'SI') d.fumigacion_fecha = fecha;
-                    histRegistro.detalle = `Recirculación: Motivo ${motivo} | Fumigado: ${fumigo}`;
+                    moveData.detalle = `Recirculación: Motivo ${motivo} | Fumigado: ${fumigo}`;
+                    moveData.nuevoEstado = fumigo === 'SI' ? { fumigacion_fecha: fecha } : {};
                 } 
                 else if(tipoAccion === 'ESTADO') {
                     let nuevoEstado = row.querySelector('.m-nuevo-estado').value;
                     
-                    if(nuevoEstado === 'VACIO' && d.tonelaje > 0) {
-                        if(!confirm(`⚠️ PELIGRO:\nEl silo ${silo} tiene ${d.tonelaje}t cargadas.\nSi continuás, se BORRARÁ toda la mercadería.\n\n¿Estás seguro?`)) { return; }
-                    }
+                    if(nuevoEstado === 'VACIO' && d.tonelaje > 0) warningMsg += `El silo ${silo} TIENE CARGA y se borrará al pasarlo a VACÍO.\n`;
 
-                    d.estado = nuevoEstado;
-                    if(nuevoEstado === 'VACIO') { 
-                        d.cereal = ''; d.calidad = ''; d.tonelaje = 0; 
-                        d.fecha_primera_carga = null; d.fumigacion_fecha = null; d.alerta_manual = false; d.relleno_manual = null; d.origen = null;
-                    }
-                    histRegistro.detalle = `Cambio de estado a: ${nuevoEstado.replace('_',' ')}`;
+                    moveData.detalle = `Cambio de estado a: ${nuevoEstado.replace('_',' ')}`;
+                    moveData.nuevoEstado = nuevoEstado === 'VACIO' 
+                        ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, alerta_manual: false, relleno_manual: null, origen: null }
+                        : { estado: nuevoEstado };
                 }
 
-                d.historial.push(histRegistro);
-                d.lastUpdate = Date.now(); 
                 silosEnLote.add(silo);
-                silosModificadosReciente.push(silo);
-                procesados++;
+                pendingMoves.push(moveData);
+            }
+
+            if (errores.length > 0) {
+                showToast(errores[0] + (errores.length > 1 ? ` (y ${errores.length-1} más)` : ""), "error");
+                console.error("Errores de validación:", errores);
+                return;
+            }
+
+            if (pendingMoves.length === 0) {
+                showToast("No hay datos nuevos para guardar.", "info");
+                return;
+            }
+
+            if (warningMsg) {
+                showConfirm("⚠️ Advertencia", warningMsg + "\n¿Estás seguro de continuar?", (ok) => {
+                    if(ok) ejecutarMovimientos(pendingMoves);
+                });
+            } else {
+                ejecutarMovimientos(pendingMoves);
+            }
+        }
+
+        function ejecutarMovimientos(moves) {
+            backupDB = JSON.parse(JSON.stringify(db));
+            silosModificadosReciente = [];
+
+            moves.forEach(m => {
+                let d = m.d;
+                Object.assign(d, m.nuevoEstado);
+                d.historial.push({ fecha: m.fecha, tipo: m.tipo, obs: m.obs, detalle: m.detalle });
+                d.lastUpdate = Date.now();
+                silosModificadosReciente.push(m.silo);
             });
 
-            if(errores.length > 0) {
-                alert("⚠️ ATENCIÓN - Algunos registros no se guardaron:\n\n" + errores.join('\n'));
-            }
+            guardarDB();
+            document.getElementById('lista-movimientos').innerHTML = '';
+            agregarFilaMovimiento();
+            dibujarTablero();
+            actualizarExistencias();
+            if (document.getElementById('existencias').classList.contains('active')) calcularStock();
+            if (document.getElementById('rellenos').classList.contains('active')) calcularRellenos();
             
-            if(procesados > 0) {
-                guardarDB();
-                document.getElementById('lista-movimientos').innerHTML = '';
-                agregarFilaMovimiento();
-                dibujarTablero();
-                alert(`✅ Se guardaron ${procesados} acciones correctamente.`);
-                
-                document.getElementById('btn-desahacer').style.display = 'block';
-            } else if(errores.length === 0) {
-                alert("No hay datos nuevos para guardar.");
-            }
+            showToast(`✅ Se guardaron ${moves.length} acciones.`, "success");
+            document.getElementById('btn-desahacer').style.display = 'block';
         }
 
         function deshacerUltimoCambio() {
             if(!backupDB) return;
-            if(!confirm("↩️ ¿Deshacer el último guardado?\n\nSe restaurará el estado de los silos a como estaban antes de esta acción.")) return;
-            
-            db = backupDB;
-            guardarDB();
-            document.getElementById('btn-desahacer').style.display = 'none';
-            document.getElementById('lista-movimientos').innerHTML = '';
-            agregarFilaMovimiento();
-            dibujarTablero();
-            alert("✅ Cambios revertidos.");
+            showConfirm("↩️ Deshacer", "Se restaurará el estado anterior de los silos. ¿Continuar?", (ok) => {
+                if(!ok) return;
+                db = backupDB;
+                guardarDB();
+                document.getElementById('btn-desahacer').style.display = 'none';
+                document.getElementById('lista-movimientos').innerHTML = '';
+                agregarFilaMovimiento();
+                dibujarTablero();
+                showToast("Cambios revertidos.", "success");
+            });
         }
 
         // --- TABLERO ---
@@ -1184,14 +1195,15 @@
         }
 
         function borrarHistorial(num, index) {
-            if(!confirm("⚠️ ¿Estás seguro de borrar este registro del historial?\n\nNota: Esto NO cambia el estado o tonelaje actual del silo en el Tablero.")) return;
-            
-            let d = getSiloData(num);
-            d.historial.splice(index, 1);
-            d.lastUpdate = Date.now();
-            guardarDB();
-            verHistorial(num); 
-            dibujarTablero(); 
+            showConfirm("Eliminar Registro", "¿Borrar este registro del historial?\n\nEsto NO cambia el estado o tonelaje actual del silo en el Tablero.", (ok) => {
+                if(!ok) return;
+                let d = getSiloData(num);
+                d.historial.splice(index, 1);
+                d.lastUpdate = Date.now();
+                guardarDB();
+                verHistorial(num); 
+                dibujarTablero(); 
+            });
         }
 
         // --- LÓGICA DE ALERTAS ---
@@ -1328,11 +1340,11 @@
                     });
 
                     guardarDB();
-                    alert(`🎉 Sincronización exitosa.\nSe actualizaron ${importados} registros con los datos más recientes.`);
-                    location.reload();
+                    showToast(`🎉 Sincronización exitosa. (${importados} registros)`, "success");
+                    setTimeout(() => location.reload(), 1500);
                     
                 } catch(err) { 
-                    alert("❌ Archivo inválido o dañado."); 
+                    showToast("❌ Archivo inválido o dañado.", "error"); 
                 } finally {
                     event.target.value = '';
                 }
@@ -1805,10 +1817,12 @@
         }
 
         function limpiarAnotador() {
-            if(!confirm("⚠️ ¿Reiniciar el anotador?\n\nTodos los silos volverán al estado 'CERRADO'.")) return;
-            db.herramienta.silos = {};
-            guardarDB();
-            renderHerramientaCintas();
+            showConfirm("Reiniciar Anotador", "Todos los silos volverán al estado 'CERRADO'. ¿Continuar?", (ok) => {
+                if(!ok) return;
+                db.herramienta.silos = {};
+                guardarDB();
+                renderHerramientaCintas();
+            });
         }
 
         // --- ADMIN / UTILS ---
@@ -1821,11 +1835,12 @@
             let nom = document.getElementById('new-cereal-nombre').value.toUpperCase();
             let ph = parseFloat(document.getElementById('new-cereal-ph').value);
             let color = document.getElementById('new-cereal-color').value;
-            if(!nom || isNaN(ph)) return alert("Complete nombre y PH");
+            if(!nom || isNaN(ph)) return showToast("Complete nombre y PH", "error");
             db.cereales.push({id: nom, nombre: nom, ph: ph, color: color});
             guardarDB(); actualizarSelects(); dibujarAdmin();
             renderHerramientaCerealesChk(); 
             document.getElementById('new-cereal-nombre').value = ''; document.getElementById('new-cereal-ph').value = '';
+            showToast("Cereal agregado correctamente.", "success");
         }
 
         function exportarCSV() {

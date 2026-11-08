@@ -260,11 +260,11 @@
     <div id="silobot-modal">
         <div class="chat-window">
             <div class="chat-header">
-                <span>🤖 SiloBot 2.1</span>
+                <span>🤖 SiloBot 2.2</span>
                 <button onclick="toggleSiloBot()" type="button">×</button>
             </div>
             <div class="chat-body" id="chat-body">
-                <div class="chat-msg bot">¡Hola! Soy el nuevo SiloBot. Ahora entiendo combinaciones, como <b>"Maíz relleno"</b> o <b>"Silo 502"</b>. Tocá un botón o escribime.</div>
+                <div class="chat-msg bot">¡Hola! Soy el nuevo SiloBot. Ya sé distinguir calidades. Probá pidiendo <b>"Relleno maíz G2"</b> o <b>"Stock soja G1"</b>.</div>
             </div>
             <div class="chat-chips">
                 <button class="chip" onclick="sendChip('Maíz')" type="button">🌽 Maíz</button>
@@ -276,7 +276,7 @@
                 <button class="chip" onclick="sendChip('Variacion')" type="button">📊 Variación Hoy</button>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ej: Relleno de Trigo..." onkeypress="handleChatEnter(event)">
+                <input type="text" id="chat-input" placeholder="Ej: Relleno de Trigo G2..." onkeypress="handleChatEnter(event)">
                 <button onclick="sendChatMsg()" type="button">➤</button>
             </div>
         </div>
@@ -2151,7 +2151,7 @@
             body.scrollTop = body.scrollHeight;
         }
 
-        // --- CEREBRO DEL SILOBOT 2.1 (CORREGIDO) ---
+        // --- CEREBRO DEL SILOBOT 2.2 (CON CALIDADES) ---
         function processBotQuery(query) {
             let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             let response = "";
@@ -2178,6 +2178,21 @@
                 q.includes(c.id.toLowerCase())
             );
 
+            let calidadBuscada = null;
+            if (cerealEncontrado) {
+                let calidadesCereal = new Set();
+                Object.keys(db.silos).forEach(num => {
+                    let s = db.silos[num];
+                    if(s.cereal === cerealEncontrado.id && s.calidad) calidadesCereal.add(s.calidad.toUpperCase());
+                });
+                for (let cal of calidadesCereal) {
+                    if (q.toUpperCase().includes(cal)) {
+                        calidadBuscada = cal;
+                        break;
+                    }
+                }
+            }
+
             let matchSilo = q.match(/\b(10[1-9]|11[0-8]|20[1-9]|21[0-7]|30[1-9]|31[0-8]|40[1-9]|41[0-7]|50[1-9]|51[0-8]|60[1-9]|61[0-7]|70[1-9]|71[0-8])\b/);
 
             if (matchSilo) {
@@ -2201,40 +2216,56 @@
             if (cerealEncontrado) {
                 let cId = cerealEncontrado.id;
                 let cNombre = cerealEncontrado.nombre;
+                let sufijoCalidad = calidadBuscada ? ` (${calidadBuscada})` : '';
                 
                 if (q.includes('relleno') || q.includes('espacio') || q.includes('donde pongo') || q.includes('donde mando')) {
                     let totEspacio = 0;
                     let mejorSilo = null;
                     let maxEsp = 0;
                     let silosDisp = [];
+                    let porCalidad = {}; // Para desglose si no se pide una específica
 
-                    // ACÁ ESTÁ LA CORRECCIÓN: SOLO busca en silos que YA TIENEN ese cereal y están CON_CARGA o TAPADA
                     TODOS_LOS_SILOS.forEach(num => {
                         let d = db.silos[num];
                         if(d && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') && d.cereal === cId) {
+                            
+                            if (calidadBuscada && d.calidad !== calidadBuscada) return; 
+                            
                             let esp = getEspacioDisp(num);
                             if(esp > 0) {
                                 totEspacio += esp;
-                                silosDisp.push({num, esp});
+                                silosDisp.push({num, esp, cal: d.calidad});
+                                
+                                if(!porCalidad[d.calidad]) porCalidad[d.calidad] = 0;
+                                porCalidad[d.calidad] += esp;
+
                                 if(esp > maxEsp) { maxEsp = esp; mejorSilo = num; }
                             }
                         }
                     });
 
-                    response = `⛽ <b>Relleno para ${cNombre}:</b><br>`;
+                    response = `⛽ <b>Relleno para ${cNombre}${sufijoCalidad}:</b><br>`;
                     response += `Espacio Total: <b>${totEspacio}t</b><br><br>`;
                     
+                    if(!calidadBuscada) {
+                        response += `<b>Desglose por Calidad:</b><br>`;
+                        for(let cal in porCalidad) {
+                            response += `- ${cal}: ${porCalidad[cal]}t<br>`;
+                        }
+                        response += `<br>`;
+                    }
+
                     if(mejorSilo) {
-                        response += `💡 <b>Silo Sugerido (para rellenar):</b> ${mejorSilo} (${maxEsp}t disp.)<br><br>`;
+                        response += `💡 <b>Silo Sugerido:</b> ${mejorSilo} (${maxEsp}t disp.)<br><br>`;
                     }
                     
                     if(silosDisp.length > 0) {
                         response += `<b>Top 3 Silos:</b><br>`;
                         silosDisp.sort((a,b) => b.esp - a.esp).slice(0,3).forEach(s => {
-                            response += `- Silo ${s.num}: ~${s.esp}t<br>`;
+                            response += `- Silo ${s.num} (${s.cal}): ~${s.esp}t<br>`;
                         });
                     } else {
-                        response += `No hay silos con ${cNombre} que tengan espacio disponible para rellenar.`;
+                        response += `No hay silos de ${cNombre}${sufijoCalidad} con espacio disponible.`;
                     }
                     addChatMessage(response, 'bot');
                     return;
@@ -2247,6 +2278,9 @@
                 TODOS_LOS_SILOS.forEach(num => {
                     let d = db.silos[num];
                     if(d && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') && d.cereal === cId) {
+                        
+                        if (calidadBuscada && d.calidad !== calidadBuscada) return;
+
                         stocks.total += (parseFloat(d.tonelaje) || 0);
                         let cal = d.calidad || 'S/C';
                         if(!stocks.calidades[cal]) stocks.calidades[cal] = 0;
@@ -2258,7 +2292,7 @@
                     }
                 });
 
-                response = `🌾 <b>Resumen de ${cNombre}:</b><br><br>`;
+                response = `🌾 <b>Resumen de ${cNombre}${sufijoCalidad}:</b><br><br>`;
                 response += `📦 <b>Stock Total:</b> ${stocks.total}t<br>`;
                 for(let cal in stocks.calidades) {
                     response += `  - ${cal}: ${stocks.calidades[cal]}t<br>`;

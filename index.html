@@ -173,7 +173,7 @@
             <button class="btn-save" style="background:#10b981; margin-top:20px;" onclick="procesarMovimientos()">✅ GUARDAR TODOS LOS MOVIMIENTOS</button>
         </div>
 
-        <!-- PESTAÑA: EXISTENCIAS (AHORA CON DESPLEGABLES) -->
+        <!-- PESTAÑA: EXISTENCIAS -->
         <div id="existencias" class="tab-content">
             <h2>Resumen y Existencias</h2>
             
@@ -207,7 +207,8 @@
                     <h4 style="margin-top:0; color:var(--primary);" id="detalle-existencias-titulo"></h4>
                     <div class="table-responsive">
                         <table class="data-table" id="tabla-detalle-stock">
-                            <thead><tr><th>Unidad</th><th>Calidad</th><th>Tonelaje</th><th>1° Carga</th><th>Fumigación</th><th>Mts</th><th>Alerta</th></tr></thead>
+                            <!-- COLUMNA MTS ELIMINADA -->
+                            <thead><tr><th>Unidad</th><th>Calidad</th><th>Tonelaje</th><th>1° Carga</th><th>Fumigación</th><th>Alerta</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -357,7 +358,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v11'); // v11
+                let saved = localStorage.getItem('unidad7_db_v12'); // v12
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -384,7 +385,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v11', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v12', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -762,7 +763,7 @@
                     total += t;
                     porCinta[cinta] += t;
                     
-                    silosPorCinta[cinta].push({ num: n, tonelaje: t, calidad: d.calidad || 'S/C', fecha_carga: d.fecha_primera_carga, fumigacion: d.fumigacion_fecha, metros: d.metros, alerta: tieneAlerta(n) });
+                    silosPorCinta[cinta].push({ num: n, tonelaje: t, calidad: d.calidad || 'S/C', fecha_carga: d.fecha_primera_carga, fumigacion: d.fumigacion_fecha, alerta: tieneAlerta(n) });
                 }
             });
 
@@ -828,18 +829,18 @@
                 let fFum = d.fumigacion_fecha ? d.fumigacion_fecha.split('-').reverse().join('/') : 'Sin Fumigar';
                 let alertaTxt = tieneAlerta(n) ? '<span style="color:#ef4444; font-weight:bold;">⚠️ Sí</span>' : 'No';
                 
+                // SE ELIMINÓ LA COLUMNA DE METROS
                 tbody.innerHTML += `<tr>
                     <td><b>${n}</b></td>
                     <td>${d.calidad||'S/C'}</td>
                     <td><b>${d.tonelaje} t</b></td>
                     <td>${fCarga}</td>
                     <td>${fFum}</td>
-                    <td>${d.metros || '-'} m</td>
                     <td>${alertaTxt}</td>
                 </tr>`;
             });
             
-            if(!hay) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin datos.</td></tr>';
+            if(!hay) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sin datos.</td></tr>';
             detalleCont.style.display = 'block';
         }
 

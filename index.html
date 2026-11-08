@@ -121,6 +121,7 @@
         .data-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
         .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
+        .btn-share { background: #25D366; color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;}
         .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
         /* HISTORIAL */
@@ -178,7 +179,6 @@
                     <option value="TODOS">Todos los Cereales</option>
                 </select>
             </div>
-            <button class="btn-save" style="background:#0ea5e9; margin-bottom:15px; margin-top:0;" onclick="generarReporteDia()">📝 Generar Reporte del Día (Copiar)</button>
             <div class="sector-tabs" id="sector-tabs-container"></div>
             <div id="contenedor-tablero"></div>
         </div>
@@ -309,6 +309,20 @@
         <!-- PESTAÑA: ADMIN -->
         <div id="admin" class="tab-content">
             <h2>Administración</h2>
+            
+            <div class="card-panel" style="border: 2px solid #25D366; background: #f0fdf4;">
+                <h3 style="margin-top:0; font-size:1.1rem; color:#065f46;">Compartir con Compañeros</h3>
+                <p style="font-size:0.85rem; color:#065f46; margin-bottom:15px;">Usá este botón para enviar tus datos actualizados por WhatsApp. Tu compañero debe importarlo para fusionar la info automáticamente.</p>
+                
+                <button class="btn-share" onclick="compartirDatos()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Compartir Mis Datos
+                </button>
+                
+                <label style="margin-top:20px; color:#065f46;">Importar y Fusionar Datos de Compañero:</label>
+                <input type="file" id="import-file" accept=".json" onchange="fusionarDatos(event)" style="background:white; padding:10px;">
+            </div>
+
             <div class="card-panel">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Parámetros de Cereales</h3>
                 <div id="lista-admin-cereales"></div>
@@ -318,13 +332,6 @@
                 <input type="color" id="new-cereal-color" value="#dc2626" style="height:40px; margin-bottom:10px;">
                 <button class="btn-save" onclick="agregarCerealNuevo()">Guardar Parámetro</button>
             </div>
-            
-            <div class="card-panel">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Respaldos</h3>
-                <button class="btn-save" style="background:var(--secondary);" onclick="exportarDatos()">Descargar Copia (.json)</button>
-                <label style="margin-top:20px;">Importar Archivo:</label>
-                <input type="file" id="import-file" accept=".json" onchange="importarDatos(event)" style="background:var(--bg); padding:10px;">
-            </div>
         </div>
     </div>
 
@@ -332,7 +339,7 @@
     <div id="modal-historial" class="modal">
         <div class="modal-box">
             <h2 id="h-titulo" style="border:none; margin-bottom:5px;">Historial Silo 101</h2>
-            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Trazabilidad de movimientos. Podés borrar registros si hubo un error.</p>
+            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Trazabilidad de movimientos.</p>
             <div id="lista-historial"></div>
             <button class="btn-close" onclick="cerrarModal('modal-historial')">Cerrar</button>
         </div>
@@ -378,7 +385,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v14'); // v14 final
+                let saved = localStorage.getItem('unidad7_db_v15'); // v15
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -405,7 +412,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v14', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v15', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -436,9 +443,10 @@
 
         function getSiloData(num) {
             if(!db.silos[num]) {
-                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null };
+                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, lastUpdate: 0 };
             }
             if(!db.silos[num].historial) db.silos[num].historial = [];
+            if(!db.silos[num].lastUpdate) db.silos[num].lastUpdate = 0;
             return db.silos[num];
         }
         
@@ -687,7 +695,7 @@
                     if(tonsBaja <= 0) { errorMsj = "Tonelaje a restar debe ser mayor a 0."; errores++; return; }
                     
                     if(!confirm(`⚠️ ATENCIÓN:\nEstás por restar ${tonsBaja}t al silo ${silo}.\nMotivo: ${motivo}.\n\n¿Confirmás el egreso?`)) {
-                        errores++; return; // Cancelado por el usuario
+                        errores++; return; 
                     }
 
                     let nuevoTonelaje = (parseFloat(d.tonelaje) || 0) - tonsBaja;
@@ -723,6 +731,7 @@
                 }
 
                 d.historial.push(histRegistro);
+                d.lastUpdate = Date.now(); // Guardamos la hora de modificación para fusiones
                 silosModificadosReciente.push(silo);
                 procesados++;
             });
@@ -797,7 +806,6 @@
             let b = document.getElementById('badge-alertas');
             if(countAlertas > 0) { b.innerText = countAlertas; b.style.display = 'inline-block'; } else { b.style.display = 'none'; }
             
-            // Limpiar animaciones después de 1.5 seg
             setTimeout(() => { silosModificadosReciente = []; }, 1500);
         }
 
@@ -812,7 +820,6 @@
             } else {
                 let hist = [...d.historial].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
                 hist.forEach((h, index) => {
-                    // Como ordenamos invertido, el index real es (length - 1 - index)
                     let realIndex = d.historial.length - 1 - index; 
                     let fechaStr = h.fecha.split('-').reverse().join('/');
                     let tipoClass = h.tipo === 'INGRESO' ? 'tipo-ingreso' : (h.tipo === 'EGRESO' ? 'tipo-egreso' : (h.tipo === 'RECIRCULACION' ? 'tipo-recir' : 'tipo-estado'));
@@ -840,9 +847,10 @@
             
             let d = getSiloData(num);
             d.historial.splice(index, 1);
+            d.lastUpdate = Date.now();
             guardarDB();
-            verHistorial(num); // Refrescar modal
-            dibujarTablero(); // Refrescar tablero por si afectó el badge de alertas
+            verHistorial(num); 
+            dibujarTablero(); 
         }
 
         // --- LÓGICA DE ALERTAS ---
@@ -855,7 +863,7 @@
             let hoy = new Date();
             let fumDate = new Date(d.fumigacion_fecha);
             let diffFum = (hoy - fumDate) / (1000 * 60 * 60 * 24);
-            if(diffFum > 50) return true; // Alerta preventiva a los 50
+            if(diffFum > 50) return true;
             
             if(d.fecha_primera_carga) {
                 let cargaDate = new Date(d.fecha_primera_carga);
@@ -901,43 +909,67 @@
             if(!hay) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay alertas activas.</td></tr>';
         }
 
-        // --- REPORTE DEL DIA ---
-        function generarReporteDia() {
-            let hoyStr = new Date().toISOString().split('T')[0];
-            let resumen = `*Reporte de Movimientos (${hoyStr.split('-').reverse().join('/')})*\n\n`;
-            let ingresos = 0, egresos = 0;
-            let detalleIngresos = [];
-            let detalleEgresos = [];
+        // --- COMPARTIR Y FUSIONAR ---
+        function compartirDatos() {
+            let dataStr = JSON.stringify(db);
+            let fileName = `silos_u7_${new Date().toISOString().split('T')[0]}.json`;
+            let file = new File([dataStr], fileName, {type: 'application/json'});
 
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                d.historial.forEach(h => {
-                    if(h.fecha === hoyStr) {
-                        if(h.tipo === 'INGRESO') {
-                            ingresos++;
-                            detalleIngresos.push(`- Silo ${num}: ${h.detalle}`);
-                        } else if(h.tipo === 'EGRESO') {
-                            egresos++;
-                            detalleEgresos.push(`- Silo ${num}: ${h.detalle}`);
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: 'Respaldo de Silos',
+                    text: 'Datos actualizados de la Unidad 7'
+                }).catch(err => console.log('Error al compartir:', err));
+            } else {
+                // Fallback si el navegador no soporta compartir archivos (PC o navegadores viejos)
+                let blob = new Blob([dataStr], {type: "application/json"});
+                let url = URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+            }
+        }
+
+        function fusionarDatos(event) {
+            let file = event.target.files[0]; if(!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) { 
+                try { 
+                    let importedData = JSON.parse(e.target.result);
+                    if(!importedData.silos) throw new Error("Formato inválido");
+
+                    let importados = 0;
+                    
+                    // Fusionar Cereales (agregar los que no existan)
+                    if(importedData.cereales) {
+                        importedData.cereales.forEach(cImp => {
+                            if(!db.cereales.find(c => c.id === cImp.id)) { db.cereales.push(cImp); importados++; }
+                        });
+                    }
+
+                    // Fusionar Silos comparando la fecha de modificación
+                    for(let num in importedData.silos) {
+                        let localSilo = getSiloData(num);
+                        let impSilo = importedData.silos[num];
+                        
+                        // Si el silo importado tiene una modificación más nueva que la local, lo reemplazamos
+                        if(impSilo.lastUpdate && impSilo.lastUpdate > (localSilo.lastUpdate || 0)) {
+                            db.silos[num] = impSilo;
+                            importados++;
                         }
                     }
-                });
-            });
 
-            if(ingresos === 0 && egresos === 0) {
-                return alert("No se registraron movimientos de carga/descarga en el día de hoy.");
-            }
-
-            resumen += `📥 *Ingresos (${ingresos}):*\n`;
-            resumen += detalleIngresos.join('\n') || 'Ninguno';
-            resumen += `\n\n📤 *Egresos (${egresos}):*\n`;
-            resumen += detalleEgresos.join('\n') || 'Ninguno';
-
-            navigator.clipboard.writeText(resumen).then(() => {
-                alert("✅ Reporte copiado al portapapeles. Pegalo en WhatsApp.");
-            }).catch(err => {
-                prompt("No se pudo copiar automáticamente. Copiá este texto:", resumen);
-            });
+                    guardarDB();
+                    alert(`🎉 Sincronización exitosa.\nSe actualizaron ${importados} registros con los datos más recientes de tu compañero.`);
+                    location.reload();
+                    
+                } catch(err) { 
+                    alert("❌ Archivo inválido o dañado."); 
+                }
+            };
+            reader.readAsText(file);
         }
 
         // --- EXISTENCIAS ---
@@ -1208,7 +1240,6 @@
                 }
             });
             
-            // Sugerencia: Poner primero el que tiene más espacio
             filas.sort((a, b) => b.espacio - a.espacio);
 
             filas.forEach(f => {
@@ -1217,7 +1248,6 @@
                     ? `<input type="number" value="${db.silos[f.n].relleno_manual||''}" placeholder="Manual" style="width:80px; padding:4px;" onchange="guardarRellenoManual(${f.n}, this.value, '${cinta}')"> t`
                     : `<b style="color:#16a34a;">~${f.espacio} t</b>`;
 
-                // Si es el que tiene más espacio, poner borde verde
                 let highlight = (f.n === siloMaxId && !f.manual) ? 'silo-sugerido' : '';
 
                 tbody.innerHTML += `<tr class="${highlight}">
@@ -1233,6 +1263,7 @@
         function guardarRellenoManual(num, valor, cinta) {
             let d = getSiloData(num);
             d.relleno_manual = parseFloat(valor) || 0;
+            d.lastUpdate = Date.now();
             guardarDB();
             calcularRellenos(); 
             setTimeout(() => { toggleDetalleRelleno(cinta, document.getElementById('sel-cereal-relleno').value, document.getElementById('sel-calidad-relleno').value); }, 100); 
@@ -1288,7 +1319,6 @@
             document.getElementById('sel-cereal-relleno').innerHTML = opt;
             document.getElementById('calc-cereal').innerHTML = opt;
             
-            // Refrescar selects dentro de las filas de movimientos ya abiertas
             document.querySelectorAll('.m-cereal').forEach(sel => {
                 let currentVal = sel.value;
                 sel.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
@@ -1296,26 +1326,6 @@
             });
         }
 
-        function exportarDatos() {
-            let dataStr = JSON.stringify(db); 
-            let blob = new Blob([dataStr], {type: "application/json"});
-            let url = URL.createObjectURL(blob); 
-            let a = document.createElement('a'); a.href = url; a.download = "spc_respaldo.json"; a.click();
-        }
-
-        function importarDatos(event) {
-            let file = event.target.files[0]; if(!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) { 
-                try { 
-                    let data = JSON.parse(e.target.result); 
-                    if(confirm("Esto borrará los datos actuales. ¿Continuar?")) {
-                        db = data; guardarDB(); location.reload();
-                    }
-                } catch(err) { alert("Archivo inválido"); }
-            };
-            reader.readAsText(file);
-        }
         window.onload = init;
     </script>
 </body>

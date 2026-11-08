@@ -43,13 +43,13 @@
             .tab-content { padding: 15px; }
             input, select, textarea { font-size: 16px !important; padding: 12px; } 
             
-            /* TARJETAS ULTRA COMPACTAS */
-            .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 4px; }
-            .tarjeta { min-height: 60px; }
-            .t-num { font-size: 1rem; }
-            .t-info { font-size: 0.5rem; }
-            .t-info-3 { font-size: 0.45rem; }
-            .t-info-2 { font-size: 0.45rem; }
+            /* TARJETAS ULTRA COMPACTAS (Aún más chicas) */
+            .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 3px; }
+            .tarjeta { min-height: 55px; border-radius: 4px; }
+            .t-num { font-size: 0.9rem; }
+            .t-info { font-size: 0.45rem; }
+            .t-info-3 { font-size: 0.4rem; }
+            .t-info-2 { font-size: 0.4rem; }
             
             .modal { align-items: flex-end; padding: 0; }
             .modal-box { border-radius: 20px 20px 0 0; max-height: 92vh; padding: 20px; padding-bottom: 30px; }
@@ -75,17 +75,17 @@
         .titulo-sector { font-size: 0.85rem; color: var(--text-light); font-weight: 700; margin-bottom: 5px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
         
         /* TARJETAS MAS CHICAS PARA QUE ENTREN EN UNA LINEA */
-        .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; }
-        .tarjeta { min-height: 65px; border-radius: 6px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 4px; }
-        .franja { position: absolute; top: 0; left: 0; right: 0; height: 5px; }
+        .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 4px; }
+        .tarjeta { min-height: 60px; border-radius: 4px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 2px; }
+        .franja { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
         .f-MAIZ { background: var(--c-maiz); } .f-SOJA { background: var(--c-soja); } .f-SORGO { background: var(--c-sorgo); } .f-TRIGO { background: var(--c-trigo); } .f-MEZCLA { background: var(--c-mezcla); } .f-GIRASOL { background: var(--c-girasol); } .f-OTROS { background: var(--c-otros); } .f-VACIO { background: transparent; }
 
-        .t-num { font-size: 1.1rem; font-weight: 800; color: var(--text); line-height: 1; margin-top: 5px; }
-        .t-info { font-size: 0.55rem; font-weight: 800; text-align: center; line-height: 1; margin-top: 2px; color: var(--text-light); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
-        .t-info-3 { font-size: 0.5rem; font-weight: 600; color: var(--text-light); margin-top: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
-        .t-info-2 { font-size: 0.5rem; font-weight: 500; color: var(--text-light); margin-top: 1px;}
-        .t-alerta { position: absolute; top: 4px; right: 4px; background: #ef4444; color: white; width: 12px; height: 12px; border-radius: 50%; font-size: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        .t-fumigado { position: absolute; top: 4px; left: 4px; font-size: 10px; }
+        .t-num { font-size: 1rem; font-weight: 800; color: var(--text); line-height: 1; margin-top: 4px; }
+        .t-info { font-size: 0.5rem; font-weight: 800; text-align: center; line-height: 1; margin-top: 2px; color: var(--text-light); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
+        .t-info-3 { font-size: 0.45rem; font-weight: 600; color: var(--text-light); margin-top: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
+        .t-info-2 { font-size: 0.45rem; font-weight: 500; color: var(--text-light); margin-top: 1px;}
+        .t-alerta { position: absolute; top: 3px; right: 3px; background: #ef4444; color: white; width: 10px; height: 10px; border-radius: 50%; font-size: 7px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .t-fumigado { position: absolute; top: 3px; left: 3px; font-size: 9px; }
         
         .estado-borde { border: 2px solid #f59e0b; }
         .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; opacity: 0.7;}
@@ -111,9 +111,9 @@
         .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
         .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
-        /* HISTORIAL MEJORADO */
+        /* HISTORIAL MEJORADO CON FECHA Y DETALLES */
         .hist-item { border-left: 3px solid var(--primary); background: var(--bg); padding: 12px; margin-bottom: 10px; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: var(--text); border: 1px solid var(--border);}
-        .hist-date { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1rem; display: flex; justify-content: space-between;}
+        .hist-date { font-weight: bold; color: var(--text); margin-bottom: 5px; font-size: 1rem; display: flex; justify-content: space-between; background: var(--primary); color: white; padding: 5px 10px; border-radius: 4px;}
         .hist-details { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; font-size: 0.85rem; color: var(--text-light);}
         .hist-details span b { color: var(--text); }
         .alerta-txt { color: #ef4444; font-weight: bold; }
@@ -123,7 +123,7 @@
         .sub-tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         
         @media print {
-            .sidebar, .top-controls, .sector-tabs, .btn-save, .btn-close, .sub-tabs { display: none !important; }
+            .sidebar, .top-controls, .sector-tabs, .btn-save, .btn-close, .sub-tabs, select { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; }
@@ -187,9 +187,26 @@
             </div>
 
             <div class="card-panel">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Consultar por Cereal</h3>
-                <select id="sel-cereal-stock" class="buscador" style="margin-bottom:10px;" onchange="calcularStock()"></select>
-                <div id="resultado-stock"></div>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Consultar Existencias</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <label style="margin-top:0;">Cereal</label>
+                        <select id="sel-cereal-stock" onchange="actualizarOpcionesStock()"></select>
+                    </div>
+                    <div>
+                        <label style="margin-top:0;">Calidad</label>
+                        <select id="sel-calidad-stock" onchange="calcularStock()"><option value="TODAS">Todas</option></select>
+                    </div>
+                </div>
+                <label>Cinta de Extracción</label>
+                <select id="sel-cinta-stock" onchange="calcularStock()">
+                    <option value="TODAS">Todas las Cintas</option>
+                    <option value="C1">Extracción 1 (700s/600s)</option>
+                    <option value="C2">Extracción 2 (500s/400s P)</option>
+                    <option value="C3">Extracción 3 (300s/400s I)</option>
+                    <option value="C4">Extracción 4 (100s/200s)</option>
+                </select>
+                <div id="resultado-stock" style="margin-top:15px;"></div>
             </div>
 
             <button style="background:var(--card); border:1px solid var(--border); color:var(--text); padding:12px; border-radius:6px; width:100%; font-weight:600; cursor:pointer;" onclick="window.print()">IMPRIMIR REPORTE</button>
@@ -219,15 +236,28 @@
 
             <div id="sub-relleno-lista" style="display:block;">
                 <div class="card-panel">
-                    <label>Filtrar por Cereal:</label>
-                    <select id="sel-cereal-relleno" class="buscador" style="margin-bottom:10px;" onchange="calcularRellenos()"></select>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div>
+                            <label style="margin-top:0;">Cereal</label>
+                            <select id="sel-cereal-relleno" onchange="actualizarCalidadesRelleno()"></select>
+                        </div>
+                        <div>
+                            <label style="margin-top:0;">Calidad</label>
+                            <select id="sel-calidad-relleno" onchange="calcularRellenos()">
+                                <option value="TODAS">Todas</option>
+                            </select>
+                        </div>
+                    </div>
                     <p style="font-size:0.8rem; color:var(--text-light); margin-top:5px;">* Solo silos con carga parcial del mismo cereal. Silos ⚠️ (700s) requieren medida manual.</p>
+                    
                     <div class="table-responsive">
                         <table class="data-table" id="tabla-rellenos">
-                            <thead><tr><th>Unidad</th><th>Cinta</th><th>Calidad</th><th>Fumigación</th><th>Espacio Disp.</th></tr></thead>
+                            <thead><tr><th>Unidad</th><th>Cinta</th><th>Fumigación</th><th>Espacio Disp.</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
+                    
+                    <div id="resumen-rellenos" style="margin-top:20px; padding:15px; background:var(--bg); border-radius:8px; border:1px solid var(--border);"></div>
                 </div>
             </div>
 
@@ -320,7 +350,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v8'); // v8
+                let saved = localStorage.getItem('unidad7_db_v9'); // v9
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -347,15 +377,15 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v8', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v9', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active'); if(btn) btn.classList.add('active');
-            if(id === 'existencias') actualizarExistencias();
+            if(id === 'existencias') { actualizarExistencias(); actualizarOpcionesStock(); }
             if(id === 'alertas') dibujarAlertas();
-            if(id === 'rellenos') calcularRellenos();
+            if(id === 'rellenos') { actualizarCalidadesRelleno(); calcularRellenos(); }
             if(id === 'tablero') dibujarTablero();
         }
 
@@ -486,13 +516,11 @@
 
                 let d = getSiloData(silo);
                 
-                // INTELIGENCIA: Validar mezcla de cereales
                 if(d.cereal && d.cereal !== cereal && estadoOp !== 'VACIO' && estadoOp !== 'RECIRCULACION') {
                     errorMsj = `El silo ${silo} ya contiene ${d.cereal}. No se puede mezclar con ${cereal}.`;
                     errores++; return;
                 }
 
-                // INTELIGENCIA: Validar recirculación en vacío
                 if(estadoOp === 'RECIRCULACION' && d.estado === 'VACIO') {
                     errorMsj = `El silo ${silo} está vacío. No se puede recircular.`;
                     errores++; return;
@@ -606,11 +634,14 @@
             } else {
                 let hist = [...d.historial].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
                 hist.forEach(h => {
+                    // Formatear Fecha
+                    let fechaStr = h.fecha.split('-').reverse().join('/');
+                    
                     cont.innerHTML += `
                         <div class="hist-item">
                             <div class="hist-date">
-                                <span>${h.fecha.split('-').reverse().join('/')}</span>
-                                <span style="color:var(--text);">${h.tons} t</span>
+                                <span>${fechaStr}</span>
+                                <span>${h.tons} t</span>
                             </div>
                             <div style="font-weight:bold; margin-bottom:5px;">${h.cereal} <span style="color:var(--text-light); font-weight:normal;">(${h.calidad||'S/C'})</span></div>
                             <div class="hist-details">
@@ -680,18 +711,44 @@
         }
 
         // --- RELLENOS ---
+        function actualizarCalidadesRelleno() {
+            let cerealId = document.getElementById('sel-cereal-relleno').value;
+            let selCal = document.getElementById('sel-calidad-relleno');
+            selCal.innerHTML = '<option value="TODAS">Todas las Calidades</option>';
+            
+            if(cerealId) {
+                let calidades = new Set();
+                Object.keys(db.silos).forEach(num => {
+                    let d = db.silos[num];
+                    if(d.cereal === cerealId && d.calidad) calidades.add(d.calidad);
+                });
+                calidades.forEach(c => {
+                    selCal.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+            }
+            calcularRellenos();
+        }
+
         function calcularRellenos() {
             let cerealId = document.getElementById('sel-cereal-relleno').value;
+            let calidadFiltro = document.getElementById('sel-calidad-relleno').value;
             let tbody = document.querySelector('#tabla-rellenos tbody');
+            let resumenDiv = document.getElementById('resumen-rellenos');
+            
             tbody.innerHTML = '';
+            resumenDiv.innerHTML = '';
             if(!cerealId) return;
 
             let cereal = db.cereales.find(c => c.id === cerealId);
             let hay = false;
+            
+            let totalRelleno = 0;
+            let rellenoPorCinta = { C1: 0, C2: 0, C3: 0, C4: 0 };
 
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
                 if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return;
+                if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
                 
                 let espacio = 0;
                 let manual = false;
@@ -706,30 +763,51 @@
                     espacio = capMaxTon - (parseFloat(d.tonelaje) || 0);
                 }
 
-                if(espacio > 10 || manual) {
+                if(espacio > 0 || manual) {
                     hay = true;
                     let fumStr = d.fumigacion_fecha ? '🧪 Fumigado' : '⚠️ Sin Fumigar';
                     
                     let inputEspacio = manual 
-                        ? `<input type="number" value="${d.relleno_manual||''}" placeholder="Manual" style="width:80px; padding:4px;" onchange="guardarRellenoManual(${num}, this.value)"> t`
+                        ? `<input type="number" value="${d.relleno_manual||''}" placeholder="Manual" style="width:80px; padding:4px;" onchange="guardarRellenoManual(${num}, this.value, '${cerealId}', '${calidadFiltro}')"> t`
                         : `<b style="color:#16a34a;">~${espacio} t</b>`;
+
+                    let n = parseInt(num);
+                    let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
+
+                    if(!manual) {
+                        totalRelleno += espacio;
+                        rellenoPorCinta[cinta] += espacio;
+                    }
 
                     tbody.innerHTML += `<tr>
                         <td><b>${num}</b> ${manual?'⚠️':''}</td>
-                        <td>${num >= 600 ? 'C1' : (num >= 500 || (num>=400 && num%2===0) ? 'C2' : (num >= 300 || (num>=400 && num%2!==0) ? 'C3' : 'C4'))}</td>
-                        <td>${d.calidad}</td>
+                        <td>${cinta}</td>
                         <td style="font-size:0.8rem;">${fumStr}</td>
                         <td>${inputEspacio}</td>
                     </tr>`;
                 }
             });
-            if(!hay) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Sin silos parciales para este cereal.</td></tr>';
+            
+            if(!hay) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin silos parciales para este cereal/calidad.</td></tr>';
+            } else {
+                let htmlResumen = `<h4 style="margin:0 0 10px 0; color:var(--text);">Resumen de Relleno (${cerealId} - ${calidadFiltro})</h4>`;
+                htmlResumen += `<div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:10px;">`;
+                htmlResumen += `<div><span class="stat-lbl">Total:</span> <span class="stat-num" style="font-size:1.4rem; color:var(--primary);">${totalRelleno} t</span></div>`;
+                htmlResumen += `<div><span class="stat-lbl">Extr 1:</span> <b>${rellenoPorCinta.C1} t</b></div>`;
+                htmlResumen += `<div><span class="stat-lbl">Extr 2:</span> <b>${rellenoPorCinta.C2} t</b></div>`;
+                htmlResumen += `<div><span class="stat-lbl">Extr 3:</span> <b>${rellenoPorCinta.C3} t</b></div>`;
+                htmlResumen += `<div><span class="stat-lbl">Extr 4:</span> <b>${rellenoPorCinta.C4} t</b></div>`;
+                htmlResumen += `</div>`;
+                resumenDiv.innerHTML = htmlResumen;
+            }
         }
 
-        function guardarRellenoManual(num, valor) {
+        function guardarRellenoManual(num, valor, cerealId, calFiltro) {
             let d = getSiloData(num);
             d.relleno_manual = parseFloat(valor) || 0;
             guardarDB();
+            calcularRellenos(); // Recalcular para actualizar totales
         }
 
         function calcularMedidaRapida() {
@@ -770,13 +848,32 @@
             document.getElementById('st-uso').innerText = counts.EN_USO;
             document.getElementById('st-tapados').innerText = counts.TAPADA;
             document.getElementById('st-fuera').innerText = counts.FUERA_SERVICIO;
+        }
+
+        function actualizarOpcionesStock() {
+            let cerealId = document.getElementById('sel-cereal-stock').value;
+            let selCal = document.getElementById('sel-calidad-stock');
+            selCal.innerHTML = '<option value="TODAS">Todas las Calidades</option>';
             
+            if(cerealId) {
+                let calidades = new Set();
+                Object.keys(db.silos).forEach(num => {
+                    let d = db.silos[num];
+                    if(d.cereal === cerealId && d.calidad) calidades.add(d.calidad);
+                });
+                calidades.forEach(c => {
+                    selCal.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+            }
             calcularStock();
         }
 
         function calcularStock() {
             let cerealId = document.getElementById('sel-cereal-stock').value;
-            if(!cerealId) { document.getElementById('resultado-stock').innerHTML = '<p style="color:var(--text-light);">Seleccione un cereal para ver el detalle.</p>'; return; }
+            let calidadFiltro = document.getElementById('sel-calidad-stock').value;
+            let cintaFiltro = document.getElementById('sel-cinta-stock').value;
+            
+            if(!cerealId) { document.getElementById('resultado-stock').innerHTML = '<p style="color:var(--text-light);">Seleccione un cereal.</p>'; return; }
             
             let cObj = db.cereales.find(c => c.id === cerealId);
             let total = 0;
@@ -786,37 +883,46 @@
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
                 if(d.cereal === cerealId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'EN_USO')) {
-                    let t = parseFloat(d.tonelaje) || 0;
-                    total += t;
+                    
+                    if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
                     
                     let n = parseInt(num);
-                    let cinta = 'C4';
-                    if(n >= 600) cinta = 'C1';
-                    else if(n >= 500 || (n >= 400 && n % 2 === 0)) cinta = 'C2';
-                    else if(n >= 300 || (n >= 400 && n % 2 !== 0)) cinta = 'C3';
+                    let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
                     
+                    if(cintaFiltro !== 'TODAS' && cinta !== cintaFiltro) return;
+
+                    let t = parseFloat(d.tonelaje) || 0;
+                    total += t;
                     porCinta[cinta] += t;
                     
-                    let cal = (d.calidad || 'S/C').toUpperCase(); // Agrupar calidades en mayúsculas
+                    let cal = (d.calidad || 'S/C').toUpperCase();
                     calPorCinta[cinta][cal] = (calPorCinta[cinta][cal] || 0) + t;
                 }
             });
 
-            let html = `<div class="stat-box" style="margin-bottom:15px;"><span class="stat-lbl">Stock Total ${cerealId}</span><span class="stat-num">${total} t</span></div>`;
+            let html = `<div class="stat-box" style="margin-bottom:15px; border-left:4px solid ${cObj.color}; padding-left:10px;">
+                <span class="stat-lbl">Stock Total ${cerealId} (${calidadFiltro})</span>
+                <span class="stat-num">${total} t</span>
+            </div>`;
             
             html += `<h4 style="margin-top:20px; font-size:1rem; color:var(--text);">Toneladas por Extracción</h4>`;
-            html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 1 (700s/600s)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C1} t</span></div>
-                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 2 (500s/400s P)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C2} t</span></div>
-                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 3 (300s/400s I)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C3} t</span></div>
-                <div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};"><span class="stat-lbl">Extr 4 (100s/200s)</span><span class="stat-num" style="font-size:1.3rem; color:${cObj.color};">${porCinta.C4} t</span></div>
-            </div>`;
+            html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">`;
+            
+            ['C1','C2','C3','C4'].forEach(c => {
+                if(cintaFiltro !== 'TODAS' && cintaFiltro !== c) return;
+                html += `<div class="stat-box" style="background:var(--bg); border-left: 4px solid ${cObj.color};">
+                    <span class="stat-lbl">${c} (${porCinta[c]} t)</span>
+                    <span class="stat-num" style="font-size:1.2rem; color:${cObj.color};">${porCinta[c]} t</span>
+                </div>`;
+            });
+            html += `</div>`;
 
             html += `<h4 style="margin-top:20px; font-size:1rem; color:var(--text);">Detalle por Cinta y Calidad</h4>`;
             html += `<div class="table-responsive"><table class="data-table">
                 <thead><tr><th>Cinta</th><th>Calidad</th><th>Tonelaje</th></tr></thead><tbody>`;
             
             ['C1','C2','C3','C4'].forEach(c => {
+                if(cintaFiltro !== 'TODAS' && cintaFiltro !== c) return;
                 let nombreCinta = c==='C1'?'Extracción 1':(c==='C2'?'Extracción 2':(c==='C3'?'Extracción 3':'Extracción 4'));
                 let calidades = calPorCinta[c];
                 let vacio = true;

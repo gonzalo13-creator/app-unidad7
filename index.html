@@ -23,8 +23,8 @@
             --text: #f8fafc; --text-light: #94a3b8; --border: #334155;
         }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-            background-color: #1e293b !important; /* Fondo oscuro para inputs */
-            color: #f8fafc !important; /* Texto claro */
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
             border-color: #475569 !important;
         }
         body.dark-mode option {
@@ -370,7 +370,8 @@
 
     <script>
         window.onerror = function(msg, url, line, col, error) {
-            alert("Ocurrió un error en la app. Refrescá la página.");
+            // alert("Ocurrió un error en la app. Refrescá la página.");
+            console.error("Error capturado:", msg, "en linea", line);
             return false;
         };
 
@@ -388,7 +389,6 @@
         const MIN_14 = [702, 705, 708, 711, 714, 717];
         const MIN_10 = [502, 505, 508, 511, 514, 517];
         
-        // AGRUPACION POR CINTAS
         const CINTAS = {
             C1: { nombre: "Cinta 1 (700s y 600s)", silos: [] },
             C2: { nombre: "Cinta 2 (500s y 400s Pares)", silos: [] },
@@ -396,16 +396,12 @@
             C4: { nombre: "Cinta 4 (100s y 200s)", silos: [] }
         };
         
-        // Llenar los arrays de las cintas
         for(let i=701; i<=718; i++) CINTAS.C1.silos.push(i);
         for(let i=601; i<=617; i++) CINTAS.C1.silos.push(i);
-        
         for(let i=501; i<=518; i++) CINTAS.C2.silos.push(i);
         for(let i=402; i<=416; i+=2) CINTAS.C2.silos.push(i);
-        
         for(let i=301; i<=318; i++) CINTAS.C3.silos.push(i);
         for(let i=401; i<=417; i+=2) CINTAS.C3.silos.push(i);
-        
         for(let i=101; i<=118; i++) CINTAS.C4.silos.push(i);
         for(let i=201; i<=217; i++) CINTAS.C4.silos.push(i);
 
@@ -418,7 +414,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v16'); // v16
+                let saved = localStorage.getItem('unidad7_db_v17'); // v17
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -444,7 +440,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v16', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v17', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -503,7 +499,7 @@
                 
                 <div class="form-group" style="min-width:80px;">
                     <label>Silo</label>
-                    <input type="number" placeholder="Ej: 501" class="m-silo" min="1">
+                    <input type="number" placeholder="Ej: 501" class="m-silo" min="1" oninput="autocompletarSilo(this)">
                 </div>
                 <div class="form-group" style="min-width:120px;">
                     <label>Fecha</label>
@@ -531,23 +527,23 @@
             div.querySelector('.m-fecha').value = new Date().toISOString().split('T')[0];
             document.getElementById('lista-movimientos').appendChild(div);
             cambiarTipoAccion(div.querySelector('.m-tipo-accion'));
+        }
+
+        function autocompletarSilo(input) {
+            let row = input.closest('.row-inputs');
+            let num = parseInt(input.value);
             
-            let inputSilo = div.querySelector('.m-silo');
-            inputSilo.addEventListener('input', function() {
-                let num = parseInt(this.value);
-                if(num && db.silos[num]) {
-                    let d = db.silos[num];
-                    if(d.cereal) {
-                        let selCereal = div.querySelector('.m-cereal');
-                        let inputCalidad = div.querySelector('.m-calidad');
-                        if(selCereal && inputCalidad) {
-                            selCereal.value = d.cereal;
-                            inputCalidad.value = d.calidad || '';
-                            validarMezclaFila(div);
-                        }
-                    }
-                }
-            });
+            if(!num || !db.silos[num]) return;
+            
+            let d = db.silos[num];
+            let selCereal = row.querySelector('.m-cereal');
+            let inputCalidad = row.querySelector('.m-calidad');
+            
+            if(selCereal && inputCalidad && d.cereal) {
+                selCereal.value = d.cereal;
+                inputCalidad.value = d.calidad || '';
+                validarMezclaFila(row);
+            }
         }
 
         function setFecha(btn, offsetDays) {
@@ -578,6 +574,10 @@
             let tipo = select.value;
             let container = row.querySelector('#campos-dinamicos');
             container.innerHTML = '';
+            
+            // IMPORTANTE: Limpiar eventos del silo para que no llame a funciones que ya no existen
+            let inputSilo = row.querySelector('.m-silo');
+            inputSilo.oninput = function() { autocompletarSilo(this); };
 
             if(tipo === 'INGRESO') {
                 container.innerHTML = `
@@ -604,8 +604,6 @@
                         <select class="m-fumigo"><option value="NO">No</option><option value="SI">Sí</option></select>
                     </div>
                 `;
-                row.querySelector('.m-silo').oninput = function() { autoCalcularFila(this); };
-                row.querySelector('.m-metros').oninput = function() { autoCalcularFila(this); };
             } 
             else if(tipo === 'EGRESO') {
                 container.innerHTML = `
@@ -659,8 +657,12 @@
         }
 
         function validarMezclaFila(row) {
-            let silo = parseInt(row.querySelector('.m-silo').value);
-            let cereal = row.querySelector('.m-cereal').value;
+            let inputSilo = row.querySelector('.m-silo');
+            let inputCereal = row.querySelector('.m-cereal');
+            if(!inputSilo || !inputCereal) return;
+
+            let silo = parseInt(inputSilo.value);
+            let cereal = inputCereal.value;
             if(!silo || !cereal) return;
             
             let d = getSiloData(silo);
@@ -675,16 +677,22 @@
 
         function autoCalcularFila(input) {
             let row = input.closest('.row-inputs');
-            let silo = parseInt(row.querySelector('.m-silo').value);
-            let cerealId = row.querySelector('.m-cereal').value;
-            let metros = parseFloat(row.querySelector('.m-metros').value);
-            let tonsInput = row.querySelector('.m-tons');
+            let inputSilo = row.querySelector('.m-silo');
+            let inputCereal = row.querySelector('.m-cereal');
+            let inputMetros = row.querySelector('.m-metros');
+            let inputTons = row.querySelector('.m-tons');
 
-            if(!silo || silo < 0) { row.style.border = "2px solid #ef4444"; tonsInput.value = ''; return; }
-            if(!cerealId || isNaN(metros) || metros < 0) { tonsInput.value = ''; return; }
-            if(SILOS_MANUALES.includes(silo)) { tonsInput.placeholder = "Manual!"; return; }
-            if(MIN_14.includes(silo) && metros < 14) { row.style.border = "2px solid #ef4444"; tonsInput.value = ''; return; }
-            if(MIN_10.includes(silo) && metros < 10) { row.style.border = "2px solid #ef4444"; tonsInput.value = ''; return; }
+            if(!inputSilo || !inputCereal || !inputMetros || !inputTons) return;
+
+            let silo = parseInt(inputSilo.value);
+            let cerealId = inputCereal.value;
+            let metros = parseFloat(inputMetros.value);
+
+            if(!silo || silo < 0) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; return; }
+            if(!cerealId || isNaN(metros) || metros < 0) { inputTons.value = ''; return; }
+            if(SILOS_MANUALES.includes(silo)) { inputTons.placeholder = "Manual!"; return; }
+            if(MIN_14.includes(silo) && metros < 14) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; return; }
+            if(MIN_10.includes(silo) && metros < 10) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; return; }
             
             validarMezclaFila(row);
             
@@ -692,7 +700,7 @@
             let tipo = esSiloTipo(silo);
             let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
             let tons = Math.round(phRef * cereal.ph / PH_BASE);
-            tonsInput.value = tons;
+            inputTons.value = tons;
         }
 
         function procesarMovimientos() {
@@ -702,9 +710,15 @@
 
             filas.forEach(row => {
                 let tipoAccion = row.querySelector('.m-tipo-accion').value;
-                let silo = parseInt(row.querySelector('.m-silo').value);
-                let fecha = row.querySelector('.m-fecha').value;
-                let obs = row.querySelector('.m-obs').value;
+                let inputSilo = row.querySelector('.m-silo');
+                let inputFecha = row.querySelector('.m-fecha');
+                let inputObs = row.querySelector('.m-obs');
+
+                if(!inputSilo || !inputFecha) return;
+
+                let silo = parseInt(inputSilo.value);
+                let fecha = inputFecha.value;
+                let obs = inputObs ? inputObs.value : '';
 
                 if(!silo || !fecha) return; 
 
@@ -718,7 +732,7 @@
                     let tons = parseFloat(row.querySelector('.m-tons').value) || 0;
                     let fumigo = row.querySelector('.m-fumigo').value;
                     let origen = row.querySelector('.m-origen').value;
-                    let uniOrigen = row.querySelector('.m-unidad-origen').value;
+                    let uniOrigen = row.querySelector('.m-unidad-origen') ? row.querySelector('.m-unidad-origen').value : '';
 
                     if(silo < 0 || metros < 0 || tons < 0) { errorMsj = "Valores negativos no permitidos."; errores++; return; }
                     if(MIN_14.includes(silo) && metros < 14) { errorMsj = `Silo ${silo} requiere mín. 14m.`; errores++; return; }
@@ -805,7 +819,6 @@
             const filtroCinta = document.getElementById('filtro-cinta-tablero').value;
             let htmlTotal = '';
 
-            // Recorremos las cintas
             for(let key in CINTAS) {
                 if(filtroCinta !== 'TODAS' && filtroCinta !== key) continue;
 

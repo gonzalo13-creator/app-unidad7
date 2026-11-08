@@ -64,11 +64,15 @@
         .sector-btn { padding: 8px 15px; border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.85rem; white-space: nowrap;}
         .sector-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* MOVIMIENTOS */
-        .row-inputs { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; background: var(--card); padding: 10px; border-radius: 6px; border: 1px solid var(--border); flex-wrap: wrap;}
-        .row-inputs input, .row-inputs select { padding: 8px; font-size: 0.85rem; margin: 0; flex: 1; min-width: 70px;}
-        .row-inputs .btn-del { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer;}
+        /* FORMULARIO DE MOVIMIENTOS */
+        .row-inputs { display: flex; gap: 8px; margin-bottom: 15px; align-items: flex-start; background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; position: relative;}
+        .row-inputs .btn-del { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-weight: bold;}
+        .row-inputs label { font-size: 0.7rem; margin-bottom: 2px; margin-top: 5px;}
+        .row-inputs input, .row-inputs select { padding: 8px; font-size: 0.85rem; margin: 0; flex: 1; min-width: 100px;}
         
+        .form-group { display: flex; flex-direction: column; flex: 1; min-width: 120px; }
+        .form-group.full { flex-basis: 100%; }
+
         /* TABLERO TARJETAS */
         .fila-sector { margin-bottom: 15px; }
         .titulo-sector { font-size: 0.85rem; color: var(--text-light); font-weight: 700; margin-bottom: 5px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
@@ -85,8 +89,8 @@
         .t-alerta { position: absolute; top: 3px; right: 3px; background: #ef4444; color: white; width: 10px; height: 10px; border-radius: 50%; font-size: 7px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
         .t-fumigado { position: absolute; top: 3px; left: 3px; font-size: 9px; }
         
-        .estado-borde { border: 2px solid #f59e0b; }
-        .estado-fuera { border: 2px solid #ef4444; background: #f8fafc; opacity: 0.7;}
+        .estado-tapado { border: 2px solid #f59e0b; background: #fffbeb; }
+        .estado-fuera { border: 2px solid #ef4444; background: #fef2f2; }
         .bg-vacio { background: var(--bg); border-style: dashed; opacity: 0.6;}
 
         /* MODALES Y PANELES */
@@ -104,23 +108,22 @@
         .data-table th { text-align: left; padding: 10px; background: var(--bg); border-bottom: 2px solid var(--border); color: var(--text-light); font-weight: 600; font-size: 0.8rem; text-transform: uppercase;}
         .data-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin: 16px 0 6px 0; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); outline: none;}
         .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
         .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
         /* HISTORIAL */
-        .hist-item { border-left: 3px solid var(--primary); background: var(--bg); padding: 12px; margin-bottom: 10px; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: var(--text); border: 1px solid var(--border);}
-        .hist-date { font-weight: bold; color: white; background: var(--primary); margin-bottom: 5px; font-size: 0.95rem; display: flex; justify-content: space-between; padding: 5px 10px; border-radius: 4px;}
-        .hist-details { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; font-size: 0.85rem; color: var(--text-light);}
+        .hist-item { border-left: 4px solid var(--primary); background: var(--bg); padding: 12px; margin-bottom: 10px; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: var(--text); border: 1px solid var(--border);}
+        .hist-date { font-weight: bold; color: white; background: var(--primary); margin-bottom: 5px; font-size: 0.9rem; display: flex; justify-content: space-between; padding: 5px 10px; border-radius: 4px;}
+        .hist-tipo { font-size: 0.75rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px; display: inline-block; padding: 2px 6px; border-radius: 4px; color: white;}
+        .tipo-ingreso { background: #10b981; } .tipo-egreso { background: #f59e0b; } .tipo-recir { background: #3b82f6; } .tipo-estado { background: #64748b; }
+        .hist-details { margin-top: 5px; font-size: 0.85rem; color: var(--text-light);}
         .hist-details span b { color: var(--text); }
-        .alerta-txt { color: #ef4444; font-weight: bold; }
         
         .sub-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
         .sub-tab-btn { background: none; border: none; font-size: 1rem; font-weight: bold; color: var(--text-light); cursor: pointer; padding-bottom: 5px;}
         .sub-tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
-        /* DESPLEGABLES EXISTENCIAS Y RELLENOS */
+        /* DESPLEGABLES */
         .cinta-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; margin-bottom: 8px;}
         .cinta-card:hover { border-color: var(--primary); }
         .cinta-card.active { border-color: var(--primary); border-width: 2px; }
@@ -164,12 +167,14 @@
             <div id="contenedor-tablero"></div>
         </div>
 
-        <!-- PESTAÑA: MOVIMIENTOS -->
+        <!-- PESTAÑA: MOVIMIENTOS INTELIGENTES -->
         <div id="movimientos" class="tab-content">
             <h2>Registrar Movimientos</h2>
-            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:20px;">Cargá los datos. Si ponés la misma fecha en el mismo silo, se sobrescribe el dato.</p>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:20px;">Elegí el tipo de acción para cargar los datos.</p>
+            
             <div id="lista-movimientos"></div>
-            <button class="btn-save" style="background:var(--secondary); margin-top:10px;" onclick="agregarFilaMovimiento()">+ Agregar Otra Fila</button>
+            
+            <button class="btn-save" style="background:var(--secondary); margin-top:10px;" onclick="agregarFilaMovimiento()">+ Agregar Otra Acción</button>
             <button class="btn-save" style="background:#10b981; margin-top:20px;" onclick="procesarMovimientos()">✅ GUARDAR TODOS LOS MOVIMIENTOS</button>
         </div>
 
@@ -182,7 +187,6 @@
                 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:10px;">
                     <div class="stat-box"><span class="stat-num" id="st-vacios">0</span><span class="stat-lbl">Vacíos</span></div>
                     <div class="stat-box"><span class="stat-num" id="st-carga">0</span><span class="stat-lbl">Con Carga</span></div>
-                    <div class="stat-box"><span class="stat-num" id="st-uso">0</span><span class="stat-lbl">En Uso</span></div>
                     <div class="stat-box"><span class="stat-num" id="st-tapados">0</span><span class="stat-lbl">Tapados</span></div>
                     <div class="stat-box"><span class="stat-num" id="st-fuera">0</span><span class="stat-lbl">F. Servicio</span></div>
                 </div>
@@ -192,11 +196,11 @@
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Consultar Existencias</h3>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                     <div>
-                        <label style="margin-top:0;">Cereal</label>
+                        <label style="margin-top:0; font-size:0.8rem;">Cereal</label>
                         <select id="sel-cereal-stock" onchange="actualizarOpcionesStock()"></select>
                     </div>
                     <div>
-                        <label style="margin-top:0;">Calidad</label>
+                        <label style="margin-top:0; font-size:0.8rem;">Calidad</label>
                         <select id="sel-calidad-stock" onchange="calcularStock()"><option value="TODAS">Todas</option></select>
                     </div>
                 </div>
@@ -207,7 +211,6 @@
                     <h4 style="margin-top:0; color:var(--primary);" id="detalle-existencias-titulo"></h4>
                     <div class="table-responsive">
                         <table class="data-table" id="tabla-detalle-stock">
-                            <!-- COLUMNA MTS ELIMINADA -->
                             <thead><tr><th>Unidad</th><th>Calidad</th><th>Tonelaje</th><th>1° Carga</th><th>Fumigación</th><th>Alerta</th></tr></thead>
                             <tbody></tbody>
                         </table>
@@ -243,11 +246,11 @@
                 <div class="card-panel">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                         <div>
-                            <label style="margin-top:0;">Cereal</label>
+                            <label style="margin-top:0; font-size:0.8rem;">Cereal</label>
                             <select id="sel-cereal-relleno" onchange="actualizarOpcionesRelleno()"></select>
                         </div>
                         <div>
-                            <label style="margin-top:0;">Calidad</label>
+                            <label style="margin-top:0; font-size:0.8rem;">Calidad</label>
                             <select id="sel-calidad-relleno" onchange="calcularRellenos()">
                                 <option value="TODAS">Todas</option>
                             </select>
@@ -313,7 +316,7 @@
     <div id="modal-historial" class="modal">
         <div class="modal-box">
             <h2 id="h-titulo" style="border:none; margin-bottom:5px;">Historial Silo 101</h2>
-            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Registro de movimientos diarios.</p>
+            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Trazabilidad de movimientos.</p>
             <div id="lista-historial"></div>
             <button class="btn-close" onclick="cerrarModal('modal-historial')">Cerrar</button>
         </div>
@@ -358,7 +361,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v12'); // v12
+                let saved = localStorage.getItem('unidad7_db_v13'); // v13 final
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -385,7 +388,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v12', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v13', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -416,7 +419,7 @@
 
         function getSiloData(num) {
             if(!db.silos[num]) {
-                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false };
+                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null };
             }
             if(!db.silos[num].historial) db.silos[num].historial = [];
             return db.silos[num];
@@ -426,63 +429,132 @@
             return ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO';
         }
 
-        // --- PESTAÑA: MOVIMIENTOS ---
+        // --- PESTAÑA: MOVIMIENTOS INTELIGENTES ---
         function agregarFilaMovimiento() {
             let div = document.createElement('div');
             div.className = 'row-inputs';
             div.innerHTML = `
-                <input type="number" placeholder="Silo" class="m-silo" style="max-width:70px;" min="1" oninput="autoCalcularFila(this)">
-                <input type="date" class="m-fecha" title="Fecha">
-                <select class="m-cereal" onchange="autoCalcularFila(this)">
-                    <option value="">Cereal...</option>
-                    ${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}
-                </select>
-                <input type="text" placeholder="Calidad" class="m-calidad">
-                <input type="number" placeholder="Mts" step="0.5" min="0" class="m-metros" style="max-width:60px;" oninput="autoCalcularFila(this)">
-                <input type="number" placeholder="Tons" min="0" class="m-tons" style="max-width:70px;">
-                <select class="m-estado" style="max-width:100px;">
-                    <option value="CON_CARGA">Con Carga</option>
-                    <option value="EN_USO">En Uso</option>
-                    <option value="RECIRCULACION">Recircular</option>
-                    <option value="VACIO">Vaciar</option>
-                    <option value="TAPADA">Tapado</option>
-                </select>
-                <select class="m-fumigo" style="max-width:100px;">
-                    <option value="NO">No Fumig.</option>
-                    <option value="SI">Fumigado</option>
-                </select>
-                <select class="m-alerta-manual" style="max-width:90px;">
-                    <option value="NO">Sin Alerta</option>
-                    <option value="SI">⚠️ Alerta</option>
-                </select>
-                <input type="text" placeholder="Obs..." class="m-obs">
+                <div class="form-group" style="flex-basis:100%; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
+                    <label style="color:var(--primary); font-size:0.9rem;">Tipo de Acción</label>
+                    <select class="m-tipo-accion" onchange="cambiarTipoAccion(this)" style="font-weight:bold; background:var(--bg);">
+                        <option value="INGRESO">📥 Ingreso de Mercadería (Carga)</option>
+                        <option value="EGRESO">📤 Egreso / Baja de Carga</option>
+                        <option value="RECIRCULACION">🔄 Recirculación</option>
+                        <option value="ESTADO">🚫 Cambio de Estado (Tapado/Fuera Servicio)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="min-width:80px;">
+                    <label>Silo</label>
+                    <input type="number" placeholder="Ej: 501" class="m-silo" min="1">
+                </div>
+                <div class="form-group" style="min-width:120px;">
+                    <label>Fecha</label>
+                    <input type="date" class="m-fecha">
+                </div>
+
+                <div id="campos-dinamicos" style="display:flex; gap:8px; flex-wrap:wrap; flex-basis:100%; margin-top:5px;"></div>
+
+                <div class="form-group full" style="margin-top:10px;">
+                    <label>Observaciones</label>
+                    <input type="text" placeholder="Ej: Mercadería húmeda, cinta rota..." class="m-obs">
+                </div>
+
                 <button class="btn-del" onclick="this.parentElement.remove()">X</button>
             `;
             div.querySelector('.m-fecha').value = new Date().toISOString().split('T')[0];
             document.getElementById('lista-movimientos').appendChild(div);
+            cambiarTipoAccion(div.querySelector('.m-tipo-accion'));
+        }
+
+        function cambiarTipoAccion(select) {
+            let row = select.closest('.row-inputs');
+            let tipo = select.value;
+            let container = row.querySelector('#campos-dinamicos');
+            container.innerHTML = '';
+
+            if(tipo === 'INGRESO') {
+                container.innerHTML = `
+                    <div class="form-group"><label>Origen</label>
+                        <select class="m-origen">
+                            <option value="CAMIONES">Camiones</option>
+                            <option value="VAGONES">Vagones</option>
+                            <option value="TRANSILE">Transile</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                            <option value="LIMPIEZA">Limpieza</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Cereal</label>
+                        <select class="m-cereal">${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}</select>
+                    </div>
+                    <div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2"></div>
+                    <div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" oninput="autoCalcularFila(this)"></div>
+                    <div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0"></div>
+                    <div class="form-group"><label>¿Fumigado?</label>
+                        <select class="m-fumigo"><option value="NO">No</option><option value="SI">Sí</option></select>
+                    </div>
+                `;
+                row.querySelector('.m-silo').oninput = function() { autoCalcularFila(this); };
+                row.querySelector('.m-metros').oninput = function() { autoCalcularFila(this); };
+            } 
+            else if(tipo === 'EGRESO') {
+                container.innerHTML = `
+                    <div class="form-group"><label>Motivo Baja</label>
+                        <select class="m-motivo-baja">
+                            <option value="EMBARQUE">Embarque</option>
+                            <option value="RECARGA">Recarga</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                            <option value="TRANSILE">Transile</option>
+                            <option value="LIMPIEZA">Limpieza</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Tonelaje a restar</label><input type="number" class="m-tons-baja" min="0" placeholder="0"></div>
+                `;
+            } 
+            else if(tipo === 'RECIRCULACION') {
+                container.innerHTML = `
+                    <div class="form-group full"><label>Motivo</label>
+                        <select class="m-motivo-recir">
+                            <option value="FUMIGACION">Fumigación</option>
+                            <option value="MUESTREO">Muestreo / Control</option>
+                            <option value="TEMPERATURA">Bajar Temperatura</option>
+                        </select>
+                    </div>
+                    <div class="form-group full"><label>¿Se fumigó en este evento?</label>
+                        <select class="m-fumigo-recir"><option value="NO">No</option><option value="SI">Sí</option></select>
+                    </div>
+                `;
+            } 
+            else if(tipo === 'ESTADO') {
+                container.innerHTML = `
+                    <div class="form-group full"><label>Nuevo Estado</label>
+                        <select class="m-nuevo-estado">
+                            <option value="TAPADA">Tapado</option>
+                            <option value="FUERA_SERVICIO">Fuera de Servicio</option>
+                            <option value="VACIO">Vacío (Borrar Carga)</option>
+                        </select>
+                    </div>
+                `;
+            }
         }
 
         function autoCalcularFila(input) {
-            let row = input.parentElement;
+            let row = input.closest('.row-inputs');
             let silo = parseInt(row.querySelector('.m-silo').value);
             let cerealId = row.querySelector('.m-cereal').value;
             let metros = parseFloat(row.querySelector('.m-metros').value);
             let tonsInput = row.querySelector('.m-tons');
 
-            if(!silo || silo < 0) {
-                row.style.border = "2px solid #ef4444"; tonsInput.value = ''; return;
-            }
+            if(!silo || silo < 0) { row.style.border = "2px solid #ef4444"; tonsInput.value = ''; return; }
             row.style.border = "1px solid var(--border)";
 
             if(!cerealId || isNaN(metros) || metros < 0) { tonsInput.value = ''; return; }
-            
             if(SILOS_MANUALES.includes(silo)) { tonsInput.placeholder = "Manual!"; return; }
             if(MIN_14.includes(silo) && metros < 14) { row.style.border = "2px solid #ef4444"; tonsInput.value = ''; return; }
             if(MIN_10.includes(silo) && metros < 10) { row.style.border = "2px solid #ef4444"; tonsInput.value = ''; return; }
             
             let cereal = db.cereales.find(c => c.id === cerealId);
             let tipo = esSiloTipo(silo);
-
             let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
             let tons = Math.round(phRef * cereal.ph / PH_BASE);
             tonsInput.value = tons;
@@ -493,62 +565,69 @@
             let procesados = 0, errores = 0, errorMsj = "";
 
             filas.forEach(row => {
+                let tipoAccion = row.querySelector('.m-tipo-accion').value;
                 let silo = parseInt(row.querySelector('.m-silo').value);
                 let fecha = row.querySelector('.m-fecha').value;
-                let cereal = row.querySelector('.m-cereal').value;
-                let calidad = row.querySelector('.m-calidad').value.toUpperCase().trim();
-                let metros = parseFloat(row.querySelector('.m-metros').value) || 0;
-                let tons = parseFloat(row.querySelector('.m-tons').value) || 0;
-                let estadoOp = row.querySelector('.m-estado').value;
-                let fumigo = row.querySelector('.m-fumigo').value;
-                let alertaManual = row.querySelector('.m-alerta-manual').value;
                 let obs = row.querySelector('.m-obs').value;
 
                 if(!silo || !fecha) return; 
 
-                if(silo < 0 || metros < 0 || tons < 0) { errorMsj = "No se permiten valores negativos."; errores++; return; }
-                if(MIN_14.includes(silo) && metros < 14) { errorMsj = `El silo ${silo} requiere un mínimo de 14 metros.`; errores++; return; }
-                if(MIN_10.includes(silo) && metros < 10) { errorMsj = `El silo ${silo} requiere un mínimo de 10 metros.`; errores++; return; }
-
                 let d = getSiloData(silo);
-                
-                if(d.cereal && d.cereal !== cereal && estadoOp !== 'VACIO' && estadoOp !== 'RECIRCULACION' && estadoOp !== 'TAPADA') {
-                    errorMsj = `El silo ${silo} ya contiene ${d.cereal}. No se puede mezclar con ${cereal}.`;
-                    errores++; return;
-                }
+                let histRegistro = { fecha: fecha, tipo: tipoAccion, obs: obs };
 
-                if(estadoOp === 'RECIRCULACION' && d.estado === 'VACIO') {
-                    errorMsj = `El silo ${silo} está vacío. No se puede recircular.`;
-                    errores++; return;
-                }
-                
-                if(estadoOp === 'VACIO') {
-                    d.estado = 'VACIO'; d.cereal = ''; d.calidad = ''; d.tonelaje = 0;
-                } else if(estadoOp === 'RECIRCULACION') {
-                    d.estado = d.estado === 'VACIO' ? 'CON_CARGA' : d.estado; 
-                    if(fumigo === 'SI') d.fumigacion_fecha = fecha; 
-                } else if(estadoOp === 'TAPADA') {
-                    d.estado = 'TAPADA';
-                } else {
-                    d.estado = estadoOp;
+                if(tipoAccion === 'INGRESO') {
+                    let cereal = row.querySelector('.m-cereal').value;
+                    let calidad = row.querySelector('.m-calidad').value.toUpperCase().trim();
+                    let metros = parseFloat(row.querySelector('.m-metros').value) || 0;
+                    let tons = parseFloat(row.querySelector('.m-tons').value) || 0;
+                    let fumigo = row.querySelector('.m-fumigo').value;
+                    let origen = row.querySelector('.m-origen').value;
+
+                    if(silo < 0 || metros < 0 || tons < 0) { errorMsj = "Valores negativos no permitidos."; errores++; return; }
+                    if(MIN_14.includes(silo) && metros < 14) { errorMsj = `Silo ${silo} requiere mín. 14m.`; errores++; return; }
+                    if(MIN_10.includes(silo) && metros < 10) { errorMsj = `Silo ${silo} requiere mín. 10m.`; errores++; return; }
+                    if(d.cereal && d.cereal !== cereal && d.estado === 'CON_CARGA') { errorMsj = `Silo ${silo} ya contiene ${d.cereal}.`; errores++; return; }
+
+                    d.estado = 'CON_CARGA';
                     d.cereal = cereal;
                     d.calidad = calidad;
                     d.tonelaje = tons;
                     if(fumigo === 'SI') d.fumigacion_fecha = fecha;
+                    if(!d.fecha_primera_carga) d.fecha_primera_carga = fecha;
+
+                    histRegistro.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${origen}`;
+                } 
+                else if(tipoAccion === 'EGRESO') {
+                    let motivo = row.querySelector('.m-motivo-baja').value;
+                    let tonsBaja = parseFloat(row.querySelector('.m-tons-baja').value) || 0;
+                    
+                    if(tonsBaja <= 0) { errorMsj = "Tonelaje a restar debe ser mayor a 0."; errores++; return; }
+
+                    let nuevoTonelaje = (parseFloat(d.tonelaje) || 0) - tonsBaja;
+                    if(nuevoTonelaje <= 0) {
+                        d.estado = 'VACIO'; d.cereal = ''; d.calidad = ''; d.tonelaje = 0;
+                        histRegistro.detalle = `Egreso TOTAL: ${motivo} | Unidad queda VACÍA.`;
+                    } else {
+                        d.tonelaje = nuevoTonelaje;
+                        histRegistro.detalle = `Egreso PARCIAL: ${tonsBaja}t por ${motivo}. Quedan ${nuevoTonelaje}t.`;
+                    }
+                } 
+                else if(tipoAccion === 'RECIRCULACION') {
+                    if(d.estado === 'VACIO') { errorMsj = "No se puede recircular un silo vacío."; errores++; return; }
+                    let motivo = row.querySelector('.m-motivo-recir').value;
+                    let fumigo = row.querySelector('.m-fumigo-recir').value;
+                    
+                    if(fumigo === 'SI') d.fumigacion_fecha = fecha;
+                    histRegistro.detalle = `Recirculación: Motivo ${motivo} | Fumigado: ${fumigo}`;
+                } 
+                else if(tipoAccion === 'ESTADO') {
+                    let nuevoEstado = row.querySelector('.m-nuevo-estado').value;
+                    d.estado = nuevoEstado;
+                    if(nuevoEstado === 'VACIO') { d.cereal = ''; d.calidad = ''; d.tonelaje = 0; }
+                    histRegistro.detalle = `Cambio de estado a: ${nuevoEstado.replace('_',' ')}`;
                 }
 
-                d.alerta_manual = (alertaManual === 'SI');
-
-                let histIndex = d.historial.findIndex(h => h.fecha === fecha);
-                let registro = {
-                    fecha: fecha, cereal: cereal, calidad: calidad, tons: tons, metros: metros,
-                    estado: estadoOp, fumigo: fumigo, obs: obs
-                };
-
-                if(histIndex >= 0) { d.historial[histIndex] = registro; } 
-                else { d.historial.push(registro); }
-                
-                if(!d.fecha_primera_carga && tons > 0) d.fecha_primera_carga = fecha;
+                d.historial.push(histRegistro);
                 procesados++;
             });
 
@@ -556,12 +635,12 @@
                 alert("⚠️ ERROR:\n" + errorMsj);
             } else if(procesados > 0) {
                 guardarDB();
-                alert(`✅ Se procesaron ${procesados} movimientos correctamente.`);
+                alert(`✅ Se guardaron ${procesados} acciones correctamente.`);
                 document.getElementById('lista-movimientos').innerHTML = '';
                 agregarFilaMovimiento();
                 dibujarTablero();
             } else {
-                alert("No hay datos válidos para guardar.");
+                alert("No hay datos para guardar.");
             }
         }
 
@@ -602,7 +681,7 @@
                     let fumigadoHtml = (d.fumigacion_fecha) ? `<div class="t-fumigado">🧪</div>` : '';
 
                     htmlSilos += `
-                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${d.estado==='EN_USO'?'estado-borde':''} ${d.estado==='TAPADA'?'estado-borde':''}" onclick="verHistorial(${num})">
+                        <div class="tarjeta ${isVacio?'bg-vacio':''} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''}" onclick="verHistorial(${num})">
                             <div class="franja ${franjaClass}"></div>
                             ${alertaHtml} ${fumigadoHtml}
                             <div class="t-num" style="color: ${isVacio?'var(--text-light)':'var(--text)'}">${num}</div>
@@ -633,17 +712,17 @@
                 let hist = [...d.historial].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
                 hist.forEach(h => {
                     let fechaStr = h.fecha.split('-').reverse().join('/');
+                    let tipoClass = h.tipo === 'INGRESO' ? 'tipo-ingreso' : (h.tipo === 'EGRESO' ? 'tipo-egreso' : (h.tipo === 'RECIRCULACION' ? 'tipo-recir' : 'tipo-estado'));
+                    let tipoNombre = h.tipo === 'RECIRCULACION' ? 'RECIRCULACIÓN' : (h.tipo === 'ESTADO' ? 'CAMBIO ESTADO' : h.tipo);
+                    
                     cont.innerHTML += `
                         <div class="hist-item">
                             <div class="hist-date">
                                 <span>${fechaStr}</span>
-                                <span>${h.tons} t</span>
                             </div>
-                            <div style="font-weight:bold; margin-bottom:5px;">${h.cereal} <span style="color:var(--text-light); font-weight:normal;">(${h.calidad||'S/C'})</span></div>
-                            <div class="hist-details">
-                                <span>Metros: <b>${h.metros || '-'} m</b></span>
-                                <span>Estado: <b>${h.estado.replace('_',' ')}</b></span>
-                                <span>Fumigado: <b>${h.fumigo}</b></span>
+                            <span class="hist-tipo ${tipoClass}">${tipoNombre}</span>
+                            <div class="hist-details" style="font-weight:bold; color:var(--text); margin-top:5px;">
+                                ${h.detalle}
                             </div>
                             ${h.obs ? `<div style="margin-top:5px; color:#d97706; font-size:0.85rem; border-top:1px dashed var(--border); padding-top:5px;">📝 ${h.obs}</div>` : ''}
                         </div>`;
@@ -669,6 +748,7 @@
                 let diffCarga = (hoy - cargaDate) / (1000 * 60 * 60 * 24);
                 if(diffCarga > 90) return true;
             }
+            if(d.estado === 'TAPADA') return true; // Tapado siempre es alerta
             return false;
         }
 
@@ -706,14 +786,13 @@
             if(!hay) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay alertas activas.</td></tr>';
         }
 
-        // --- EXISTENCIAS (CON DESPLEGABLES) ---
+        // --- EXISTENCIAS ---
         function actualizarExistencias() {
-            let counts = { VACIO:0, CON_CARGA:0, EN_USO:0, TAPADA:0, FUERA_SERVICIO:0 };
+            let counts = { VACIO:0, CON_CARGA:0, TAPADA:0, FUERA_SERVICIO:0 };
             Object.keys(db.silos).forEach(num => { counts[db.silos[num].estado]++; });
 
             document.getElementById('st-vacios').innerText = counts.VACIO;
             document.getElementById('st-carga').innerText = counts.CON_CARGA;
-            document.getElementById('st-uso').innerText = counts.EN_USO;
             document.getElementById('st-tapados').innerText = counts.TAPADA;
             document.getElementById('st-fuera').innerText = counts.FUERA_SERVICIO;
         }
@@ -753,7 +832,7 @@
 
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
-                if(d.cereal === cerealId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'EN_USO')) {
+                if(d.cereal === cerealId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
                     if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
                     
                     let n = parseInt(num);
@@ -817,7 +896,7 @@
             let hay = false;
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
-                if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA' && d.estado !== 'EN_USO')) return;
+                if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return;
                 if(calFiltro !== 'TODAS' && d.calidad !== calFiltro) return;
                 
                 let n = parseInt(num);
@@ -829,7 +908,6 @@
                 let fFum = d.fumigacion_fecha ? d.fumigacion_fecha.split('-').reverse().join('/') : 'Sin Fumigar';
                 let alertaTxt = tieneAlerta(n) ? '<span style="color:#ef4444; font-weight:bold;">⚠️ Sí</span>' : 'No';
                 
-                // SE ELIMINÓ LA COLUMNA DE METROS
                 tbody.innerHTML += `<tr>
                     <td><b>${n}</b></td>
                     <td>${d.calidad||'S/C'}</td>
@@ -1040,6 +1118,13 @@
             document.getElementById('sel-cereal-stock').innerHTML = opt;
             document.getElementById('sel-cereal-relleno').innerHTML = opt;
             document.getElementById('calc-cereal').innerHTML = opt;
+            
+            // Refrescar selects dentro de las filas de movimientos ya abiertas
+            document.querySelectorAll('.m-cereal').forEach(sel => {
+                let currentVal = sel.value;
+                sel.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+                if(currentVal) sel.value = currentVal;
+            });
         }
 
         function exportarDatos() {

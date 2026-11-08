@@ -8,6 +8,7 @@
   "background_color": "#f1f5f9",
   "theme_color": "#1e293b",
   "orientation": "portrait-primary",
+  "description": "Aplicación offline para la gestión de inventario de silos.",
   "icons": [
     {
       "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzFlMjkzYiIvPjxwYXRoIGQ9Ik0gMTU2IDE1MCBMIDM1NiAxNTAgTCAzNTYgNDAwIEwgMTU2IDQwMCBaIiBmaWxsPSIjY2JkNWUxIi8+PHBhdGggZD0iTSAxNTYgMTUwIEwgMjU2IDgwIEwgMzU2IDE1MCIgZmlsbD0iIzk0YTNiOCIvPjxyZWN0IHg9IjIwNiIgeT0iMjIwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjE4MCIgcj0iMTUiIGZpbGw9IiMzOGJkZjgiLz48L3N2Zz4=",

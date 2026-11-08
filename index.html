@@ -16,10 +16,27 @@
             --c-maiz: #d97706; --c-soja: #ca8a04; --c-sorgo: #2563eb; --c-trigo: #16a34a;
             --c-mezcla: #db2777; --c-girasol: #94a3b8; --c-otros: #dc2626;
         }
+        
+        /* MODO OSCURO MEJORADO */
         body.dark-mode {
             --primary: #0f172a; --secondary: #1e293b; --bg: #0f172a; --card: #1e293b;
-            --text: #f8fafc; --text-light: #cbd5e1; --border: #334155;
+            --text: #f8fafc; --text-light: #94a3b8; --border: #334155;
         }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background-color: #1e293b !important; /* Fondo oscuro para inputs */
+            color: #f8fafc !important; /* Texto claro */
+            border-color: #475569 !important;
+        }
+        body.dark-mode option {
+            background-color: #1e293b;
+            color: #f8fafc;
+        }
+        body.dark-mode .btn-fecha-rapida {
+            background-color: #334155;
+            color: #f8fafc;
+            border-color: #475569;
+        }
+
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; transition: background 0.3s; }
         
@@ -53,17 +70,12 @@
             .modal { align-items: flex-end; padding: 0; }
             .modal-box { border-radius: 20px 20px 0 0; max-height: 92vh; padding: 20px; padding-bottom: 30px; }
             .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 10px;}
-            .sector-tabs { overflow-x: auto; padding-bottom: 5px; }
         }
 
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--text); font-weight: 600; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
         .top-controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;}
         .buscador { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); outline: none;}
         
-        .sector-tabs { display: flex; gap: 5px; margin-bottom: 20px; }
-        .sector-btn { padding: 8px 15px; border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.85rem; white-space: nowrap;}
-        .sector-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
         /* MOVIMIENTOS INTELIGENTES */
         .row-inputs { display: flex; gap: 8px; margin-bottom: 15px; align-items: flex-start; background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; position: relative; transition: border 0.3s;}
         .row-inputs .btn-del { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-weight: bold;}
@@ -81,8 +93,8 @@
         .btn-dictar { position: absolute; right: 5px; top: 5px; bottom: 5px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; padding: 0 8px;}
 
         /* TABLERO TARJETAS */
-        .fila-sector { margin-bottom: 15px; }
-        .titulo-sector { font-size: 0.85rem; color: var(--text-light); font-weight: 700; margin-bottom: 5px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
+        .fila-cinta { margin-bottom: 25px; }
+        .titulo-cinta { font-size: 0.9rem; color: var(--text-light); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
         
         .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 4px; }
         .tarjeta { min-height: 60px; border-radius: 4px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 2px; transition: all 0.3s ease;}
@@ -147,7 +159,7 @@
         body.dark-mode .silo-sugerido { background: #064e3b !important; }
         
         @media print {
-            .sidebar, .top-controls, .sector-tabs, .btn-save, .btn-close, .sub-tabs, select, .cinta-card { display: none !important; }
+            .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; display: table !important;}
@@ -174,12 +186,23 @@
         <div id="tablero" class="tab-content active">
             <h2>Estado de Unidades</h2>
             <div class="top-controls">
-                <input type="text" id="buscador-silo" class="buscador" placeholder="🔍 Buscar N° de silo..." oninput="dibujarTablero()">
-                <select id="filtro-tablero" class="buscador" style="flex:0 1 200px;" onchange="dibujarTablero()">
-                    <option value="TODOS">Todos los Cereales</option>
-                </select>
+                <div style="flex:1; min-width:200px;">
+                    <label style="margin-top:0; font-size:0.8rem;">Filtro por Cereal</label>
+                    <select id="filtro-tablero" class="buscador" onchange="dibujarTablero()">
+                        <option value="TODOS">Todos los Cereales</option>
+                    </select>
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <label style="margin-top:0; font-size:0.8rem;">Filtro por Cinta</label>
+                    <select id="filtro-cinta-tablero" class="buscador" onchange="dibujarTablero()">
+                        <option value="TODAS">Todas las Cintas</option>
+                        <option value="C1">Cinta 1 (700s / 600s)</option>
+                        <option value="C2">Cinta 2 (500s / 400s Pares)</option>
+                        <option value="C3">Cinta 3 (300s / 400s Impares)</option>
+                        <option value="C4">Cinta 4 (100s / 200s)</option>
+                    </select>
+                </div>
             </div>
-            <div class="sector-tabs" id="sector-tabs-container"></div>
             <div id="contenedor-tablero"></div>
         </div>
 
@@ -365,18 +388,28 @@
         const MIN_14 = [702, 705, 708, 711, 714, 717];
         const MIN_10 = [502, 505, 508, 511, 514, 517];
         
-        const SECTORES_REALES = [
-            { id: 's700', nombre: "Sector 700", silos: [701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718] },
-            { id: 's600', nombre: "Sector 600", silos: [601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617] },
-            { id: 's500', nombre: "Sector 500", silos: [501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518] },
-            { id: 's400', nombre: "Sector 400", silos: [401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417] },
-            { id: 's300', nombre: "Sector 300", silos: [301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318] },
-            { id: 's200', nombre: "Sector 200", silos: [201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217] },
-            { id: 's100', nombre: "Sector 100", silos: [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118] }
-        ];
+        // AGRUPACION POR CINTAS
+        const CINTAS = {
+            C1: { nombre: "Cinta 1 (700s y 600s)", silos: [] },
+            C2: { nombre: "Cinta 2 (500s y 400s Pares)", silos: [] },
+            C3: { nombre: "Cinta 3 (300s y 400s Impares)", silos: [] },
+            C4: { nombre: "Cinta 4 (100s y 200s)", silos: [] }
+        };
+        
+        // Llenar los arrays de las cintas
+        for(let i=701; i<=718; i++) CINTAS.C1.silos.push(i);
+        for(let i=601; i<=617; i++) CINTAS.C1.silos.push(i);
+        
+        for(let i=501; i<=518; i++) CINTAS.C2.silos.push(i);
+        for(let i=402; i<=416; i+=2) CINTAS.C2.silos.push(i);
+        
+        for(let i=301; i<=318; i++) CINTAS.C3.silos.push(i);
+        for(let i=401; i<=417; i+=2) CINTAS.C3.silos.push(i);
+        
+        for(let i=101; i<=118; i++) CINTAS.C4.silos.push(i);
+        for(let i=201; i<=217; i++) CINTAS.C4.silos.push(i);
 
         let db = { cereales: [], silos: {} };
-        let sectorActual = 'todos';
         let cintaRellenoAbierta = null;
         let cintaStockAbierta = null;
         let silosModificadosReciente = [];
@@ -385,7 +418,7 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             
             try {
-                let saved = localStorage.getItem('unidad7_db_v15'); // v15
+                let saved = localStorage.getItem('unidad7_db_v16'); // v16
                 if(saved) { db = JSON.parse(saved); }
             } catch(e) { db = { cereales: [], silos: {} }; }
 
@@ -401,7 +434,6 @@
             
             guardarDB();
             actualizarSelects(); 
-            dibujarSectorTabs();
             dibujarTablero(); 
             dibujarAdmin();
             agregarFilaMovimiento();
@@ -412,7 +444,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        function guardarDB() { localStorage.setItem('unidad7_db_v15', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('unidad7_db_v16', JSON.stringify(db)); }
 
         function cambiarTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -461,7 +493,7 @@
             div.innerHTML = `
                 <div class="form-group" style="flex-basis:100%; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
                     <label style="color:var(--primary); font-size:0.9rem;">Tipo de Acción</label>
-                    <select class="m-tipo-accion" onchange="cambiarTipoAccion(this)" style="font-weight:bold; background:var(--bg);">
+                    <select class="m-tipo-accion" onchange="cambiarTipoAccion(this)" style="font-weight:bold;">
                         <option value="INGRESO">📥 Ingreso de Mercadería (Carga)</option>
                         <option value="EGRESO">📤 Egreso / Baja de Carga</option>
                         <option value="RECIRCULACION">🔄 Recirculación</option>
@@ -500,7 +532,6 @@
             document.getElementById('lista-movimientos').appendChild(div);
             cambiarTipoAccion(div.querySelector('.m-tipo-accion'));
             
-            // Autocompletar al escribir silo
             let inputSilo = div.querySelector('.m-silo');
             inputSilo.addEventListener('input', function() {
                 let num = parseInt(this.value);
@@ -551,13 +582,17 @@
             if(tipo === 'INGRESO') {
                 container.innerHTML = `
                     <div class="form-group"><label>Origen</label>
-                        <select class="m-origen">
+                        <select class="m-origen" onchange="validarOrigen(this)">
                             <option value="CAMIONES">Camiones</option>
                             <option value="VAGONES">Vagones</option>
                             <option value="TRANSILE">Transile</option>
                             <option value="TRANSFERENCIA">Transferencia</option>
                             <option value="LIMPIEZA">Limpieza</option>
                         </select>
+                    </div>
+                    <div class="form-group" id="div-unidad-origen" style="display:none;">
+                        <label>Unidad Origen</label>
+                        <input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305">
                     </div>
                     <div class="form-group"><label>Cereal</label>
                         <select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'))">${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}</select>
@@ -610,6 +645,16 @@
                         </select>
                     </div>
                 `;
+            }
+        }
+
+        function validarOrigen(select) {
+            let row = select.closest('.row-inputs');
+            let divUnidad = row.querySelector('#div-unidad-origen');
+            if(select.value === 'TRANSILE') {
+                divUnidad.style.display = 'flex';
+            } else {
+                divUnidad.style.display = 'none';
             }
         }
 
@@ -673,6 +718,7 @@
                     let tons = parseFloat(row.querySelector('.m-tons').value) || 0;
                     let fumigo = row.querySelector('.m-fumigo').value;
                     let origen = row.querySelector('.m-origen').value;
+                    let uniOrigen = row.querySelector('.m-unidad-origen').value;
 
                     if(silo < 0 || metros < 0 || tons < 0) { errorMsj = "Valores negativos no permitidos."; errores++; return; }
                     if(MIN_14.includes(silo) && metros < 14) { errorMsj = `Silo ${silo} requiere mín. 14m.`; errores++; return; }
@@ -686,7 +732,10 @@
                     if(fumigo === 'SI') d.fumigacion_fecha = fecha;
                     if(!d.fecha_primera_carga) d.fecha_primera_carga = fecha;
 
-                    histRegistro.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${origen}`;
+                    let detalleOrigen = origen;
+                    if(origen === 'TRANSILE' && uniOrigen) detalleOrigen += ` (desde ${uniOrigen})`;
+
+                    histRegistro.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen}`;
                 } 
                 else if(tipoAccion === 'EGRESO') {
                     let motivo = row.querySelector('.m-motivo-baja').value;
@@ -731,7 +780,7 @@
                 }
 
                 d.historial.push(histRegistro);
-                d.lastUpdate = Date.now(); // Guardamos la hora de modificación para fusiones
+                d.lastUpdate = Date.now(); 
                 silosModificadosReciente.push(silo);
                 procesados++;
             });
@@ -750,34 +799,22 @@
         }
 
         // --- TABLERO ---
-        function dibujarSectorTabs() {
-            let cont = document.getElementById('sector-tabs-container');
-            cont.innerHTML = `<button class="sector-btn ${sectorActual === 'todos' ? 'active' : ''}" onclick="sectorActual='todos'; dibujarSectorTabs(); dibujarTablero();">Todos</button>`;
-            SECTORES_REALES.forEach(sec => {
-                let btn = document.createElement('button');
-                btn.className = 'sector-btn ' + (sectorActual === sec.id ? 'active' : '');
-                btn.innerText = sec.nombre;
-                btn.onclick = () => { sectorActual = sec.id; dibujarSectorTabs(); dibujarTablero(); };
-                cont.appendChild(btn);
-            });
-        }
-
         function dibujarTablero() {
             const contenedor = document.getElementById('contenedor-tablero');
-            const filtro = document.getElementById('filtro-tablero').value;
-            const busqueda = document.getElementById('buscador-silo').value.trim();
+            const filtroCereal = document.getElementById('filtro-tablero').value;
+            const filtroCinta = document.getElementById('filtro-cinta-tablero').value;
             let htmlTotal = '';
 
-            SECTORES_REALES.forEach(sector => {
-                if(sectorActual !== 'todos' && sector.id !== sectorActual && busqueda === '') return;
-                if(busqueda !== '' && !sector.silos.includes(parseInt(busqueda))) return;
-                
+            // Recorremos las cintas
+            for(let key in CINTAS) {
+                if(filtroCinta !== 'TODAS' && filtroCinta !== key) continue;
+
+                let cinta = CINTAS[key];
                 let htmlSilos = '';
-                sector.silos.forEach(num => {
-                    if(busqueda !== '' && num.toString() !== busqueda) return;
-                    
+
+                cinta.silos.forEach(num => {
                     let d = getSiloData(num);
-                    if(filtro !== 'TODOS' && d.cereal !== filtro && d.estado !== 'VACIO') return;
+                    if(filtroCereal !== 'TODOS' && d.cereal !== filtroCereal && d.estado !== 'VACIO') return;
 
                     let isVacio = d.estado === 'VACIO';
                     let textoCereal = isVacio ? 'VACÍO' : d.cereal;
@@ -797,9 +834,13 @@
                             <div class="t-info-2">${d.tonelaje>0?d.tonelaje+'t':''}</div>
                         </div>`;
                 });
-                if(htmlSilos !== '') htmlTotal += `<div class="fila-sector"><div class="titulo-sector">${sector.nombre}</div><div class="grid-tarjetas">${htmlSilos}</div></div>`;
-            });
-            contenedor.innerHTML = htmlTotal || '<p style="text-align:center; color:var(--text-light);">No se encontraron silos.</p>';
+
+                if(htmlSilos !== '') {
+                    htmlTotal += `<div class="fila-cinta"><div class="titulo-cinta">${cinta.nombre}</div><div class="grid-tarjetas">${htmlSilos}</div></div>`;
+                }
+            }
+
+            contenedor.innerHTML = htmlTotal || '<p style="text-align:center; color:var(--text-light);">No se encontraron silos con ese filtro.</p>';
             
             let countAlertas = 0;
             Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) countAlertas++; });
@@ -922,7 +963,6 @@
                     text: 'Datos actualizados de la Unidad 7'
                 }).catch(err => console.log('Error al compartir:', err));
             } else {
-                // Fallback si el navegador no soporta compartir archivos (PC o navegadores viejos)
                 let blob = new Blob([dataStr], {type: "application/json"});
                 let url = URL.createObjectURL(blob);
                 let a = document.createElement('a');
@@ -942,19 +982,16 @@
 
                     let importados = 0;
                     
-                    // Fusionar Cereales (agregar los que no existan)
                     if(importedData.cereales) {
                         importedData.cereales.forEach(cImp => {
                             if(!db.cereales.find(c => c.id === cImp.id)) { db.cereales.push(cImp); importados++; }
                         });
                     }
 
-                    // Fusionar Silos comparando la fecha de modificación
                     for(let num in importedData.silos) {
                         let localSilo = getSiloData(num);
                         let impSilo = importedData.silos[num];
                         
-                        // Si el silo importado tiene una modificación más nueva que la local, lo reemplazamos
                         if(impSilo.lastUpdate && impSilo.lastUpdate > (localSilo.lastUpdate || 0)) {
                             db.silos[num] = impSilo;
                             importados++;

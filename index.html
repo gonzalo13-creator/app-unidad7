@@ -117,7 +117,7 @@
         .data-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
         .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 24px; cursor: pointer; }
-        .btn-share { background: #25D366; color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;}
+        .btn-share { background: #25D366; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; font-size: 0.95rem; font-weight: 600; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;}
         .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
         /* HISTORIAL */
@@ -329,19 +329,6 @@
         <div id="admin" class="tab-content">
             <h2>Administración</h2>
             
-            <div class="card-panel" style="border: 2px solid #25D366; background: #f0fdf4;">
-                <h3 style="margin-top:0; font-size:1.1rem; color:#065f46;">Compartir con Compañeros</h3>
-                <p style="font-size:0.85rem; color:#065f46; margin-bottom:15px;">Usá este botón para enviar tus datos actualizados por WhatsApp. Tu compañero debe importarlo para fusionar la info automáticamente.</p>
-                
-                <button class="btn-share" onclick="compartirDatos()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                    Compartir Mis Datos
-                </button>
-                
-                <label style="margin-top:20px; color:#065f46;">Importar y Fusionar Datos de Compañero:</label>
-                <input type="file" id="import-file" accept=".json" onchange="fusionarDatos(event)" style="background:white; padding:10px;">
-            </div>
-
             <div class="card-panel">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Parámetros de Cereales</h3>
                 <div id="lista-admin-cereales"></div>
@@ -350,6 +337,20 @@
                 <input type="number" id="new-cereal-ph" placeholder="PH (Ej: 75)" style="margin-bottom:5px;" inputmode="decimal">
                 <input type="color" id="new-cereal-color" value="#dc2626" style="height:40px; margin-bottom:10px;">
                 <button class="btn-save" onclick="agregarCerealNuevo()">Guardar Parámetro</button>
+            </div>
+
+            <!-- SECCIÓN COMPARTIR (AHORA AL FINAL Y DISCRETA) -->
+            <div class="card-panel" style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Compartir y Sincronizar</h3>
+                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Enviá tus datos por WhatsApp o importá los de un compañero.</p>
+                
+                <button class="btn-share" onclick="compartirDatos()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Compartir Mis Datos
+                </button>
+                
+                <label style="margin-top:20px; display: block; font-size: 0.85rem;">Importar y Fusionar Datos de Compañero:</label>
+                <input type="file" id="import-file" accept=".json" onchange="fusionarDatos(event)" style="padding:8px; font-size:0.85rem; width: 100%;">
             </div>
         </div>
     </div>
@@ -429,7 +430,6 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    // Intentar migrar de la versión anterior
                     let old = localStorage.getItem('unidad7_db_v18');
                     if (old) {
                         db = JSON.parse(old);
@@ -646,7 +646,14 @@
                             <option value="LIMPIEZA">Limpieza</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Tonelaje a restar</label><input type="number" class="m-tons-baja" min="0" placeholder="0" inputmode="decimal"></div>
+                    <div class="form-group">
+                        <label>Nueva Medida (m)</label>
+                        <input type="number" class="m-nuevos-metros" step="0.5" min="0" inputmode="decimal" oninput="calcularEgresoPorMetros(this)" placeholder="Metros Vacíos">
+                    </div>
+                    <div class="form-group">
+                        <label>Tonelaje a restar</label>
+                        <input type="number" class="m-tons-baja" min="0" placeholder="0" inputmode="decimal">
+                    </div>
                 `;
             } 
             else if(tipo === 'RECIRCULACION') {
@@ -733,6 +740,46 @@
             inputTons.value = tons;
         }
 
+        function calcularEgresoPorMetros(input) {
+            let row = input.closest('.row-inputs');
+            let inputSilo = row.querySelector('.m-silo');
+            let inputNuevosMetros = row.querySelector('.m-nuevos-metros');
+            let inputTonsBaja = row.querySelector('.m-tons-baja');
+
+            if(!inputSilo || !inputNuevosMetros || !inputTonsBaja) return;
+
+            let silo = parseInt(inputSilo.value);
+            let metros = parseFloat(inputNuevosMetros.value);
+
+            if(!silo || isNaN(metros) || metros < 0) { return; }
+
+            let d = getSiloData(silo);
+            if(d.estado === 'VACIO') {
+                inputTonsBaja.value = 0;
+                return;
+            }
+
+            let cereal = db.cereales.find(c => c.id === d.cereal);
+            if(!cereal) return;
+
+            let tipo = esSiloTipo(silo);
+            let topeMetros = obtenerTopeMetros(silo);
+            let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+            let capMaxTon = Math.round(capMaxRefTope * cereal.ph / PH_BASE);
+
+            let refNuevosMetros = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
+            let capacidadRestante = Math.round(refNuevosMetros * cereal.ph / PH_BASE);
+
+            let nuevoTonelaje = capMaxTon - capacidadRestante;
+            if(nuevoTonelaje < 0) nuevoTonelaje = 0;
+
+            let tonsRestadas = (parseFloat(d.tonelaje) || 0) - nuevoTonelaje;
+            
+            if(tonsRestadas < 0) tonsRestadas = 0;
+
+            inputTonsBaja.value = tonsRestadas;
+        }
+
         function procesarMovimientos() {
             let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
             let procesados = 0;
@@ -786,6 +833,7 @@
                     histRegistro.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen}`;
                 } 
                 else if(tipoAccion === 'EGRESO') {
+                    let metros = parseFloat(row.querySelector('.m-nuevos-metros').value) || 0;
                     let motivo = row.querySelector('.m-motivo-baja').value;
                     let tonsBaja = parseFloat(row.querySelector('.m-tons-baja').value) || 0;
                     
@@ -797,6 +845,9 @@
                     }
 
                     let nuevoTonelaje = (parseFloat(d.tonelaje) || 0) - tonsBaja;
+                    let msgDetalle = `Egreso PARCIAL: ${tonsBaja}t por ${motivo}`;
+                    if(metros > 0) msgDetalle += ` (Medido: ${metros}m)`;
+                    
                     if(nuevoTonelaje <= 0) {
                         if(!confirm(`El silo ${silo} quedará VACÍO (0t). ¿Continuar?`)) { return; }
                         d.estado = 'VACIO'; d.cereal = ''; d.calidad = ''; d.tonelaje = 0;
@@ -804,7 +855,7 @@
                         histRegistro.detalle = `Egreso TOTAL: ${motivo} | Unidad queda VACÍA.`;
                     } else {
                         d.tonelaje = nuevoTonelaje;
-                        histRegistro.detalle = `Egreso PARCIAL: ${tonsBaja}t por ${motivo}. Quedan ${nuevoTonelaje}t.`;
+                        histRegistro.detalle = msgDetalle + `. Quedan ${nuevoTonelaje}t.`;
                     }
                 } 
                 else if(tipoAccion === 'RECIRCULACION') {
@@ -871,7 +922,6 @@
                     let isVacio = d.estado === 'VACIO';
                     let textoCereal = isVacio ? 'VACÍO' : d.cereal;
                     
-                    // Arreglo color para cereales personalizados
                     let cObj = db.cereales.find(c => c.id === d.cereal);
                     let colorFranja = isVacio ? 'transparent' : (cObj ? cObj.color : '#64748b');
 
@@ -921,7 +971,6 @@
             if(d.historial.length === 0) {
                 cont.innerHTML = '<p style="text-align:center;">Sin movimientos registrados.</p>';
             } else {
-                // Ordenar usando localeCompare en las fechas YYYY-MM-DD (evita bugs de UTC)
                 let hist = [...d.historial].sort((a,b) => b.fecha.localeCompare(a.fecha));
                 hist.forEach((h, index) => {
                     let realIndex = d.historial.length - 1 - index; 
@@ -1066,7 +1115,6 @@
                     if(!importedData.silos) throw new Error("Formato inválido");
 
                     let importados = 0;
-                    // Evitar Prototype Pollution
                     let keysSilos = Object.keys(importedData.silos).filter(k => k !== '__proto__' && k !== 'constructor' && k !== 'prototype');
 
                     if(importedData.cereales) {
@@ -1079,9 +1127,7 @@
                         let localSilo = getSiloData(num);
                         let impSilo = importedData.silos[num];
                         
-                        // Si el importado es más nuevo
                         if(impSilo.lastUpdate && impSilo.lastUpdate > (localSilo.lastUpdate || 0)) {
-                            // Fusionar Historiales para no perder trazabilidad
                             let mergedHist = [...(impSilo.historial || []), ...(localSilo.historial || [])];
                             let uniqueHist = [];
                             let seen = new Set();
@@ -1109,7 +1155,7 @@
                 } catch(err) { 
                     alert("❌ Archivo inválido o dañado."); 
                 } finally {
-                    event.target.value = ''; // Reset input
+                    event.target.value = '';
                 }
             };
             reader.readAsText(file);
@@ -1486,7 +1532,6 @@
             let optTodos = '<option value="TODOS">Todos los Cereales</option>';
             db.cereales.forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
             
-            // Guardar valores previos para no perder selección al actualizar
             let prevTablero = document.getElementById('filtro-tablero').value;
             let prevStock = document.getElementById('sel-cereal-stock').value;
             let prevRelleno = document.getElementById('sel-cereal-relleno').value;

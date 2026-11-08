@@ -260,7 +260,7 @@
     <div id="silobot-modal">
         <div class="chat-window">
             <div class="chat-header">
-                <span>🤖 SiloBot 2.0</span>
+                <span>🤖 SiloBot 2.1</span>
                 <button onclick="toggleSiloBot()" type="button">×</button>
             </div>
             <div class="chat-body" id="chat-body">
@@ -2151,13 +2151,11 @@
             body.scrollTop = body.scrollHeight;
         }
 
-        // --- EL NUEVO CEREBRO DEL SILOBOT ---
+        // --- CEREBRO DEL SILOBOT 2.1 (CORREGIDO) ---
         function processBotQuery(query) {
-            // 1. Normalizar texto (sin acentos, minúsculas)
             let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             let response = "";
 
-            // Función auxiliar para calcular espacio disponible
             function getEspacioDisp(num) {
                 let d = db.silos[num];
                 if(!d || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return 0;
@@ -2175,18 +2173,13 @@
                 return capMaxTonTope - actual;
             }
 
-            // 2. Buscar si el usuario mencionó un cereal
             let cerealEncontrado = db.cereales.find(c => 
                 q.includes(c.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || 
                 q.includes(c.id.toLowerCase())
             );
 
-            // 3. Buscar número de silo (3 dígitos)
             let matchSilo = q.match(/\b(10[1-9]|11[0-8]|20[1-9]|21[0-7]|30[1-9]|31[0-8]|40[1-9]|41[0-7]|50[1-9]|51[0-8]|60[1-9]|61[0-7]|70[1-9]|71[0-8])\b/);
 
-            // --- LÓGICA DE RESPUESTA ---
-
-            // A. Información de un Silo específico
             if (matchSilo) {
                 let num = matchSilo[0];
                 let d = getSiloData(num);
@@ -2205,30 +2198,21 @@
                 return;
             }
 
-            // B. Info específica de un Cereal (Stock, Relleno, Alertas)
             if (cerealEncontrado) {
                 let cId = cerealEncontrado.id;
                 let cNombre = cerealEncontrado.nombre;
                 
-                // Si pide solo relleno de ese cereal
                 if (q.includes('relleno') || q.includes('espacio') || q.includes('donde pongo') || q.includes('donde mando')) {
                     let totEspacio = 0;
                     let mejorSilo = null;
                     let maxEsp = 0;
                     let silosDisp = [];
 
+                    // ACÁ ESTÁ LA CORRECCIÓN: SOLO busca en silos que YA TIENEN ese cereal y están CON_CARGA o TAPADA
                     TODOS_LOS_SILOS.forEach(num => {
                         let d = db.silos[num];
-                        // Solo consideramos silos que ya tengan ese cereal o esten vacios
-                        if(d && (d.cereal === cId || d.estado === 'VACIO')) {
+                        if(d && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') && d.cereal === cId) {
                             let esp = getEspacioDisp(num);
-                            if(d.estado === 'VACIO') {
-                                // Si está vacío, calculamos capacidad total
-                                let tipo = esSiloTipo(num);
-                                let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, obtenerTopeMetros(num));
-                                esp = Math.round(capMaxRefTope * cerealEncontrado.ph / PH_BASE);
-                            }
-                            
                             if(esp > 0) {
                                 totEspacio += esp;
                                 silosDisp.push({num, esp});
@@ -2239,8 +2223,9 @@
 
                     response = `⛽ <b>Relleno para ${cNombre}:</b><br>`;
                     response += `Espacio Total: <b>${totEspacio}t</b><br><br>`;
+                    
                     if(mejorSilo) {
-                        response += `💡 <b>Silo Sugerido:</b> ${mejorSilo} (${maxEsp}t disp.)<br><br>`;
+                        response += `💡 <b>Silo Sugerido (para rellenar):</b> ${mejorSilo} (${maxEsp}t disp.)<br><br>`;
                     }
                     
                     if(silosDisp.length > 0) {
@@ -2249,13 +2234,12 @@
                             response += `- Silo ${s.num}: ~${s.esp}t<br>`;
                         });
                     } else {
-                        response += `No hay silos disponibles para ${cNombre}.`;
+                        response += `No hay silos con ${cNombre} que tengan espacio disponible para rellenar.`;
                     }
                     addChatMessage(response, 'bot');
                     return;
                 }
 
-                // Si no especificó relleno, le damos TODO el resumen del cereal
                 let stocks = { total: 0, calidades: {} };
                 let totEspacio = 0;
                 let alertas = 0;
@@ -2279,26 +2263,26 @@
                 for(let cal in stocks.calidades) {
                     response += `  - ${cal}: ${stocks.calidades[cal]}t<br>`;
                 }
-                response += `<br>⛽ <b>Espacio Disp.:</b> ~${totEspacio}t<br>`;
+                response += `<br>⛽ <b>Espacio Disp. (Relleno):</b> ~${totEspacio}t<br>`;
                 response += `<br>🚨 <b>Alertas:</b> ${alertas > 0 ? alertas + ' silos requieren atención' : 'Ninguna'}`;
                 
                 addChatMessage(response, 'bot');
                 return;
             }
 
-            // C. Rellenos Generales (sin cereal específico)
             if (q.includes('relleno') || q.includes('espacio')) {
                 let totEspacio = 0;
                 let porCereal = {};
                 
                 TODOS_LOS_SILOS.forEach(num => {
-                    let esp = getEspacioDisp(num);
-                    if(esp > 0) {
-                        totEspacio += esp;
-                        let d = db.silos[num];
-                        if(!d || !d.cereal) return;
-                        if(!porCereal[d.cereal]) porCereal[d.cereal] = 0;
-                        porCereal[d.cereal] += esp;
+                    let d = db.silos[num];
+                    if(d && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                        let esp = getEspacioDisp(num);
+                        if(esp > 0) {
+                            totEspacio += esp;
+                            if(!porCereal[d.cereal]) porCereal[d.cereal] = 0;
+                            porCereal[d.cereal] += esp;
+                        }
                     }
                 });
 
@@ -2310,7 +2294,6 @@
                 return;
             }
 
-            // D. Fumigación
             if (q.includes('fumig')) {
                 if (q.includes('sin')) {
                     let arr = [];
@@ -2354,7 +2337,6 @@
                 return;
             }
 
-            // E. Estados específicos (Tapados, Fuera de servicio, Con carga)
             if (q.includes('tapad')) {
                 let arr = [];
                 TODOS_LOS_SILOS.forEach(num => { let d = db.silos[num]; if(d && d.estado === 'TAPADA') arr.push(num); });
@@ -2379,7 +2361,6 @@
                 return;
             }
 
-            // F. Origen (Camiones, Vagones)
             if (q.includes('camion') || q.includes('vagon')) {
                 let tipo = q.includes('camion') ? 'CAMIONES' : 'VAGONES';
                 let hoy = getFechaLocal();
@@ -2399,7 +2380,6 @@
                 return;
             }
 
-            // G. Fallbacks viejos (Variación, Vacíos, Alertas, Olvidados)
             if (q.includes('variacion') || q.includes('cambio')) {
                 let hoy = getFechaLocal();
                 let v = {};
@@ -2450,7 +2430,6 @@
                 return;
             }
 
-            // H. Si no entendió nada
             addChatMessage("No entendí. Probá con:<br>- El nombre de un cereal (ej: <b>Maíz</b>)<br>- <b>Relleno de Trigo</b><br>- <b>Fumigación</b><br>- <b>Tapados</b><br>- <b>Silo 501</b><br>- O usá los botones de abajo.", 'bot');
         }
 

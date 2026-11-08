@@ -160,7 +160,7 @@
         .t-info-3 { font-size: 0.45rem; font-weight: 600; color: var(--text-light); margin-top: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
         .t-info-2 { font-size: 0.45rem; font-weight: 500; color: var(--text-light); margin-top: 1px;}
         .t-alerta { position: absolute; top: 3px; right: 3px; background: #ef4444; color: white; width: 12px; height: 12px; border-radius: 50%; font-size: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        .t-fumigado { position: absolute; top: 3px; left: 3px; font-size: 10px; }
+        .t-fumigado { position: absolute; top: 3px; left: 3px; font-size: 11px; }
         
         .estado-tapado { background: #fffbeb !important; border: 2px solid #f59e0b; }
         body.dark-mode .estado-tapado { background: #451a03 !important; }
@@ -530,7 +530,6 @@
     <script>
         window.onerror = function(msg, url, line, col, error) {
             console.error("Error crítico:", msg, {url, line, col, error});
-            // Si hay un error, muestra un cartel en vez de quedarse en blanco
             let errDiv = document.getElementById('error-fatal');
             if(!errDiv) {
                 errDiv = document.createElement('div');
@@ -665,6 +664,12 @@
             if (!db.silos) db.silos = {};
             if (!db.herramienta) db.herramienta = { cereales: [], silos: {} };
             
+            // Compatibilidad con datos viejos que no tenian fumigacion_tipo
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if(d.fumigacion_fecha && !d.fumigacion_tipo) d.fumigacion_tipo = 'TOTAL';
+            });
+
             guardarDB();
             actualizarSelects(); 
             dibujarTablero(); 
@@ -718,7 +723,7 @@
 
         function getSiloData(num) {
             if(!db.silos[num]) {
-                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, origen: null, lastUpdate: 0 };
+                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], relleno_manual: null, alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, origen: null, lastUpdate: 0 };
             }
             if(!db.silos[num].historial) db.silos[num].historial = [];
             if(!db.silos[num].lastUpdate) db.silos[num].lastUpdate = 0;
@@ -778,7 +783,7 @@
             let calidadEncontrada = null;
 
             db.cereales.forEach(c => {
-                if(c.nombre && query.includes(c.nombre.toLowerCase()) || c.id && query.includes(c.id.toLowerCase())) {
+                if((c.nombre && query.includes(c.nombre.toLowerCase())) || (c.id && query.includes(c.id.toLowerCase()))) {
                     cerealEncontrado = c.id;
                 }
             });
@@ -884,7 +889,12 @@
                     <div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this)"></div>
                     <div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal"></div>
                     <div class="form-group full"><label>¿Fumigado?</label>
-                        <select class="m-fumigo"><option value="NO">No</option><option value="SI">Sí</option></select>
+                        <select class="m-fumigo">
+                            <option value="NO">No se fumigó</option>
+                            <option value="TOTAL">Fumigación Total</option>
+                            <option value="LIQUIDO">Solo Líquido</option>
+                            <option value="PASTILLAS">Solo Pastillas</option>
+                        </select>
                     </div>
                 `;
             } 
@@ -919,7 +929,12 @@
                         </select>
                     </div>
                     <div class="form-group full"><label>¿Se fumigó en este evento?</label>
-                        <select class="m-fumigo-recir"><option value="NO">No</option><option value="SI">Sí</option></select>
+                        <select class="m-fumigo-recir">
+                            <option value="NO">No se fumigó</option>
+                            <option value="TOTAL">Fumigación Total</option>
+                            <option value="LIQUIDO">Solo Líquido</option>
+                            <option value="PASTILLAS">Solo Pastillas</option>
+                        </select>
                     </div>
                 `;
             } 
@@ -1078,10 +1093,21 @@
                     let detalleOrigen = origen;
                     if(origen === 'TRANSILE' && uniOrigen) detalleOrigen += ` (desde ${uniOrigen})`;
                     
-                    moveData.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen}`;
+                    let txtFum = fumigo === 'NO' ? 'No fumigado' : `Fumigado (${fumigo})`;
+
+                    moveData.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen} | ${txtFum}`;
                     moveData.tons = tons;
                     moveData.cereal = cereal;
-                    moveData.nuevoEstado = { estado: 'CON_CARGA', cereal, calidad, tonelaje: tons, fumigacion_fecha: fumigo === 'SI' ? fecha : d.fumigacion_fecha, fecha_primera_carga: d.fecha_primera_carga || fecha, origen: detalleOrigen };
+                    moveData.nuevoEstado = { 
+                        estado: 'CON_CARGA', 
+                        cereal, 
+                        calidad, 
+                        tonelaje: tons, 
+                        fumigacion_fecha: fumigo !== 'NO' ? fecha : null, 
+                        fumigacion_tipo: fumigo !== 'NO' ? fumigo : null,
+                        fecha_primera_carga: d.fecha_primera_carga || fecha, 
+                        origen: detalleOrigen 
+                    };
                 } 
                 else if(tipoAccion === 'EGRESO') {
                     let metros = parseFloat(row.querySelector('.m-nuevos-metros').value) || 0;
@@ -1102,7 +1128,7 @@
                     moveData.tons = tonsBaja;
                     moveData.cereal = d.cereal;
                     moveData.nuevoEstado = nuevoTonelaje <= 0 
-                        ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, alerta_manual: false, relleno_manual: null, origen: null }
+                        ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null }
                         : { tonelaje: nuevoTonelaje };
                 } 
                 else if(tipoAccion === 'RECIRCULACION') {
@@ -1110,10 +1136,11 @@
                     let motivo = row.querySelector('.m-motivo-recir').value;
                     let fumigo = row.querySelector('.m-fumigo-recir').value;
                     
-                    moveData.detalle = `Recirculación: Motivo ${motivo} | Fumigado: ${fumigo}`;
+                    let txtFum = fumigo === 'NO' ? 'No fumigado' : `Fumigado (${fumigo})`;
+                    moveData.detalle = `Recirculación: Motivo ${motivo} | ${txtFum}`;
                     moveData.tons = 0;
                     moveData.cereal = d.cereal;
-                    moveData.nuevoEstado = fumigo === 'SI' ? { fumigacion_fecha: fecha } : {};
+                    moveData.nuevoEstado = fumigo !== 'NO' ? { fumigacion_fecha: fecha, fumigacion_tipo: fumigo } : {};
                 } 
                 else if(tipoAccion === 'ESTADO') {
                     let nuevoEstado = row.querySelector('.m-nuevo-estado').value;
@@ -1124,7 +1151,7 @@
                     moveData.tons = 0;
                     moveData.cereal = d.cereal;
                     moveData.nuevoEstado = nuevoEstado === 'VACIO' 
-                        ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, alerta_manual: false, relleno_manual: null, origen: null }
+                        ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null }
                         : { estado: nuevoEstado };
                 }
 
@@ -1243,7 +1270,12 @@
                     let colorFranja = isVacio ? 'transparent' : (cObj ? cObj.color : '#64748b');
 
                     let alertaHtml = tieneAlerta(num) ? `<div class="t-alerta">!</div>` : '';
-                    let fumigadoHtml = (d.fumigacion_fecha) ? `<div class="t-fumigado">🧪</div>` : '';
+                    
+                    let fumigadoHtml = '';
+                    if(d.fumigacion_tipo === 'TOTAL') fumigadoHtml = `<div class="t-fumigado">🧪</div>`;
+                    else if(d.fumigacion_tipo === 'LIQUIDO') fumigadoHtml = `<div class="t-fumigado">💧</div>`;
+                    else if(d.fumigacion_tipo === 'PASTILLAS') fumigadoHtml = `<div class="t-fumigado">💊</div>`;
+                    else if(d.fumigacion_fecha) fumigadoHtml = `<div class="t-fumigado">🧪</div>`; // Retrocompatibilidad
                     
                     let animateClass = silosModificadosReciente.includes(num) ? 'destacado' : '';
 
@@ -1986,7 +2018,7 @@
 
         function exportarCSV() {
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-            csvContent += "Silo;Estado;Cereal;Calidad;Tonelaje;Fecha Carga;Fumigacion;Origen\n";
+            csvContent += "Silo;Estado;Cereal;Calidad;Tonelaje;Fecha Carga;Fumigacion;Tipo Fumigacion;Origen\n";
             
             Object.keys(db.silos).sort((a,b) => parseInt(a) - parseInt(b)).forEach(num => {
                 let d = db.silos[num];
@@ -1994,7 +2026,7 @@
                 let cName = db.cereales.find(c => c.id === d.cereal)?.nombre || d.cereal;
                 let row = [
                     num, d.estado, cName, d.calidad || '-', d.tonelaje || 0, 
-                    d.fecha_primera_carga || '-', d.fumigacion_fecha || '-', d.origen || '-'
+                    d.fecha_primera_carga || '-', d.fumigacion_fecha || '-', d.fumigacion_tipo || '-', d.origen || '-'
                 ];
                 csvContent += row.join(";") + "\n";
             });
@@ -2241,7 +2273,10 @@
                 response = `<b>📋 Silo ${num}</b><br>`;
                 response += `Estado: <b>${d.estado}</b><br>`;
                 if(d.cereal) response += `Contenido: <b>${d.cereal} (${d.calidad})</b><br>Tonelaje: <b>${d.tonelaje}t</b><br>`;
-                if(d.fumigacion_fecha) response += `Fumigado: ${d.fumigacion_fecha}<br>`;
+                if(d.fumigacion_fecha) {
+                    let txtFum = d.fumigacion_tipo || 'TOTAL';
+                    response += `Fumigado: ${d.fumigacion_fecha} (${txtFum})<br>`;
+                }
                 addChatMessage(response, 'bot');
                 return;
             }

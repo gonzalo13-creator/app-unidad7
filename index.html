@@ -79,8 +79,7 @@
         .btn-fecha-rapida:hover { background: var(--border); }
 
         /* TABLERO TARJETAS */
-        .fila-cinta { margin-bottom: 25px; }
-        .titulo-cinta { font-size: 0.9rem; color: var(--text-light); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; border-left: 3px solid var(--primary); padding-left: 8px;}
+        .fila-cinta { margin-bottom: 10px; } /* Reducido porque ya no hay títulos grandes */
         
         .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 4px; }
         .tarjeta { min-height: 60px; border-radius: 4px; background: var(--card); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow: hidden; padding-bottom: 2px; transition: all 0.3s ease;}
@@ -183,13 +182,25 @@
                     </select>
                 </div>
                 <div style="flex:1; min-width:200px;">
-                    <label style="margin-top:0; font-size:0.8rem;">Filtro por Cinta</label>
+                    <label style="margin-top:0; font-size:0.8rem;">Filtro de Vista</label>
+                    <!-- NUEVO SELECTOR DE FILTRO -->
                     <select id="filtro-cinta-tablero" class="buscador" onchange="dibujarTablero()">
-                        <option value="TODAS">Todas las Cintas</option>
-                        <option value="C1">Cinta 1 (700s / 600s)</option>
-                        <option value="C2">Cinta 2 (500s / 400s Pares)</option>
-                        <option value="C3">Cinta 3 (300s / 400s Impares)</option>
-                        <option value="C4">Cinta 4 (100s / 200s)</option>
+                        <option value="TODAS">Tablero Completo</option>
+                        <optgroup label="Por Cinta (Extracción)">
+                            <option value="C1">Cinta 1 (700s / 600s)</option>
+                            <option value="C2">Cinta 2 (500s / 400s Pares)</option>
+                            <option value="C3">Cinta 3 (300s / 400s Impares)</option>
+                            <option value="C4">Cinta 4 (100s / 200s)</option>
+                        </optgroup>
+                        <optgroup label="Por Fila Física">
+                            <option value="700">Fila 700s</option>
+                            <option value="600">Fila 600s</option>
+                            <option value="500">Fila 500s</option>
+                            <option value="400">Fila 400s</option>
+                            <option value="300">Fila 300s</option>
+                            <option value="200">Fila 200s</option>
+                            <option value="100">Fila 100s</option>
+                        </optgroup>
                     </select>
                 </div>
             </div>
@@ -206,7 +217,6 @@
             <button class="btn-save" style="background:var(--secondary); margin-top:10px;" onclick="agregarFilaMovimiento()">+ Agregar Otra Acción</button>
             <button class="btn-save" style="background:#10b981; margin-top:20px;" onclick="procesarMovimientos()">✅ GUARDAR TODOS LOS MOVIMIENTOS</button>
             
-            <!-- BOTÓN DESHACER (Oculto por defecto) -->
             <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin-top:10px;" onclick="deshacerUltimoCambio()">↩️ Deshacer Último Guardado</button>
         </div>
 
@@ -353,7 +363,6 @@
                 <button class="btn-save" style="background:#0284c7; margin-top:0;" onclick="exportarCSV()">📊 Descargar Excel (CSV)</button>
             </div>
 
-            <!-- SECCIÓN COMPARTIR (AHORA AL FINAL Y DISCRETA) -->
             <div class="card-panel" style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Compartir y Sincronizar</h3>
                 <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Enviá tus datos por WhatsApp o importá los de un compañero.</p>
@@ -369,7 +378,6 @@
         </div>
     </div>
 
-    <!-- MODAL: HISTORIAL DE SILO -->
     <div id="modal-historial" class="modal">
         <div class="modal-box">
             <h2 id="h-titulo" style="border:none; margin-bottom:5px;">Historial Silo 101</h2>
@@ -379,7 +387,6 @@
         </div>
     </div>
 
-    <!-- TOAST: ACTUALIZACIÓN PWA -->
     <div id="toast-update">
         <span>🚀 Nueva versión disponible</span>
         <button onclick="actualizarApp()">Recargar</button>
@@ -400,30 +407,31 @@
         const SILOS_MANUALES = [701, 703, 704, 706, 707, 709, 710, 712, 713, 715, 716, 718];
         const MIN_14 = [702, 705, 708, 711, 714, 717];
         const MIN_10 = [502, 505, 508, 511, 514, 517];
-        
-        const CINTAS = {
-            C1: { nombre: "Cinta 1 (700s y 600s)", silos: [] },
-            C2: { nombre: "Cinta 2 (500s y 400s Pares)", silos: [] },
-            C3: { nombre: "Cinta 3 (300s y 400s Impares)", silos: [] },
-            C4: { nombre: "Cinta 4 (100s y 200s)", silos: [] }
+
+        // DEFINIMOS LAS FILAS FÍSICAS PARA EL TABLERO
+        const FILAS_TABLERO = {
+            '700': [701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718],
+            '600': [601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617],
+            '500': [501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518],
+            '400': [401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417],
+            '300': [301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318],
+            '200': [201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217],
+            '100': [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118]
         };
-        
-        for(let i=701; i<=718; i++) CINTAS.C1.silos.push(i);
-        for(let i=601; i<=617; i++) CINTAS.C1.silos.push(i);
-        for(let i=501; i<=518; i++) CINTAS.C2.silos.push(i);
-        for(let i=402; i<=416; i+=2) CINTAS.C2.silos.push(i);
-        for(let i=301; i<=318; i++) CINTAS.C3.silos.push(i);
-        for(let i=401; i<=417; i+=2) CINTAS.C3.silos.push(i);
-        for(let i=101; i<=118; i++) CINTAS.C4.silos.push(i);
-        for(let i=201; i<=217; i++) CINTAS.C4.silos.push(i);
+
+        const CINTAS = {
+            C1: { nombre: "Cinta 1 (700s y 600s)" },
+            C2: { nombre: "Cinta 2 (500s y 400s Pares)" },
+            C3: { nombre: "Cinta 3 (300s y 400s Impares)" },
+            C4: { nombre: "Cinta 4 (100s y 200s)" }
+        };
 
         let db = { __version: DB_VERSION, cereales: [], silos: {} };
-        let backupDB = null; // Para deshacer
+        let backupDB = null;
         let cintaRellenoAbierta = null;
         let cintaStockAbierta = null;
         let silosModificadosReciente = [];
 
-        // --- FUNCIONES DE FECHA ---
         function getFechaLocal() {
             const d = new Date();
             const year = d.getFullYear();
@@ -438,7 +446,6 @@
             return new Date(y, m - 1, d);
         }
 
-        // --- SERVICE WORKER UPDATE ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
@@ -821,14 +828,12 @@
             let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
             let procesados = 0;
             let errores = [];
-            let silosEnLote = new Set(); // Para evitar procesar el mismo silo dos veces
+            let silosEnLote = new Set();
             silosModificadosReciente = [];
 
-            // Validación previa: ¿Hay algo para guardar?
             let hayDatos = Array.from(filas).some(row => row.querySelector('.m-silo').value);
             if(!hayDatos) { alert("No hay datos para guardar."); return; }
 
-            // Guardar backup antes de procesar
             backupDB = JSON.parse(JSON.stringify(db));
 
             filas.forEach(row => {
@@ -945,7 +950,6 @@
                 dibujarTablero();
                 alert(`✅ Se guardaron ${procesados} acciones correctamente.`);
                 
-                // Mostrar botón de deshacer
                 document.getElementById('btn-desahacer').style.display = 'block';
             } else if(errores.length === 0) {
                 alert("No hay datos nuevos para guardar.");
@@ -969,16 +973,36 @@
         function dibujarTablero() {
             const contenedor = document.getElementById('contenedor-tablero');
             const filtroCereal = document.getElementById('filtro-tablero').value;
-            const filtroCinta = document.getElementById('filtro-cinta-tablero').value;
+            const filtroVista = document.getElementById('filtro-cinta-tablero').value;
             let htmlTotal = '';
 
-            for(let key in CINTAS) {
-                if(filtroCinta !== 'TODAS' && filtroCinta !== key) continue;
+            // Orden de las filas de arriba hacia abajo
+            const ordenFilas = ['700', '600', '500', '400', '300', '200', '100'];
 
-                let cinta = CINTAS[key];
+            ordenFilas.forEach(prefijo => {
+                let silosFila = FILAS_TABLERO[prefijo];
                 let htmlSilos = '';
 
-                cinta.silos.forEach(num => {
+                silosFila.forEach(num => {
+                    // Filtrar por Cinta o Fila
+                    if(filtroVista.startsWith('C')) {
+                        let esC1 = num >= 600 && num <= 718;
+                        let esC2 = (num >= 501 && num <= 518) || (num >= 402 && num <= 416 && num % 2 === 0);
+                        let esC3 = (num >= 301 && num <= 318) || (num >= 401 && num <= 417 && num % 2 !== 0);
+                        let esC4 = num >= 101 && num <= 217;
+                        
+                        let pertenece = false;
+                        if(filtroVista === 'C1' && esC1) pertenece = true;
+                        if(filtroVista === 'C2' && esC2) pertenece = true;
+                        if(filtroVista === 'C3' && esC3) pertenece = true;
+                        if(filtroVista === 'C4' && esC4) pertenece = true;
+                        
+                        if(!pertenece) return;
+                    } 
+                    else if(filtroVista !== 'TODAS' && filtroVista !== prefijo) {
+                        return;
+                    }
+
                     let d = getSiloData(num);
                     if(filtroCereal !== 'TODOS' && d.cereal !== filtroCereal && d.estado !== 'VACIO') return;
 
@@ -1005,9 +1029,9 @@
                 });
 
                 if(htmlSilos !== '') {
-                    htmlTotal += `<div class="fila-cinta"><div class="titulo-cinta">${cinta.nombre}</div><div class="grid-tarjetas">${htmlSilos}</div></div>`;
+                    htmlTotal += `<div class="fila-cinta"><div class="grid-tarjetas">${htmlSilos}</div></div>`;
                 }
-            }
+            });
 
             contenedor.innerHTML = htmlTotal || '<p style="text-align:center; color:var(--text-light);">No se encontraron silos con ese filtro.</p>';
             
@@ -1589,12 +1613,12 @@
         }
 
         function exportarCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM para que Excel lea acentos bien
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             csvContent += "Silo;Estado;Cereal;Calidad;Tonelaje;Fecha Carga;Fumigacion;Origen\n";
             
             Object.keys(db.silos).sort((a,b) => parseInt(a) - parseInt(b)).forEach(num => {
                 let d = db.silos[num];
-                if(d.estado === 'VACIO') return; // Solo exportar los que tienen algo
+                if(d.estado === 'VACIO') return;
                 let cName = db.cereales.find(c => c.id === d.cereal)?.nombre || d.cereal;
                 let row = [
                     num, d.estado, cName, d.calidad || '-', d.tonelaje || 0, 

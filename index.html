@@ -643,8 +643,8 @@
             return false;
         };
 
-        const DB_VERSION = 30;
-        const DB_KEY = 'unidad7_db_v30';
+        const DB_VERSION = 31;
+        const DB_KEY = 'unidad7_db_v31';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -830,7 +830,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v29') || localStorage.getItem('unidad7_db_v28');
+                    let old = localStorage.getItem('unidad7_db_v30') || localStorage.getItem('unidad7_db_v29');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -3242,7 +3242,7 @@
                 if (botContext.justAskedHelp) {
                     addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando (ej: <i>Tanques</i>).", 'bot');
                 } else {
-                    addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Maíz</i> (resumen completo)<br>- <i>¿Y el espacio?</i> (si ya preguntaste por un cereal)<br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Que puedo cargar en el 305</i><br>- <i>Cual es el silo mas vacio de soja</i><br>- <i>Simular ph 69 maiz</i><br>- <i>Tanques</i><br>- <i>Caño 1</i><br>- <i>Camiones ayer</i>", 'bot');
+                    addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Maíz</i> (resumen completo)<br>- <i>¿Y el espacio?</i> (si ya preguntaste por un cereal)<br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Que puedo cargar en el 305</i><br>- <i>Cual es el silo mas vacio de soja</i><br>- <i>Simular ph 69 maiz</i><br>- <i>Tanques</i><br>- <i>Caño 1</i><br>- <i>Camiones ayer</i><br>- <i>Maíz por línea</i><br>- <i>Cuánto maíz hay desde el 101 al 118</i>", 'bot');
                     botContext.justAskedHelp = true;
                     setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
                 }
@@ -3250,7 +3250,7 @@
             }
 
             if (q === 'cereales' || q === 'stock') {
-                addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Simular ph 74 maiz</i>", 'bot');
+                addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Simular ph 74 maiz</i><br>- <i>Maíz por línea</i>", 'bot');
                 return;
             }
 
@@ -3284,7 +3284,7 @@
 
             // --- NUEVAS HABILIDADES IA ---
 
-            // 1. Simulación de PH (CORREGIDA)
+            // 1. Simulación de PH
             let matchSimular = q.match(/simular (?:ph )?(\d+)/i) || q.match(/simular ph\s+(\d+)/i);
             if (q.includes('simular')) {
                 let phMatch = q.match(/\d+/);
@@ -3298,7 +3298,6 @@
                         let d = db.silos[num];
                         if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
                             totalActual += (parseFloat(d.tonelaje) || 0);
-                            // Regla de 3: Si PH sube, el peso sube proporcionalmente.
                             let factor = nuevoPh / cerealEncontrado.ph;
                             totalSimulado += ((parseFloat(d.tonelaje) || 0) * factor);
                         }
@@ -3316,7 +3315,58 @@
                 }
             }
 
-            // 2. ¿Qué puedo cargar en [Silo]?
+            // 2. Consulta por Rango de Silos (Ej: 101 al 118)
+            let matchRange = q.match(/(?:del|desde el?)?\s*\b(\d{3})\s*(?:al|a|-)\s*(\d{3})\b/i);
+            if (matchRange) {
+                let start = parseInt(matchRange[1]);
+                let end = parseInt(matchRange[2]);
+                let cerealEncontrado = findCereal(q);
+                
+                if (cerealEncontrado) {
+                    let total = 0;
+                    let detalles = [];
+                    for(let i=start; i<=end; i++) {
+                        let d = getSiloData(i);
+                        if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                            total += (parseFloat(d.tonelaje) || 0);
+                            detalles.push(`Silo ${i}: ${d.tonelaje}t (${d.calidad})`);
+                        }
+                    }
+                    response = `📊 <b>${cerealEncontrado.nombre} entre ${start} y ${end}:</b><br>`;
+                    response += `Total: <b>${total}t</b><br><br>`;
+                    if(detalles.length > 0) {
+                        response += detalles.join('<br>');
+                    } else {
+                        response += "No hay carga en ese rango.";
+                    }
+                    addChatMessage(response, 'bot');
+                    return;
+                }
+            }
+
+            // 3. Consulta "Por Línea" (Ej: Maíz por línea)
+            if (q.includes('por linea') || q.includes('por fila') || q.includes('por cinta')) {
+                let cerealEncontrado = findCereal(q);
+                if (cerealEncontrado) {
+                    let lineas = { '100':0, '200':0, '300':0, '400':0, '500':0, '600':0, '700':0 };
+                    Object.keys(db.silos).forEach(num => {
+                        let d = db.silos[num];
+                        if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                            let n = parseInt(num);
+                            let centena = Math.floor(n / 100) * 100;
+                            if(lineas[centena] !== undefined) lineas[centena] += (parseFloat(d.tonelaje) || 0);
+                        }
+                    });
+                    response = `📊 <b>${cerealEncontrado.nombre} por Línea:</b><br><br>`;
+                    for(let l in lineas) {
+                        if(lineas[l] > 0) response += `Línea ${l}s: <b>${lineas[l]}t</b><br>`;
+                    }
+                    addChatMessage(response, 'bot');
+                    return;
+                }
+            }
+
+            // 4. ¿Qué puedo cargar en [Silo]?
             let matchQueCargo = q.match(/que (puedo )?(cargo|cargar|meto|mando) en (el |la )?([a-z0-9\s]+)/i);
             if (matchQueCargo) {
                 let unitStr = matchQueCargo[4].trim();
@@ -3354,7 +3404,7 @@
                 }
             }
 
-            // 3. ¿Cuál es el silo más vacío de [Cereal]?
+            // 5. ¿Cuál es el silo más vacío de [Cereal]?
             let matchMasVacio = q.match(/silo mas vacio de\s+([a-z0-9]+)/i);
             if (matchMasVacio) {
                 let cerealName = matchMasVacio[1];
@@ -3382,7 +3432,7 @@
                 }
             }
 
-            // 4. ¿Cuánto falta para llenar el [Silo]?
+            // 6. ¿Cuánto falta para llenar el [Silo]?
             let matchFaltaLlenar = q.match(/cuanto falta para llenar el (silo )?(\d+)/i);
             if (matchFaltaLlenar) {
                 let num = matchFaltaLlenar[2];
@@ -3397,7 +3447,7 @@
                 return;
             }
 
-            // 5. Relleno General
+            // 7. Relleno General
             let matchLinea = q.match(/linea de\s+([a-z]+)/i);
             if (matchLinea) {
                 let cName = matchLinea[1];
@@ -3419,7 +3469,7 @@
                 }
             }
 
-            let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
+            let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
             if (matchDondePongo) {
                 let tonsReq = parseFloat(matchDondePongo[2]);
                 let cerealQ = matchDondePongo[4].trim();

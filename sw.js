@@ -1,8 +1,8 @@
-const CACHE_NAME = 'silos-u7-v44'; // IMPORTANTE: Cambiar este número cada vez que subas cambios a GitHub
+const CACHE_NAME = 'silos-u7-v45'; 
 const urlsToCache = [ './', './index.html', './manifest.json' ];
 
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Fuerza al nuevo Service Worker a activarse inmediatamente
+    self.skipWaiting(); 
     event.waitUntil( 
         caches.open(CACHE_NAME).then(cache => {
             return Promise.all(urlsToCache.map(url => cache.add(url).catch(() => console.log('Falló cache de: ' + url))));

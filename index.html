@@ -885,7 +885,7 @@
             actualizarSelects(); 
             dibujarTablero(); 
             dibujarTanques();
-            dibujarAdmin();
+            // dibujarAdmin(); // ELIMINADO PORQUE NO EXISTE
             dibujarCierres();
             restaurarBorrador();
             if(document.querySelectorAll('#lista-movimientos .row-inputs').length === 0) agregarFilaMovimiento();
@@ -1453,6 +1453,17 @@
                         tons = parseFloat(row.querySelector('.m-tons').value) || 0;
                         if(MIN_14.includes(silo) && metros < 14) { errores.push(`Silo ${silo} requiere mín. 14m.`); continue; }
                         if(MIN_10.includes(silo) && metros < 10) { errores.push(`Silo ${silo} requiere mín. 10m.`); continue; }
+                        
+                        // VALIDACION DE CAPACIDAD MAXIMA
+                        let tipoU = esSiloTipo(silo);
+                        let topeMetros = obtenerTopeMetros(silo);
+                        let capMaxRefTope = interpolar(tipoU === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+                        let cerealObj = db.cereales.find(c => c.id === cereal);
+                        let capMaxTon = Math.round(capMaxRefTope * (cerealObj ? cerealObj.ph : PH_BASE) / PH_BASE);
+                        if(tons > capMaxTon) {
+                            errores.push(`Silo ${silo}: Capacidad máxima excedida (~${capMaxTon}t).`);
+                            continue;
+                        }
                     } else {
                         tons = parseFloat(row.querySelector('.m-tons-manual').value) || 0;
                     }
@@ -2240,10 +2251,19 @@
                         let alertaCal = (idx % 30 === 0);
                         let sinCalidad = (idx % 40 === 0);
 
+                        // CALCULO DE CAPACIDAD REAL PARA DATOS DE PRUEBA
+                        let tipo = esSiloTipo(num);
+                        let topeMetros = obtenerTopeMetros(num);
+                        let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+                        let cObj = db.cereales.find(cr => cr.id === c);
+                        let ph = cObj ? cObj.ph : 76;
+                        let capMaxTon = Math.round(capMaxRefTope * ph / PH_BASE);
+                        let tonsReales = Math.floor(capMaxTon * (0.3 + Math.random() * 0.6)); // 30% - 90% de capacidad
+
                         d.cereal = c;
                         d.calidad = sinCalidad ? '' : cal;
                         d.estado = tapado ? 'TAPADA' : 'CON_CARGA';
-                        d.tonelaje = Math.floor(Math.random() * 800) + 200;
+                        d.tonelaje = tonsReales;
                         d.fecha_primera_carga = fechaPasada(viejo ? (Math.floor(Math.random() * 50) + 100) : (Math.floor(Math.random() * 50) + 5));
                         d.fumigacion_fecha = sinFumigar ? null : fechaPasada(Math.floor(Math.random() * 40) + 1);
                         d.fumigacion_tipo = sinFumigar ? null : ((idx % 2 === 0) ? 'TOTAL' : 'PASTILLAS');
@@ -2416,11 +2436,16 @@
                         totalGeneral += t;
                         
                         let cal = d.calidad || 'S/C';
-                        if(!calidades[cal]) calidades[cal] = { silos:0, tanques:0, paso:0, total:0, pendientes:0 };
+                        if(!calidades[cal]) calidades[cal] = { silos:0, tanques:0, paso:0, total:0, pendientes: [] };
                         calidades[cal].total += t;
 
-                        let isPendiente = false;
-                        if (!d.calidad || !d.fumigacion_fecha || !d.fecha_primera_carga) isPendiente = true;
+                        let falta = [];
+                        if (!d.calidad) falta.push('Calidad');
+                        if (!d.fumigacion_fecha && (d.tipo==='SILO'||d.tipo==='TANQUE'||d.tipo==='ENTRESILO')) falta.push('Fumigación');
+                        if (!d.fecha_primera_carga) falta.push('F. Carga');
+                        if (falta.length > 0) {
+                            calidades[cal].pendientes.push(`${num} (${falta.join(', ')})`);
+                        }
 
                         if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') {
                             totalSilos += t;
@@ -2432,8 +2457,6 @@
                             totalPaso += t;
                             calidades[cal].paso += t;
                         }
-                        
-                        if (isPendiente) calidades[cal].pendientes++;
                     }
                 });
 
@@ -2463,11 +2486,12 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="data-table" style="margin-top:0;">
-                                    <thead><tr><th>Calidad</th><th>Unidades (t)</th><th>Tanques (t)</th><th>Caños (t)</th><th>Total (t)</th><th>Pendientes</th></tr></thead>
+                                    <thead><tr><th>Calidad</th><th>Unidades (t)</th><th>Tanques (t)</th><th>Paso/Emerg (t)</th><th>Total (t)</th><th>Pendientes</th></tr></thead>
                                     <tbody>
                                         ${Object.keys(data.calidades).map(cal => {
                                             let c = data.calidades[cal];
-                                            let pendHtml = c.pendientes > 0 ? `<span style="color:#ef4444; font-weight:bold;">⚠️ ${c.pendientes} unidades</span>` : '—';
+                                            let titleText = c.pendientes.join('\n');
+                                            let pendHtml = c.pendientes.length > 0 ? `<span style="color:#ef4444; font-weight:bold; cursor:help;" title="${titleText}">⚠️ ${c.pendientes.length} unidades</span>` : '—';
                                             return `
                                             <tr>
                                                 <td><b>${cal}</b></td>
@@ -2481,6 +2505,12 @@
                                     </tbody>
                                 </table>
                             </div>
+                            ${Object.keys(data.calidades).some(k => data.calidades[k].pendientes.length > 0) ? `
+                                <div style="margin-top:10px; font-size:0.8rem; color:#b91c1c; background:#fef2f2; padding:10px; border-radius:6px; border:1px solid #fecaca;">
+                                    <b>Detalle de pendientes:</b><br>
+                                    ${Object.keys(data.calidades).map(k => data.calidades[k].pendientes.length > 0 ? `- ${k}: ${data.calidades[k].pendientes.join(' | ')}` : '').filter(f=>f).join('<br>')}
+                                </div>
+                            ` : ''}
                         </div>
                     `;
                 }
@@ -3119,6 +3149,11 @@
         function processBotQuery(query) {
             let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             
+            if (q === 'ayuda') {
+                addChatMessage("🤖 <b>Ayuda de SiloBot</b><br>Podés escribirme cosas como:<br>- <i>Maíz</i> (resumen)<br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Tanques</i><br>- <i>Caño 1</i><br>- <i>Alertas</i><br>- <i>Vencidas</i><br>- <i>Pendientes</i><br>- <i>Camiones ayer</i><br>- <i>Simular ph 74 maíz</i>", 'bot');
+                return;
+            }
+
             if (q === 'cereales') {
                 addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Simular ph 74</i>", 'bot');
                 return;

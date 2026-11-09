@@ -133,7 +133,7 @@
             .tool-state-badge { font-size: 0.55rem; padding: 2px 4px;}
             .tool-body { font-size: 0.75rem; }
 
-            #herramienta-chk-cereales { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; }
+            #herramienta-chk-cereales { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; }
             .chk-cereal { padding: 6px 8px; font-size: 0.75rem; justify-content: center;}
 
             .modal { align-items: flex-end; padding: 0; }
@@ -265,7 +265,7 @@
         .tool-body { font-size: 0.8rem; display: flex; flex-direction: column; gap: 2px; flex:1;}
         .tool-warning { font-size: 0.7rem; color: #ef4444; font-weight: bold; margin-top: 4px; line-height: 1.1;}
 
-        .chk-cereal { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer;}
+        .chk-cereal { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; }
         .chk-cereal input { width: 18px; height: 18px; cursor: pointer; }
         
         .offline-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block; margin-left: 5px; }
@@ -280,7 +280,6 @@
 
         .floor-header { font-size: 1.1rem; font-weight: bold; color: var(--text-light); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px dashed var(--border); padding-bottom: 5px; }
 
-        /* NUEVOS ESTILOS PARA ALERTAS ACORDEON */
         .alert-accordion-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
         .alert-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; font-size: 1rem; }
         .alert-header:hover { background: rgba(0,0,0,0.05); }
@@ -288,7 +287,6 @@
         .alert-body.active { display: block; }
         .alert-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
 
-        /* NUEVOS ESTILOS PARA CIERRE Y PDF */
         .step-box { border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 15px; background: var(--bg); }
         .step-title { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
         .step-desc { font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px; }
@@ -420,7 +418,7 @@
             <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Hacé clic en cualquier tanque para ver su flujo. Los caños, tolvas y balanzas se listan al final como unidades de paso/emergencia.</p>
             
             <!-- Resumen General Tanques -->
-            <div id="tanques-resumen" class="card-panel" style="display:flex; justify-content:space-around; text-align:center; flex-wrap:wrap; gap:10px;">
+            <div id="tanques-resumen" class="card-panel" style="display:flex; flex-direction:column; gap:10px;">
                 <!-- Se llena con JS -->
             </div>
 
@@ -560,7 +558,8 @@
             
             <div class="card-panel">
                 <h3 style="margin-top:0; font-size:0.9rem; color:var(--text-light);">1. Elegir Cereales (Múltiple)</h3>
-                <div id="herramienta-chk-cereales" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px;"></div>
+                <!-- Checkboxes compactos -->
+                <div id="herramienta-chk-cereales" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;"></div>
                 
                 <div style="display:flex; flex-direction: column; gap: 10px; border-top:1px solid var(--border); padding-top:15px;">
                     <span style="color:var(--text-light); font-size:0.8rem;">* Tocá las tarjetas para cambiar su estado.</span>
@@ -578,11 +577,11 @@
             <!-- CIERRE DE JORNADA -->
             <div class="step-box">
                 <div class="step-title">📸 Cierre de Jornada (Snapshot)</div>
-                <p class="step-desc">Guarda una "foto" del inventario actual en el historial para que no se pierda. Luego podés generar un PDF prolijo para imprimir o enviar.</p>
+                <p class="step-desc"><b>Guardar Cierre:</b> Toma una "foto" del inventario actual y la <b>guarda en el historial</b> de la base de datos (para consultar días después).<br><b>Generar PDF Actual:</b> Imprime el estado actual <b>sin guardarlo</b> en el historial.</p>
                 <button class="btn-save" style="background:#3b82f6; margin-top:0;" onclick="cerrarJornada()" type="button">Guardar Cierre del Día</button>
                 <button class="btn-save" style="background:#475569; margin-top:10px;" onclick="imprimirCierreActual()" type="button">Generar PDF del Estado Actual</button>
                 
-                <h3 style="margin-top:20px; font-size:0.9rem;">Historial de Cierres</h3>
+                <h3 style="margin-top:20px; font-size:0.9rem;">Historial de Cierres Guardados</h3>
                 <div id="lista-cierres" style="max-height:200px; overflow-y:auto;"></div>
             </div>
 
@@ -642,8 +641,8 @@
             return false;
         };
 
-        const DB_VERSION = 26;
-        const DB_KEY = 'unidad7_db_v26';
+        const DB_VERSION = 27;
+        const DB_KEY = 'unidad7_db_v27';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -826,7 +825,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v25') || localStorage.getItem('unidad7_db_v24');
+                    let old = localStorage.getItem('unidad7_db_v26') || localStorage.getItem('unidad7_db_v25');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -1013,7 +1012,6 @@
             return 0;
         }
 
-        // --- SISTEMA DE BORRADOR ---
         let searchTimeout;
         function filtrarSmartSearchDebounce() {
             clearTimeout(searchTimeout);
@@ -1040,7 +1038,6 @@
             localStorage.removeItem('movimientos_borrador');
         }
 
-        // --- SISTEMA DE MOVIMIENTOS ---
         function agregarFilaMovimiento() {
             let div = document.createElement('div');
             div.className = 'row-inputs';
@@ -1602,7 +1599,6 @@
             });
         }
 
-        // --- TABLERO Y TANQUES ---
         function dibujarTablero() {
             const contenedor = document.getElementById('contenedor-tablero');
             if(!contenedor) return;
@@ -1792,11 +1788,14 @@
             contenedorPaso.innerHTML = htmlPaso || '<p style="text-align:center; color:var(--text-light); font-size:0.85rem; grid-column: 1/-1;">No hay unidades de paso con carga ni fuera de servicio.</p>';
         }
 
+        // --- RESUMEN DE TANQUES DISCRIMINADO POR CEREAL ---
         function actualizarResumenTanques() {
             let cont = document.getElementById('tanques-resumen');
             if(!cont) return;
 
-            let carga = 0, vacios = 0, tapados = 0, fuera = 0, totalTons = 0;
+            let carga = 0, vacios = 0, tapados = 0, fuera = 0;
+            let porCereal = {};
+            let totalTons = 0;
             
             TANQUES_CONFIG.forEach(t => {
                 let d = getSiloData(t.id);
@@ -1804,30 +1803,49 @@
                 else if(d.estado === 'VACIO') vacios++;
                 else if(d.estado === 'TAPADA') tapados++;
                 else if(d.estado === 'FUERA_SERVICIO') fuera++;
-                totalTons += (parseFloat(d.tonelaje) || 0);
+                
+                if (d.tonelaje > 0 && d.cereal) {
+                    let tons = parseFloat(d.tonelaje) || 0;
+                    totalTons += tons;
+                    if(!porCereal[d.cereal]) porCereal[d.cereal] = 0;
+                    porCereal[d.cereal] += tons;
+                }
             });
 
+            let desgloseHtml = '';
+            let keys = Object.keys(porCereal).sort((a,b) => porCereal[b] - porCereal[a]);
+            if (keys.length > 0) {
+                desgloseHtml = `<div style="width:100%; border-top:1px solid var(--border); padding-top:10px; margin-top:5px; display:flex; flex-wrap:wrap; gap:10px;">`;
+                keys.forEach(k => {
+                    desgloseHtml += `<span style="font-size:0.85rem; background:rgba(0,0,0,0.05); padding:4px 8px; border-radius:4px;"><b>${k}:</b> ${porCereal[k]}t</span>`;
+                });
+                desgloseHtml += `</div>`;
+            }
+
             cont.innerHTML = `
-                <div style="flex:1; min-width:80px;">
-                    <div style="font-size:1.4rem; font-weight:bold; color:#10b981;">${carga}</div>
-                    <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Con Carga</div>
+                <div style="display:flex; justify-content:space-around; text-align:center; flex-wrap:wrap; gap:10px;">
+                    <div style="flex:1; min-width:70px;">
+                        <div style="font-size:1.4rem; font-weight:bold; color:#10b981;">${carga}</div>
+                        <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Con Carga</div>
+                    </div>
+                    <div style="flex:1; min-width:70px;">
+                        <div style="font-size:1.4rem; font-weight:bold; color:var(--text-light);">${vacios}</div>
+                        <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Vacíos</div>
+                    </div>
+                    <div style="flex:1; min-width:70px;">
+                        <div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${tapados}</div>
+                        <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Tapados</div>
+                    </div>
+                    <div style="flex:1; min-width:70px;">
+                        <div style="font-size:1.4rem; font-weight:bold; color:#ef4444;">${fuera}</div>
+                        <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">F. Servicio</div>
+                    </div>
+                    <div style="flex:2; min-width:120px; border-left:1px solid var(--border); padding-left:15px; text-align:left;">
+                        <div style="font-size:1.4rem; font-weight:bold; color:var(--primary);">${totalTons}t</div>
+                        <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Total</div>
+                    </div>
                 </div>
-                <div style="flex:1; min-width:80px;">
-                    <div style="font-size:1.4rem; font-weight:bold; color:var(--text-light);">${vacios}</div>
-                    <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Vacíos</div>
-                </div>
-                <div style="flex:1; min-width:80px;">
-                    <div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${tapados}</div>
-                    <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Tapados</div>
-                </div>
-                <div style="flex:1; min-width:80px;">
-                    <div style="font-size:1.4rem; font-weight:bold; color:#ef4444;">${fuera}</div>
-                    <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">F. Servicio</div>
-                </div>
-                <div style="flex:2; min-width:120px; border-left:1px solid var(--border); padding-left:15px; text-align:left;">
-                    <div style="font-size:1.4rem; font-weight:bold; color:var(--primary);">${totalTons}t</div>
-                    <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Total Inventariado</div>
-                </div>
+                ${desgloseHtml}
             `;
         }
 
@@ -2019,7 +2037,6 @@
             return false;
         }
 
-        // --- NUEVO SISTEMA DE ALERTAS EN ACORDEON ---
         function dibujarAlertas() {
             let cont = document.getElementById('alertas-acordeon');
             if(!cont) return;
@@ -2039,7 +2056,6 @@
                 if(d.estado === 'VACIO') return;
                 
                 let nombreVisual = String(num).replace('CANO','CAÑO');
-                let motivos = []; // Para el listado general si no cae en categorías estrictas
 
                 if(d.alerta_manual) cats.revision.items.push(nombreVisual);
                 if(d.estado === 'TAPADA') cats.tapados.items.push(nombreVisual);
@@ -2092,7 +2108,6 @@
 
             if(totalAlertas === 0) html = '<div class="card-panel" style="text-align:center; color:#10b981; font-weight:bold; font-size:1.2rem;">✅ No hay alertas activas. Todo en orden.</div>';
             
-            // Header general
             let header = `
                 <div class="card-panel" style="display:flex; justify-content:space-between; align-items:center; border-left:4px solid #ef4444; background:#fef2f2;">
                     <div>
@@ -2197,7 +2212,6 @@
             reader.readAsText(file);
         }
 
-        // --- SISTEMA DE DATOS DE PRUEBA COMPLETO ---
         function cargarDatosPrueba() {
             showConfirm("Cargar Datos de Prueba", "Esto sobreescribirá los datos actuales con un inventario ficticio (95% ocupado, con problemas, historial y cierres). ¿Continuar?", (ok) => {
                 if(!ok) return;
@@ -2272,7 +2286,6 @@
                     }
                 });
 
-                // Generar un par de cierres ficticios
                 db.cierres = [
                     { fecha: fechaPasada(1), data: JSON.parse(JSON.stringify(db.silos)) },
                     { fecha: fechaPasada(2), data: JSON.parse(JSON.stringify(db.silos)) }
@@ -2380,7 +2393,6 @@
             cont.innerHTML = html;
         }
 
-        // --- NUEVO STOCK ANALÍTICO CON PENDIENTES ---
         function calcularStock() {
             let query = document.getElementById('smart-search').value.toLowerCase().trim();
             let cont = document.getElementById('existencias-cintas-container');
@@ -2395,7 +2407,7 @@
                 let totalTanques = 0;
                 let totalPaso = 0;
                 let totalGeneral = 0;
-                let calidades = {}; // cal: { silos, tanques, paso, total, pendientes }
+                let calidades = {}; 
                 
                 Object.keys(db.silos).forEach(num => {
                     let d = db.silos[num];
@@ -2703,7 +2715,7 @@
             res.innerText = `${tons} t`;
         }
 
-        // --- ANOTADOR MULTI-CEREAL (AGRUPADO POR CINTA, TANQUES Y PASOS) ---
+        // --- ANOTADOR COMPACTO MULTI-CEREAL ---
         function renderHerramientaCerealesChk() {
             let cont = document.getElementById('herramienta-chk-cereales');
             if(!cont) return;
@@ -2712,8 +2724,8 @@
             db.cereales.forEach(c => {
                 let checked = db.herramienta.cereales.includes(c.id) ? 'checked' : '';
                 cont.innerHTML += `
-                    <label class="chk-cereal">
-                        <input type="checkbox" value="${c.id}" ${checked} onchange="toggleHerramientaCereal('${c.id}')">
+                    <label class="chk-cereal" style="padding:4px 8px; font-size:0.8rem;">
+                        <input type="checkbox" value="${c.id}" ${checked} onchange="toggleHerramientaCereal('${c.id}')" style="width:16px; height:16px;">
                         <span>${c.nombre}</span>
                     </label>
                 `;
@@ -2852,12 +2864,9 @@
                 let fechaHoy = getFechaLocal();
                 let snapshot = JSON.parse(JSON.stringify(db.silos));
                 
-                // Eliminar cierre del mismo día si ya existe
                 db.cierres = db.cierres.filter(c => c.fecha !== fechaHoy);
-                
                 db.cierres.unshift({ fecha: fechaHoy, data: snapshot });
                 
-                // Limitar a los últimos 10 cierres para no llenar la memoria
                 if(db.cierres.length > 10) db.cierres = db.cierres.slice(0, 10);
                 
                 guardarDB();
@@ -2954,7 +2963,7 @@
             printArea.innerHTML = html;
             printArea.classList.remove('no-print');
             window.print();
-            printArea.classList.add('no-print'); // Ocultar de nuevo después de imprimir
+            printArea.classList.add('no-print');
         }
 
         function archivarHistorial() {
@@ -3107,11 +3116,9 @@
             body.scrollTop = body.scrollHeight;
         }
 
-        // --- CEREBRO DEL SILOBOT 6.0 ---
         function processBotQuery(query) {
             let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             
-            // COMANDOS DIRECTOS DE CHIPS
             if (q === 'cereales') {
                 addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Simular ph 74</i>", 'bot');
                 return;
@@ -3174,7 +3181,6 @@
                 return capMaxTonTope - actual;
             }
 
-            // NUEVA INTELIGENCIA: "Simular PH"
             let matchSimular = q.match(/simular ph\s+(\d+)/i);
             if (matchSimular) {
                 let nuevoPh = parseInt(matchSimular[1]);
@@ -3199,7 +3205,6 @@
                 }
             }
 
-            // NUEVA INTELIGENCIA: "Linea de [Cereal]"
             let matchLinea = q.match(/linea de\s+([a-z]+)/i);
             if (matchLinea) {
                 let cName = matchLinea[1];
@@ -3221,7 +3226,6 @@
                 }
             }
 
-            // "Donde pongo X toneladas de Cereal"
             let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
             if (matchDondePongo) {
                 let tonsReq = parseFloat(matchDondePongo[2]);

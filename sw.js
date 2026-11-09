@@ -1,4 +1,4 @@
-const CACHE_NAME = 'silos-u7-v37'; // IMPORTANTE: Cambiar este número cada vez que subas cambios a GitHub
+const CACHE_NAME = 'silos-u7-v38'; // IMPORTANTE: Cambiar este número cada vez que subas cambios a GitHub
 const urlsToCache = [ './', './index.html', './manifest.json' ];
 
 self.addEventListener('install', event => {
@@ -11,8 +11,6 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-    // ESTRATEGIA: Network First para el HTML (para que detecte actualizaciones rápido)
-    // Cache First para el resto (imágenes, etc.)
     if (event.request.mode === 'navigate' || (event.request.method === 'GET' && event.request.headers.get('accept').includes('text/html'))) {
         event.respondWith(
             fetch(event.request).then(response => {
@@ -42,7 +40,6 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Escuchar mensaje para aplicar actualización
 self.addEventListener('message', event => {
     if (event.data && event.data.action === 'skipWaiting') {
         self.skipWaiting();

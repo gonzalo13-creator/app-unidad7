@@ -1,4 +1,4 @@
-const CACHE_NAME = 'silos-u7-v42'; // IMPORTANTE: Cambiar este número cada vez que subas cambios a GitHub
+const CACHE_NAME = 'silos-u7-v43'; // IMPORTANTE: Cambiar este número cada vez que subas cambios a GitHub
 const urlsToCache = [ './', './index.html', './manifest.json' ];
 
 self.addEventListener('install', event => {

@@ -98,14 +98,14 @@
             .content { height: calc(100% - 65px); padding-bottom: 0; }
             /* Aumentamos el padding bottom para que los botones flotantes no tapen los últimos campos */
             .tab-content { padding: 12px; padding-bottom: 200px; }
-            #movimientos { padding-bottom: 220px !important; } /* Padding extra para movimientos */
+            #movimientos { padding-bottom: 250px !important; } /* Padding extra para movimientos */
             
             h2 { font-size: 1.1rem; padding-bottom: 8px; margin-bottom: 12px;}
             
             .top-controls { flex-direction: column; gap: 8px;}
             .top-controls > div { min-width: 100% !important; }
             /* Filtros del tablero más chicos */
-            .buscador { padding: 8px; font-size: 0.85rem !important; }
+            .buscador { padding: 6px; font-size: 0.8rem !important; }
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
             .row-inputs { flex-direction: column; padding: 12px; gap: 10px; }
@@ -133,9 +133,9 @@
             .tool-state-badge { font-size: 0.55rem; padding: 2px 4px;}
             .tool-body { font-size: 0.75rem; }
 
-            /* Checkboxes del anotador en grilla de 2 columnas */
-            #herramienta-chk-cereales { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-            .chk-cereal { padding: 8px; font-size: 0.85rem; justify-content: center;}
+            /* Checkboxes del anotador en grilla de 3 columnas */
+            #herramienta-chk-cereales { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; }
+            .chk-cereal { padding: 6px 8px; font-size: 0.75rem; justify-content: center;}
 
             .modal { align-items: flex-end; padding: 0; }
             .modal-box { border-radius: 20px 20px 0 0; max-height: 90vh; padding: 20px; padding-bottom: 30px; width: 100%;}
@@ -207,4 +207,4 @@
         .btn-del-hist { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #b91c1c; border: none; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 0.9rem;}
         
         .sub-tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
-        .sub-tab-btn { background: none; border: no
+        .sub-tab-b

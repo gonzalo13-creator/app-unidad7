@@ -38,12 +38,13 @@
         .tab-content { display: none; flex: 1; overflow-y: auto; padding: 24px; -webkit-overflow-scrolling: touch;}
         .tab-content.active { display: block; }
 
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none;}
-        .toast { background: #1e293b; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-weight: 500; font-size: 0.95rem; opacity: 0; transform: translateY(-20px); transition: all 0.3s ease; max-width: 90vw; text-align: center;}
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none;}
+        .toast { background: #1e293b; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-weight: 500; font-size: 0.95rem; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; max-width: 90vw; text-align: center;}
         .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto;}
         .toast.success { border-left: 4px solid #10b981; }
         .toast.error { border-left: 4px solid #ef4444; }
         .toast.warning { border-left: 4px solid #f59e0b; }
+        .toast.update { background: #3b82f6; cursor: pointer; }
 
         #custom-confirm { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 10000; justify-content: center; align-items: center; }
         #custom-confirm.active { display: flex; }
@@ -64,6 +65,7 @@
 
         #btn-silobot { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #3b82f6; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; border: none; transition: transform 0.2s;}
         #btn-silobot:active { transform: scale(0.9); }
+        #btn-silobot.hidden { display: none; }
         
         #silobot-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 3000; justify-content: flex-end; align-items: flex-end;}
         #silobot-modal.active { display: flex; }
@@ -141,6 +143,7 @@
             
             #btn-silobot { bottom: 140px; right: 15px; }
             .chat-window { margin: 0; max-width: 100%; border-radius: 20px 20px 0 0; height: 90vh; }
+            #toast-container { bottom: 80px; }
         }
 
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--text); font-weight: 600; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
@@ -177,7 +180,6 @@
         .t-alerta { position: absolute; top: 3px; right: 3px; background: #ef4444; color: white; width: 12px; height: 12px; border-radius: 50%; font-size: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
         .t-fumigado { position: absolute; top: 3px; left: 3px; font-size: 11px; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); }
         
-        /* Colores de tarjeta basados en cereal */
         .bg-MAIZ { background-color: var(--c-maiz); border-color: #c2410c; }
         .bg-SOJA { background-color: var(--c-soja); border-color: #a16207; color: #422006;}
         .bg-SORGO { background-color: var(--c-sorgo); border-color: #1d4ed8; }
@@ -188,13 +190,20 @@
         .bg-VACIO { background-color: var(--card); border-style: dashed; opacity: 0.6; color: var(--text-light); text-shadow: none;}
         .bg-VACIO .t-num, .bg-VACIO .t-info, .bg-VACIO .t-info-2, .bg-VACIO .t-info-3 { text-shadow: none; color: var(--text-light); }
 
+        /* Modo Oscuro suave para tarjetas */
+        body.dark-mode .bg-MAIZ { background-color: #9a3412; border-color: #ea580c; }
+        body.dark-mode .bg-SOJA { background-color: #854d0e; border-color: #eab308; color: #fef08a;}
+        body.dark-mode .bg-SORGO { background-color: #1e3a8a; border-color: #3b82f6; }
+        body.dark-mode .bg-TRIGO { background-color: #14532d; border-color: #22c55e; }
+        body.dark-mode .bg-MEZCLA { background-color: #831843; border-color: #ec4899; }
+        body.dark-mode .bg-GIRASOL { background-color: #334155; border-color: #64748b; }
+        body.dark-mode .bg-OTROS { background-color: #7f1d1d; border-color: #ef4444; }
+
         .estado-tapado { border: 3px solid #f59e0b !important; }
         .estado-fuera { border: 3px solid #ef4444 !important; }
         
-        /* Colores específicos para tanques y paso */
         .tag-tipo { font-size: 0.6rem; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; margin-bottom: 2px; color: white; display: inline-block;}
         
-        /* Diagrama de flujo */
         .flow-container { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; padding: 15px; background: var(--bg); border-radius: 8px; overflow-x: auto;}
         .flow-arrow { font-size: 1.5rem; color: var(--text-light); }
 
@@ -214,6 +223,7 @@
         
         .btn-save { background: var(--primary); color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 20px; cursor: pointer; transition: opacity 0.2s;}
         .btn-save:active { opacity: 0.7; }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-share { background: #25D366; color: white; padding: 14px; width: 100%; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;}
         .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
         
@@ -257,8 +267,18 @@
         .tool-warning { font-size: 0.7rem; color: #ef4444; font-weight: bold; margin-top: 4px; line-height: 1.1;}
 
         .chk-cereal { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer;}
-        .chk-cereal input { width: 18px; height: 18px; cursor: pointer;}
+        .chk-cereal input { width: 18px; height: 18px; cursor: pointer; }
         
+        .offline-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block; margin-left: 5px; }
+        .online-dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block; margin-left: 5px; }
+        
+        .tank-details-container { margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; max-height: 0; transition: max-height 0.4s ease-out; }
+        .tank-details-container.open { max-height: 500px; padding: 15px; }
+        
+        .hist-filter-btns { display: flex; gap: 5px; margin-bottom: 10px; }
+        .hist-filter-btn { flex: 1; padding: 5px; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; font-weight: 600; color: var(--text-light); }
+        .hist-filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
         @media print {
             .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #btn-silobot, #silobot-modal, .stat-box.clickable { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
@@ -288,30 +308,35 @@
     <div id="silobot-modal">
         <div class="chat-window">
             <div class="chat-header">
-                <span>🤖 SiloBot 3.0</span>
+                <span>🤖 SiloBot 4.0</span>
                 <button onclick="toggleSiloBot()" type="button">×</button>
             </div>
             <div class="chat-body" id="chat-body">
-                <div class="chat-msg bot">¡Hola! Soy el SiloBot 3.0. Ya conozco los Tanques, Caños, Tolvas y el CER. Probá con:<br>- <b>Stock tanque CTM</b><br>- <b>Caño 1</b><br>- <b>Relleno de Maíz G2</b><br>- <b>Historial de transiles</b>.</div>
+                <div class="chat-msg bot">¡Hola! Soy el SiloBot 4.0. Escribí <b>"Ayuda"</b> para ver todo lo que sé hacer o tocá un acceso rápido abajo.</div>
             </div>
             <div class="chat-chips">
                 <button class="chip" onclick="sendChip('Maíz')" type="button">🌽 Maíz</button>
-                <button class="chip" onclick="sendChip('Soja')" type="button">🌱 Soja</button>
+                <button class="chip" onclick="sendChip('Tanques')" type="button">🛢️ Tanques</button>
+                <button class="chip" onclick="sendChip('Caños')" type="button">🛠️ Caños</button>
+                <button class="chip" onclick="sendChip('Tolvas')" type="button">⏬ Tolvas</button>
+                <button class="chip" onclick="sendChip('Balanza')" type="button">⚖️ Balanzas</button>
                 <button class="chip" onclick="sendChip('Rellenos')" type="button">⛽ Rellenos</button>
                 <button class="chip" onclick="sendChip('Vacíos')" type="button">🚫 Vacíos</button>
-                <button class="chip" onclick="sendChip('Historial de transiles')" type="button">🔄 Transiles</button>
+                <button class="chip" onclick="sendChip('Historial de camiones')" type="button">🚚 Historial</button>
                 <button class="chip" onclick="sendChip('Alertas')" type="button">🚨 Alertas</button>
-                <button class="chip" onclick="sendChip('Fumigación')" type="button">💊 Fumigación</button>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ej: Tanque CTM..." onkeypress="handleChatEnter(event)">
+                <input type="text" id="chat-input" placeholder="Ej: Tanque CTM, Ayuda..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
                 <button onclick="sendChatMsg()" type="button">➤</button>
             </div>
         </div>
     </div>
 
     <div class="sidebar">
-        <button class="nav-btn" onclick="toggleDarkMode()" aria-label="Modo Oscuro/Claro" style="background:var(--secondary); color:white; justify-content:center; border-bottom: 2px solid #000;" type="button">🌙 / ☀️</button>
+        <button class="nav-btn" onclick="toggleDarkMode()" aria-label="Modo Oscuro/Claro" style="background:var(--secondary); color:white; justify-content:space-between; border-bottom: 2px solid #000;" type="button">
+            <span>🌙 / ☀️</span>
+            <span id="status-dot" class="online-dot" title="Estado de conexión"></span>
+        </button>
         
         <button class="nav-btn active" onclick="cambiarTab('tablero', this)" type="button">📋<br>Tablero</button>
         <button class="nav-btn" onclick="cambiarTab('movimientos', this)" type="button">📝<br>Movs</button>
@@ -356,6 +381,10 @@
                     </select>
                 </div>
             </div>
+            <!-- Resumen general -->
+            <div id="tablero-resumen" style="font-size:0.85rem; font-weight:bold; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap; background:var(--card); padding:10px; border-radius:6px; border:1px solid var(--border);">
+                <!-- Se llena con JS -->
+            </div>
             <div id="contenedor-tablero"></div>
         </div>
 
@@ -368,7 +397,7 @@
             
             <div class="action-buttons">
                 <button class="btn-save" style="background:var(--secondary); margin:0;" onclick="agregarFilaMovimiento()" type="button">+ Agregar Acción</button>
-                <button class="btn-save" style="background:#10b981; margin:0;" onclick="procesarMovimientos()" type="button">✅ GUARDAR TODOS</button>
+                <button id="btn-guardar-todos" class="btn-save" style="background:#10b981; margin:0;" onclick="procesarMovimientos()" type="button">✅ GUARDAR TODOS</button>
                 <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin:0;" onclick="deshacerUltimoCambio()" type="button">↩️ Deshacer</button>
             </div>
         </div>
@@ -376,18 +405,17 @@
         <!-- PESTAÑA: TANQUES / CIRCUITOS -->
         <div id="tanques" class="tab-content">
             <h2>Tanques y Circuitos</h2>
-            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Hacé clic en un tanque del Piso 1 para ver su flujo.</p>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Hacé clic en un tanque del Piso 1 para desplegar su flujo.</p>
             
             <div id="contenedor-tanques-piso1" class="grid-tarjetas" style="grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px;"></div>
             
-            <div id="panel-flujo-tanque" style="display:none; margin-top:20px;">
-                <div class="card-panel">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3 id="titulo-flujo" style="margin:0; font-size:1rem;">Conjunto seleccionado</h3>
-                        <button onclick="cerrarFlujo()" class="btn-close" style="width:auto; padding:5px 15px; margin:0; font-size:0.8rem;">Cerrar</button>
-                    </div>
-                    <div id="flow-container" class="flow-container"></div>
+            <!-- Contenedor del acordeón de flujo -->
+            <div id="panel-flujo-tanque" class="tank-details-container">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 id="titulo-flujo" style="margin:0; font-size:1rem;">Conjunto seleccionado</h3>
+                    <button onclick="cerrarFlujo()" class="btn-close" style="width:auto; padding:5px 15px; margin:0; font-size:0.8rem;">Cerrar</button>
                 </div>
+                <div id="flow-container" class="flow-container"></div>
             </div>
 
             <h3 style="margin-top:30px; font-size:1rem; color:var(--text-light);">Unidades de Paso (Solo con carga/tapados)</h3>
@@ -415,7 +443,7 @@
                 <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
                     <div style="flex:1; min-width:150px;">
                         <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Buscador Inteligente</label>
-                        <input type="text" id="smart-search" class="buscador" placeholder="Ej: Soja G2" oninput="filtrarSmartSearch()">
+                        <input type="text" id="smart-search" class="buscador" placeholder="Ej: Soja G2" oninput="filtrarSmartSearchDebounce()">
                     </div>
                     <div style="flex:1; min-width:150px;">
                         <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Cereal</label>
@@ -566,7 +594,7 @@
 
             <div class="card-panel">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Exportar Reporte</h3>
-                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Descargá una planilla de Excel con todo el stock.</p>
+                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Descargá una planilla de Excel con todo el stock (respeta filtros de Stock).</p>
                 <button class="btn-save" style="background:#0284c7; margin-top:0;" onclick="exportarCSV()" type="button">📊 Descargar Excel</button>
             </div>
 
@@ -598,7 +626,11 @@
     <div id="modal-historial" class="modal">
         <div class="modal-box">
             <h2 id="h-titulo" style="border:none; margin-bottom:5px;">Historial Silo 101</h2>
-            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Trazabilidad de movimientos.</p>
+            <div class="hist-filter-btns">
+                <button class="hist-filter-btn active" onclick="filtrarHistorial('TODOS', this)">Todos</button>
+                <button class="hist-filter-btn" onclick="filtrarHistorial('INGRESO', this)">Ingresos</button>
+                <button class="hist-filter-btn" onclick="filtrarHistorial('EGRESO', this)">Egresos</button>
+            </div>
             <div id="lista-historial"></div>
             <button class="btn-close" onclick="cerrarModal('modal-historial')" type="button">Cerrar</button>
         </div>
@@ -618,8 +650,8 @@
             return false;
         };
 
-        const DB_VERSION = 20;
-        const DB_KEY = 'unidad7_db_v20';
+        const DB_VERSION = 21;
+        const DB_KEY = 'unidad7_db_v21';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -629,7 +661,7 @@
         const MIN_14 = [702, 705, 708, 711, 714, 717];
         const MIN_10 = [502, 505, 508, 511, 514, 517];
 
-        // CONFIGURACIÓN DE TANQUES (Piso 1, Piso 2, Piso 3, Conexiones)
+        // PISOS CORREGIDOS SEGÚN TUS CAPTURAS
         const TANQUES_CONFIG = [
             { id: 'CTM', piso: 1, max: 130, padre: 'SSE5' },
             { id: 'IL1', piso: 1, max: 230, padre: 'SL1' },
@@ -638,34 +670,34 @@
             { id: 'IL4', piso: 1, max: 230, padre: 'SL4' },
             { id: 'ISE1', piso: 1, max: 120, padre: 'SSE1' },
             { id: 'ISE2', piso: 1, max: 130, padre: 'SSE2' },
-            { id: 'ISE3', piso: 1, max: 130, padre: 'SSE3' },
-            { id: 'ISE4', piso: 1, max: 130, padre: 'SSE4' },
-            { id: 'P3', piso: 1, max: 330, padre: 'TA2' },
-            { id: 'R1', piso: 1, max: 200, padre: 'P2' },
-            { id: 'R2', piso: 1, max: 200, padre: 'P4' },
+            { id: 'ISE3', piso: 2, max: 130, padre: 'SSE3' },
+            { id: 'ISE4', piso: 2, max: 130, padre: 'SSE4' },
+            { id: 'P3', piso: 3, max: 330, padre: 'TA2' },
+            { id: 'R1', piso: 2, max: 200, padre: 'P2' },
+            { id: 'R2', piso: 2, max: 200, padre: 'P4' },
             
-            // Nivel 2 y 3 (para el diagrama)
-            { id: 'SSE5', piso: 2, max: 200, padre: null },
-            { id: 'SL1', piso: 2, max: 210, padre: null },
-            { id: 'SL2', piso: 2, max: 210, padre: null },
-            { id: 'SL3', piso: 2, max: 210, padre: null },
-            { id: 'SL4', piso: 2, max: 210, padre: null },
-            { id: 'SSE1', piso: 2, max: 180, padre: null },
-            { id: 'SSE2', piso: 2, max: 190, padre: 'TN2' },
-            { id: 'SSE3', piso: 2, max: 110, padre: 'TA3' },
-            { id: 'SSE4', piso: 2, max: 110, padre: null },
-            { id: 'TA2', piso: 2, max: 130, padre: 'TA1' },
-            { id: 'P2', piso: 2, max: 200, padre: null },
-            { id: 'P4', piso: 2, max: 200, padre: null },
+            // Nivel 2, 3 y 6
+            { id: 'SSE5', piso: 3, max: 200, padre: null },
+            { id: 'SL1', piso: 3, max: 210, padre: null },
+            { id: 'SL2', piso: 3, max: 210, padre: null },
+            { id: 'SL3', piso: 3, max: 210, padre: null },
+            { id: 'SL4', piso: 3, max: 210, padre: null },
+            { id: 'SSE1', piso: 3, max: 180, padre: null },
+            { id: 'SSE2', piso: 3, max: 190, padre: 'TN2' },
+            { id: 'SSE3', piso: 3, max: 110, padre: 'TA3' },
+            { id: 'SSE4', piso: 3, max: 110, padre: null },
+            { id: 'P2', piso: 3, max: 200, padre: null },
+            { id: 'P4', piso: 3, max: 200, padre: null },
 
-            { id: 'TN2', piso: 3, max: 70, padre: null },
-            { id: 'TA3', piso: 3, max: 120, padre: 'TA4' },
-            { id: 'TA1', piso: 3, max: 130, padre: 'TN4' },
-            { id: 'TA4', piso: 3, max: 140, padre: null },
-            { id: 'TN4', piso: 3, max: 260, padre: null }
+            { id: 'TN2', piso: 6, max: 70, padre: null },
+            { id: 'TA3', piso: 6, max: 120, padre: 'TA4' },
+            { id: 'TA1', piso: 6, max: 130, padre: 'TN4' },
+            { id: 'TA4', piso: 6, max: 140, padre: null },
+            { id: 'TN4', piso: 6, max: 260, padre: null },
+            { id: 'TA2', piso: 6, max: 130, padre: 'TA1' }
         ];
 
-        // CONFIGURACIÓN DE UNIDADES DE PASO
+        // SE MANTIENE ID "CANO-X" PERO VISUALMENTE SERÁ "CAÑO"
         const UNIDADES_PASO_CONFIG = [
             { id: 'CER', tipo: 'CER', extra: 'Pulmón U6' },
             { id: 'CANO-1', tipo: 'CAÑO', extra: '' }, { id: 'CANO-2', tipo: 'CAÑO', extra: '' }, { id: 'CANO-3', tipo: 'CAÑO', extra: '' },
@@ -705,19 +737,22 @@
         let confirmCallback = null;
         let estadoFiltradoActual = null;
         let tanqueAbierto = null;
+        let historialFiltroActual = 'TODOS';
+        let historialSiloActivo = null;
 
-        function showToast(msg, type = 'info') {
+        function showToast(msg, type = 'info', duration = 3500) {
             const container = document.getElementById('toast-container');
             if(!container) return;
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerText = msg;
+            toast.innerHTML = msg;
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, duration);
+            return toast;
         }
 
         function showConfirm(title, msg, callback) {
@@ -749,20 +784,40 @@
             return new Date(y, m - 1, d);
         }
 
+        // --- LÓGICA PWA ACTUALIZACIÓN AUTOMÁTICA ---
+        let refreshing = false;
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
-                    reg.onupdatefound = () => {
-                        const installingWorker = reg.installing;
-                        installingWorker.onstatechange = () => {
-                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                window.location.reload();
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateToast();
                             }
-                        };
-                    };
+                        });
+                    });
                 }).catch(err => console.log('SW Error:', err));
             });
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                window.location.reload();
+                refreshing = true;
+            });
         }
+
+        function showUpdateToast() {
+            const toast = showToast("🚀 Nueva versión disponible. Tocá aquí para actualizar.", "update", 15000);
+            toast.onclick = () => {
+                toast.innerHTML = "Actualizando...";
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
+                }
+            };
+        }
+
+        // --- FIN PWA ---
 
         function init() {
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
@@ -770,7 +825,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v19');
+                    let old = localStorage.getItem('unidad7_db_v20') || localStorage.getItem('unidad7_db_v19');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -794,7 +849,7 @@
             if (!db.silos) db.silos = {};
             if (!db.herramienta) db.herramienta = { cereales: [], silos: {} };
             
-            // Inicializar Tanques y Unidades de Paso si no existen
+            // Inicializar Tanques y Unidades de Paso
             TANQUES_CONFIG.forEach(t => {
                 if(!db.silos[t.id]) {
                     db.silos[t.id] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, origen: null, lastUpdate: 0, tipo: 'TANQUE', piso: t.piso, max: t.max, padre: t.padre };
@@ -815,7 +870,6 @@
                 }
             });
 
-            // Compatibilidad
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
                 if(d.fumigacion_fecha && !d.fumigacion_tipo) d.fumigacion_tipo = 'TOTAL';
@@ -827,10 +881,26 @@
             dibujarTablero(); 
             dibujarTanques();
             dibujarAdmin();
-            agregarFilaMovimiento();
+            restaurarBorrador(); // Carga movimientos no guardados
+            if(document.querySelectorAll('#lista-movimientos .row-inputs').length === 0) agregarFilaMovimiento();
             renderHerramientaCerealesChk();
             actualizarExistencias();
+            updateOnlineStatus();
         }
+
+        function updateOnlineStatus() {
+            const dot = document.getElementById('status-dot');
+            if(!dot) return;
+            if(navigator.onLine) {
+                dot.className = 'online-dot';
+                dot.title = 'Conectado a Internet';
+            } else {
+                dot.className = 'offline-dot';
+                dot.title = 'Sin conexión (Modo Offline)';
+            }
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
@@ -901,13 +971,20 @@
                        (num >= 501 && num <= 518) || (num >= 601 && num <= 617) ||
                        (num >= 701 && num <= 718);
             }
-            return true; // Validado en la lista de TANQUES_CONFIG y UNIDADES_PASO_CONFIG
+            return true;
         }
 
         function obtenerTopeMetros(num) {
             if(MIN_14.includes(num)) return 14;
             if(MIN_10.includes(num)) return 10;
             return 0;
+        }
+
+        // --- DEBOUNCE BUSCADOR ---
+        let searchTimeout;
+        function filtrarSmartSearchDebounce() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(filtrarSmartSearch, 300);
         }
 
         function filtrarSmartSearch() {
@@ -945,13 +1022,35 @@
             }
         }
 
+        // --- BORRADOR AUTOMÁTICO ---
+        function guardarBorrador() {
+            let lista = document.getElementById('lista-movimientos');
+            if(lista) {
+                localStorage.setItem('movimientos_borrador', lista.innerHTML);
+            }
+        }
+        function restaurarBorrador() {
+            let draft = localStorage.getItem('movimientos_borrador');
+            let lista = document.getElementById('lista-movimientos');
+            if(draft && lista) {
+                lista.innerHTML = draft;
+                // Re-bind events
+                lista.querySelectorAll('.m-tipo-accion').forEach(sel => cambiarTipoAccion(sel));
+                lista.querySelectorAll('.m-tipo-unidad').forEach(sel => cambiarTipoUnidad(sel));
+                showToast("📝 Borrador de movimientos restaurado", "info");
+            }
+        }
+        function limpiarBorrador() {
+            localStorage.removeItem('movimientos_borrador');
+        }
+
         function agregarFilaMovimiento() {
             let div = document.createElement('div');
             div.className = 'row-inputs';
             div.innerHTML = `
                 <div class="form-group full" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
                     <label style="color:var(--primary); font-size:0.9rem;">Tipo de Acción</label>
-                    <select class="m-tipo-accion" onchange="cambiarTipoAccion(this)" style="font-weight:bold;">
+                    <select class="m-tipo-accion" onchange="cambiarTipoAccion(this); guardarBorrador();" style="font-weight:bold;">
                         <option value="INGRESO">📥 Ingreso de Mercadería</option>
                         <option value="EGRESO">📤 Egreso / Baja</option>
                         <option value="RECIRCULACION">🔄 Recirculación</option>
@@ -961,7 +1060,7 @@
                 
                 <div class="form-group">
                     <label>Tipo de Unidad</label>
-                    <select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this)" style="font-weight:bold;">
+                    <select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this); guardarBorrador();" style="font-weight:bold;">
                         <option value="SILO">Silo / Entresilo</option>
                         <option value="TANQUE">Tanque</option>
                         <option value="PASO">Caño / Tolva / Balanza / CER</option>
@@ -970,35 +1069,35 @@
 
                 <div class="form-group">
                     <label>Unidad</label>
-                    <input type="number" placeholder="Ej: 501" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this)">
-                    <select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this)"></select>
+                    <input type="number" placeholder="Ej: 501" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this); guardarBorrador();">
+                    <select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this); guardarBorrador();"></select>
                 </div>
                 <div class="form-group">
                     <label>Fecha</label>
-                    <input type="date" class="m-fecha" style="flex:1;">
+                    <input type="date" class="m-fecha" style="flex:1;" onchange="guardarBorrador();">
                 </div>
 
                 <div class="campos-dinamicos" style="display:flex; gap:8px; flex-wrap:wrap; flex-basis:100%; margin-top:5px;"></div>
 
                 <div class="form-group full" style="margin-top:5px;">
                     <label>Observaciones (Opcional)</label>
-                    <input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs">
+                    <input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs" oninput="guardarBorrador();">
                 </div>
 
                 <button class="btn-dup" aria-label="Duplicar fila" onclick="duplicarFila(this)" type="button">📋</button>
-                <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove()" type="button">X</button>
+                <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove(); guardarBorrador();" type="button">X</button>
             `;
             div.querySelector('.m-fecha').value = '';
             document.getElementById('lista-movimientos').appendChild(div);
             
-            // Llenar select de tanques y paso
             let selT = div.querySelector('.m-silo-select');
             let optTanques = TANQUES_CONFIG.map(t => `<option value="${t.id}">${t.id} (Piso ${t.piso})</option>`).join('');
-            let optPaso = UNIDADES_PASO_CONFIG.map(u => `<option value="${u.id}">${u.id} (${u.tipo})</option>`).join('');
+            let optPaso = UNIDADES_PASO_CONFIG.map(u => `<option value="${u.id}">${u.id.replace('CANO','CAÑO')} (${u.tipo})</option>`).join('');
             selT.innerHTML = optTanques + optPaso;
 
             cambiarTipoAccion(div.querySelector('.m-tipo-accion'));
             cambiarTipoUnidad(div.querySelector('.m-tipo-unidad'));
+            guardarBorrador();
         }
 
         function cambiarTipoUnidad(select) {
@@ -1018,7 +1117,6 @@
                 inputSilo.classList.add('ignore');
             }
             
-            // Re-render dynamic fields
             let accionSelect = row.querySelector('.m-tipo-accion');
             cambiarTipoAccion(accionSelect);
         }
@@ -1032,7 +1130,7 @@
             container.innerHTML = '';
             
             let inputSilo = row.querySelector('.m-silo');
-            if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); };
+            if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); guardarBorrador(); };
 
             let esSilo = (tipoUnidad === 'SILO');
             let esFumigable = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE');
@@ -1040,7 +1138,7 @@
             if(tipoAccion === 'INGRESO') {
                 let campos = `
                     <div class="form-group"><label>Origen</label>
-                        <select class="m-origen" onchange="validarOrigen(this)">
+                        <select class="m-origen" onchange="validarOrigen(this); guardarBorrador();">
                             <option value="CAMIONES">Camiones</option>
                             <option value="VAGONES">Vagones</option>
                             <option value="TRANSILE">Transile</option>
@@ -1050,18 +1148,18 @@
                     </div>
                     <div class="form-group" id="div-unidad-origen" style="display:none;">
                         <label>Unidad Origen</label>
-                        <input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305">
+                        <input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305" oninput="guardarBorrador();">
                     </div>
                     <div class="form-group"><label>Cereal</label>
-                        <select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'))">${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}</select>
+                        <select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs')); guardarBorrador();">${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}</select>
                     </div>
-                    <div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2"></div>
+                    <div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2" oninput="guardarBorrador();"></div>
                 `;
 
                 if (esFumigable) {
                     campos += `
                     <div class="form-group full"><label>¿Fumigado?</label>
-                        <select class="m-fumigo">
+                        <select class="m-fumigo" onchange="guardarBorrador();">
                             <option value="NO">No se fumigó</option>
                             <option value="TOTAL">Fumigación Total</option>
                             <option value="LIQUIDO">Solo Líquido</option>
@@ -1072,12 +1170,12 @@
 
                 if (esSilo) {
                     campos += `
-                    <div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this)"></div>
-                    <div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal"></div>
+                    <div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this); guardarBorrador();"></div>
+                    <div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal" oninput="guardarBorrador();"></div>
                     `;
                 } else {
                     campos += `
-                    <div class="form-group full"><label>Tonelaje (Manual)</label><input type="number" class="m-tons-manual" min="0" placeholder="0" inputmode="decimal"></div>
+                    <div class="form-group full"><label>Tonelaje (Manual)</label><input type="number" class="m-tons-manual" min="0" placeholder="0" inputmode="decimal" oninput="guardarBorrador();"></div>
                     `;
                 }
                 container.innerHTML = campos;
@@ -1085,7 +1183,7 @@
             else if(tipoAccion === 'EGRESO') {
                 let campos = `
                     <div class="form-group full"><label>Motivo Baja</label>
-                        <select class="m-motivo-baja">
+                        <select class="m-motivo-baja" onchange="guardarBorrador();">
                             <option value="EMBARQUE">Embarque</option>
                             <option value="RECARGA">Recarga</option>
                             <option value="TRANSFERENCIA">Transferencia (U6)</option>
@@ -1098,14 +1196,14 @@
                     campos += `
                     <div class="form-group">
                         <label>Nueva Medida (m)</label>
-                        <input type="number" class="m-nuevos-metros" step="0.5" min="0" inputmode="decimal" oninput="calcularEgresoPorMetros(this)" placeholder="Metros Vacíos">
+                        <input type="number" class="m-nuevos-metros" step="0.5" min="0" inputmode="decimal" oninput="calcularEgresoPorMetros(this); guardarBorrador();" placeholder="Metros Vacíos">
                     </div>
                     `;
                 }
                 campos += `
                     <div class="form-group">
                         <label>Tonelaje a restar</label>
-                        <input type="number" class="m-tons-baja" min="0" placeholder="0" inputmode="decimal">
+                        <input type="number" class="m-tons-baja" min="0" placeholder="0" inputmode="decimal" oninput="guardarBorrador();">
                     </div>
                 `;
                 container.innerHTML = campos;
@@ -1113,7 +1211,7 @@
             else if(tipoAccion === 'RECIRCULACION') {
                 let campos = `
                     <div class="form-group full"><label>Motivo</label>
-                        <select class="m-motivo-recir">
+                        <select class="m-motivo-recir" onchange="guardarBorrador();">
                             <option value="FUMIGACION">Fumigación</option>
                             <option value="MUESTREO">Muestreo / Control</option>
                             <option value="TEMPERATURA">Bajar Temperatura</option>
@@ -1123,7 +1221,7 @@
                 if (esFumigable) {
                     campos += `
                     <div class="form-group full"><label>¿Se fumigó en este evento?</label>
-                        <select class="m-fumigo-recir">
+                        <select class="m-fumigo-recir" onchange="guardarBorrador();">
                             <option value="NO">No se fumigó</option>
                             <option value="TOTAL">Fumigación Total</option>
                             <option value="LIQUIDO">Solo Líquido</option>
@@ -1136,7 +1234,7 @@
             else if(tipoAccion === 'ESTADO') {
                 container.innerHTML = `
                     <div class="form-group full"><label>Nuevo Estado</label>
-                        <select class="m-nuevo-estado">
+                        <select class="m-nuevo-estado" onchange="guardarBorrador();">
                             <option value="TAPADA">Tapado</option>
                             <option value="FUERA_SERVICIO">Fuera de Servicio</option>
                             <option value="VACIO">Vacío (Borrar Carga)</option>
@@ -1203,6 +1301,7 @@
                     }
                 });
             }
+            guardarBorrador();
         }
 
         function autocompletarSilo(input) {
@@ -1308,6 +1407,9 @@
         }
 
         function procesarMovimientos() {
+            let btn = document.getElementById('btn-guardar-todos');
+            if(btn.disabled) return; // Evitar doble clic
+
             let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
             let silosEnLote = new Set();
             let pendingMoves = [];
@@ -1452,28 +1554,39 @@
         }
 
         function ejecutarMovimientos(moves) {
-            backupDB = JSON.parse(JSON.stringify(db));
-            silosModificadosReciente = [];
+            let btn = document.getElementById('btn-guardar-todos');
+            btn.disabled = true;
+            btn.innerHTML = "⏳ Guardando...";
 
-            moves.forEach(m => {
-                let d = m.d;
-                d.historial.push({ fecha: m.fecha, tipo: m.tipo, obs: m.obs, detalle: m.detalle, tons: m.tons, cereal: m.cereal });
-                Object.assign(d, m.nuevoEstado);
-                d.lastUpdate = Date.now();
-                silosModificadosReciente.push(m.silo);
-            });
+            // Simular un pequeño delay para que se sienta el proceso y no se congele
+            setTimeout(() => {
+                backupDB = JSON.parse(JSON.stringify(db));
+                silosModificadosReciente = [];
 
-            guardarDB();
-            document.getElementById('lista-movimientos').innerHTML = '';
-            agregarFilaMovimiento();
-            dibujarTablero();
-            dibujarTanques();
-            actualizarExistencias();
-            if (document.getElementById('existencias').classList.contains('active')) calcularStock();
-            if (document.getElementById('rellenos').classList.contains('active')) calcularRellenos();
-            
-            showToast(`✅ Se guardaron ${moves.length} acciones.`, "success");
-            document.getElementById('btn-desahacer').style.display = 'block';
+                moves.forEach(m => {
+                    let d = m.d;
+                    d.historial.push({ fecha: m.fecha, tipo: m.tipo, obs: m.obs, detalle: m.detalle, tons: m.tons, cereal: m.cereal });
+                    Object.assign(d, m.nuevoEstado);
+                    d.lastUpdate = Date.now();
+                    silosModificadosReciente.push(m.silo);
+                });
+
+                guardarDB();
+                limpiarBorrador();
+                document.getElementById('lista-movimientos').innerHTML = '';
+                agregarFilaMovimiento();
+                dibujarTablero();
+                dibujarTanques();
+                actualizarExistencias();
+                if (document.getElementById('existencias').classList.contains('active')) calcularStock();
+                if (document.getElementById('rellenos').classList.contains('active')) calcularRellenos();
+                
+                showToast(`✅ Se guardaron ${moves.length} acciones.`, "success");
+                document.getElementById('btn-desahacer').style.display = 'block';
+
+                btn.disabled = false;
+                btn.innerHTML = "✅ GUARDAR TODOS";
+            }, 100);
         }
 
         function deshacerUltimoCambio() {
@@ -1497,13 +1610,22 @@
             if(!contenedor) return;
             const filtroCereal = document.getElementById('filtro-tablero').value;
             const filtroVista = document.getElementById('filtro-cinta-tablero').value;
-            let htmlTotal = '';
+            
+            // Usamos DocumentFragment para mayor velocidad
+            let fragment = document.createDocumentFragment();
+            let totalTons = 0;
+            let silosCarga = 0;
+            let silosVacios = 0;
 
             const ordenFilas = ['700', '600', '500', '400', '300', '200', '100'];
 
             ordenFilas.forEach(prefijo => {
                 let silosFila = FILAS_TABLERO[prefijo];
-                let htmlSilos = '';
+                let rowDiv = document.createElement('div');
+                rowDiv.className = 'fila-cinta';
+                let gridDiv = document.createElement('div');
+                gridDiv.className = 'grid-tarjetas';
+                let haySilosEnFila = false;
 
                 silosFila.forEach(num => {
                     if (filtroVista === 'CE1') {
@@ -1536,9 +1658,17 @@
                     let d = getSiloData(num);
                     if(filtroCereal !== 'TODOS' && d.cereal !== filtroCereal && d.estado !== 'VACIO') return;
 
+                    haySilosEnFila = true;
                     let isVacio = d.estado === 'VACIO';
                     let textoCereal = isVacio ? 'VACÍO' : d.cereal;
                     
+                    if(d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
+                        if(filtroCereal === 'TODOS' || d.cereal === filtroCereal) {
+                            totalTons += (parseFloat(d.tonelaje) || 0);
+                            silosCarga++;
+                        }
+                    } else if (isVacio) silosVacios++;
+
                     let claseCereal = isVacio ? 'bg-VACIO' : 'bg-' + d.cereal;
                     if (!isVacio && !db.cereales.find(c => c.id === d.cereal)) claseCereal = 'bg-OTROS';
 
@@ -1552,23 +1682,39 @@
                     
                     let animateClass = silosModificadosReciente.includes(num) ? 'destacado' : '';
 
-                    htmlSilos += `
-                        <div class="tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''} ${animateClass}" onclick="verHistorial(${num})" aria-label="Ver silo ${num}, ${textoCereal}">
-                            ${alertaHtml} ${fumigadoHtml}
-                            <div class="t-num">${num}</div>
-                            <div class="t-info">${textoCereal}</div>
-                            <div class="t-info-3">${d.calidad||''}</div>
-                            <div class="t-info-2">${d.tonelaje>0?d.tonelaje+'t':''}</div>
-                        </div>`;
+                    let card = document.createElement('div');
+                    card.className = `tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''} ${animateClass}`;
+                    card.onclick = () => verHistorial(num);
+                    card.innerHTML = `
+                        ${alertaHtml} ${fumigadoHtml}
+                        <div class="t-num">${num}</div>
+                        <div class="t-info">${textoCereal}</div>
+                        <div class="t-info-3">${d.calidad||''}</div>
+                        <div class="t-info-2">${d.tonelaje>0?d.tonelaje+'t':''}</div>
+                    `;
+                    gridDiv.appendChild(card);
                 });
 
-                if(htmlSilos !== '') {
-                    htmlTotal += `<div class="fila-cinta"><div class="grid-tarjetas">${htmlSilos}</div></div>`;
+                if(haySilosEnFila) {
+                    rowDiv.appendChild(gridDiv);
+                    fragment.appendChild(rowDiv);
                 }
             });
 
-            contenedor.innerHTML = htmlTotal || '<p style="text-align:center; color:var(--text-light);">No se encontraron silos.</p>';
+            contenedor.innerHTML = '';
+            contenedor.appendChild(fragment);
+            if(contenedor.innerHTML === '') contenedor.innerHTML = '<p style="text-align:center; color:var(--text-light);">No se encontraron silos.</p>';
             
+            // Actualizar resumen
+            let resumenDiv = document.getElementById('tablero-resumen');
+            if(resumenDiv) {
+                resumenDiv.innerHTML = `
+                    <span>🌾 Total: <b>${totalTons.toLocaleString()} t</b></span>
+                    <span>📦 Con Carga: <b>${silosCarga}</b></span>
+                    <span>🚫 Vacíos: <b>${silosVacios}</b></span>
+                `;
+            }
+
             actualizarBadgeAlertas();
             
             setTimeout(() => { silosModificadosReciente = []; }, 1500);
@@ -1603,7 +1749,6 @@
             });
             contenedorP1.innerHTML = htmlP1;
 
-            // Unidades de paso (solo con carga o tapadas)
             let htmlPaso = '';
             UNIDADES_PASO_CONFIG.forEach(u => {
                 let d = getSiloData(u.id);
@@ -1615,12 +1760,14 @@
                     if (!isVacio && !db.cereales.find(c => c.id === d.cereal)) claseCereal = 'bg-OTROS';
 
                     let alertaHtml = tieneAlerta(u.id) ? `<div class="t-alerta">!</div>` : '';
+                    // Corrección visual de CANO a CAÑO
+                    let nombreVisual = u.id.replace('CANO', 'CAÑO');
                     
                     htmlPaso += `
                         <div class="tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''}" onclick="verHistorial('${u.id}')" style="min-height:80px;">
                             ${alertaHtml}
                             <span class="tag-tipo">${u.tipo} ${u.extra ? '('+u.extra+')' : ''}</span>
-                            <div class="t-num" style="font-size:0.8rem; text-align:center;">${u.id.replace('-',' ')}</div>
+                            <div class="t-num" style="font-size:0.8rem; text-align:center;">${nombreVisual}</div>
                             <div class="t-info">${textoCereal}</div>
                             <div class="t-info-2">${d.tonelaje} t</div>
                         </div>
@@ -1640,10 +1787,9 @@
                 return;
             }
             tanqueAbierto = id;
-            panel.style.display = 'block';
+            panel.classList.add('open');
             titulo.innerText = 'Conjunto seleccionado: ' + id;
             
-            // Construir cadena de flujo (subiendo por padres)
             let chain = [];
             let current = TANQUES_CONFIG.find(t => t.id === id);
             while(current) {
@@ -1674,15 +1820,20 @@
             }).join('');
             
             flow.innerHTML = htmlChain + `<div style="margin-left:20px; font-weight:bold;">Total: ${totalTons}t</div>`;
+            
+            // Scroll suave al panel
+            setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
         }
 
         function cerrarFlujo() {
-            document.getElementById('panel-flujo-tanque').style.display = 'none';
-            tanqueAbierto = null;
+            let panel = document.getElementById('panel-flujo-tanque');
+            panel.classList.remove('open');
+            setTimeout(() => { tanqueAbierto = null; }, 400); // Esperar que termine la animación
         }
 
         function verHistorial(num) {
             let d = getSiloData(num);
+            historialSiloActivo = num;
             
             let btnAlerta = d.alerta_manual 
                 ? `<button onclick="toggleAlertaCalidad('${num}')" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:0.85rem; margin-top:10px; width:100%;" type="button">🚨 Quitar Alerta Calidad</button>`
@@ -1693,31 +1844,68 @@
             let cont = document.getElementById('lista-historial');
             cont.innerHTML = `<div style="margin-bottom:15px;">${btnAlerta}</div>`;
             
+            document.querySelectorAll('.hist-filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.hist-filter-btn').classList.add('active');
+            historialFiltroActual = 'TODOS';
+
+            renderHistorialLista();
+            document.getElementById('modal-historial').classList.add('active');
+        }
+
+        function filtrarHistorial(tipo, btn) {
+            document.querySelectorAll('.hist-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            historialFiltroActual = tipo;
+            renderHistorialLista();
+        }
+
+        function renderHistorialLista() {
+            let num = historialSiloActivo;
+            if(!num) return;
+            let d = getSiloData(num);
+            let cont = document.getElementById('lista-historial');
+            
+            // Mantenemos el botón de alerta arriba
+            let btnAlertaHTML = cont.firstElementChild ? cont.firstElementChild.innerHTML : '';
+            cont.innerHTML = `<div style="margin-bottom:15px;">${btnAlertaHTML}</div>`;
+            
             if(d.historial.length === 0) {
                 cont.innerHTML += '<p style="text-align:center;">Sin movimientos registrados.</p>';
-            } else {
-                let hist = [...d.historial].sort((a,b) => b.fecha.localeCompare(a.fecha));
-                hist.forEach((h, index) => {
-                    let realIndex = d.historial.length - 1 - index; 
-                    let fechaStr = h.fecha.split('-').reverse().join('/');
-                    let tipoClass = h.tipo === 'INGRESO' ? 'tipo-ingreso' : (h.tipo === 'EGRESO' ? 'tipo-egreso' : (h.tipo === 'RECIRCULACION' ? 'tipo-recir' : 'tipo-estado'));
-                    let tipoNombre = h.tipo === 'RECIRCULACION' ? 'RECIRCULACIÓN' : (h.tipo === 'ESTADO' ? 'CAMBIO ESTADO' : h.tipo);
-                    
-                    cont.innerHTML += `
-                        <div class="hist-item">
-                            <button class="btn-del-hist" onclick="borrarHistorial('${num}', ${realIndex})" title="Eliminar Registro" aria-label="Eliminar registro" type="button">🗑️</button>
-                            <div class="hist-date">
-                                <span>${fechaStr}</span>
-                            </div>
-                            <span class="hist-tipo ${tipoClass}">${tipoNombre}</span>
-                            <div class="hist-details" style="font-weight:bold; color:var(--text); margin-top:5px; padding-right:30px;">
-                                ${h.detalle}
-                            </div>
-                            ${h.obs ? `<div style="margin-top:5px; color:#d97706; font-size:0.85rem; border-top:1px dashed var(--border); padding-top:5px;">📝 ${h.obs}</div>` : ''}
-                        </div>`;
-                });
+                return;
             }
-            document.getElementById('modal-historial').classList.add('active');
+            
+            let hist = [...d.historial].sort((a,b) => b.fecha.localeCompare(a.fecha));
+            
+            if(historialFiltroActual !== 'TODOS') {
+                hist = hist.filter(h => h.tipo === historialFiltroActual);
+            }
+
+            if(hist.length === 0) {
+                cont.innerHTML += '<p style="text-align:center;">No hay movimientos de este tipo.</p>';
+                return;
+            }
+
+            hist.forEach((h, index) => {
+                // Encontrar el índice real en el array original
+                let realIndex = d.historial.findIndex(orig => orig.fecha === h.fecha && orig.detalle === h.detalle && orig.tipo === h.tipo);
+                
+                let fechaStr = h.fecha.split('-').reverse().join('/');
+                let tipoClass = h.tipo === 'INGRESO' ? 'tipo-ingreso' : (h.tipo === 'EGRESO' ? 'tipo-egreso' : (h.tipo === 'RECIRCULACION' ? 'tipo-recir' : 'tipo-estado'));
+                let tipoNombre = h.tipo === 'RECIRCULACION' ? 'RECIRCULACIÓN' : (h.tipo === 'ESTADO' ? 'CAMBIO ESTADO' : h.tipo);
+                
+                cont.innerHTML += `
+                    <div class="hist-item">
+                        <button class="btn-del-hist" onclick="borrarHistorial('${num}', ${realIndex})" title="Eliminar Registro" aria-label="Eliminar registro" type="button">🗑️</button>
+                        <div class="hist-date">
+                            <span>${fechaStr}</span>
+                        </div>
+                        <span class="hist-tipo ${tipoClass}">${tipoNombre}</span>
+                        <div class="hist-details" style="font-weight:bold; color:var(--text); margin-top:5px; padding-right:30px;">
+                            ${h.detalle}
+                        </div>
+                        ${h.obs ? `<div style="margin-top:5px; color:#d97706; font-size:0.85rem; border-top:1px dashed var(--border); padding-top:5px;">📝 ${h.obs}</div>` : ''}
+                    </div>`;
+            });
         }
 
         function toggleAlertaCalidad(num) {
@@ -1758,7 +1946,6 @@
             if(d.alerta_manual) return true;
             if(d.estado === 'TAPADA') return true;
             
-            // Solo fumigables aplican alerta por tiempo
             let esFumigable = (d.tipo === 'SILO' || d.tipo === 'ENTRESILO' || d.tipo === 'TANQUE');
             if(!esFumigable) return false;
 
@@ -1987,7 +2174,8 @@
                     let cObj = d && d.cereal ? db.cereales.find(c=>c.id===d.cereal) : null;
                     let color = cObj ? cObj.color : 'var(--bg)';
                     let txtColor = d && d.cereal ? 'white' : 'var(--text-light)';
-                    html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial('${u.id}')">${u.id}</div>`;
+                    let nombreVisual = u.id.replace('CANO', 'CAÑO');
+                    html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial('${u.id}')">${nombreVisual}</div>`;
                 }
             });
             html += `</div>`;
@@ -2081,7 +2269,6 @@
                 }
             });
 
-            // Render Tanques
             if (tanquesStock.length > 0) {
                 let totalTanques = tanquesStock.reduce((sum, item) => sum + item.tonelaje, 0);
                 htmlTotal += `
@@ -2095,7 +2282,6 @@
                 `;
             }
 
-            // Render Paso
             if (pasoStock.length > 0) {
                 let totalPaso = pasoStock.reduce((sum, item) => sum + item.tonelaje, 0);
                 htmlTotal += `
@@ -2159,9 +2345,10 @@
                 let fFum = d.fumigacion_fecha ? d.fumigacion_fecha.split('-').reverse().join('/') : 'Sin Fumigar';
                 let alertaTxt = tieneAlerta(num) ? '<span style="color:#ef4444; font-weight:bold;">⚠️ Sí</span>' : 'No';
                 let tipoTxt = d.tipo ? d.tipo : 'SILO';
+                let numVisual = num.replace('CANO', 'CAÑO');
                 
                 tbody.innerHTML += `<tr>
-                    <td><b>${num}</b></td>
+                    <td><b>${numVisual}</b></td>
                     <td>${tipoTxt}</td>
                     <td>${d.calidad||'S/C'}</td>
                     <td><b>${d.tonelaje} t</b></td>
@@ -2569,16 +2756,32 @@
         }
 
         function exportarCSV() {
+            // Si estamos en la pestaña Stock y hay un filtro seleccionado, lo respetamos
+            let cerealFiltro = null;
+            let calidadFiltro = null;
+            if (document.getElementById('existencias').classList.contains('active')) {
+                cerealFiltro = document.getElementById('sel-cereal-stock').value;
+                calidadFiltro = document.getElementById('sel-calidad-stock').value;
+            }
+
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             csvContent += "Unidad;Tipo;Estado;Cereal;Calidad;Tonelaje;Fecha Carga;Fumigacion;Tipo Fumigacion;Origen\n";
             
             Object.keys(db.silos).sort((a,b) => String(a).localeCompare(String(b))).forEach(num => {
                 let d = db.silos[num];
                 if(d.estado === 'VACIO') return;
+                
+                // Aplicar filtros si estamos en Stock
+                if (cerealFiltro && cerealFiltro !== '') {
+                    if (d.cereal !== cerealFiltro) return;
+                    if (calidadFiltro && calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
+                }
+
                 let cObj = db.cereales.find(c => c.id === d.cereal);
                 let cName = cObj ? cObj.nombre : d.cereal;
+                let numVisual = num.replace('CANO', 'CAÑO');
                 let row = [
-                    num, d.tipo || 'SILO', d.estado, cName, d.calidad || '-', d.tonelaje || 0, 
+                    numVisual, d.tipo || 'SILO', d.estado, cName, d.calidad || '-', d.tonelaje || 0, 
                     d.fecha_primera_carga || '-', d.fumigacion_fecha || '-', d.fumigacion_tipo || '-', d.origen || '-'
                 ];
                 csvContent += row.join(";") + "\n";
@@ -2587,7 +2790,8 @@
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `stock_silos_${getFechaLocal()}.csv`);
+            let fileName = cerealFiltro ? `stock_${cerealFiltro}_${getFechaLocal()}.csv` : `stock_silos_${getFechaLocal()}.csv`;
+            link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -2635,6 +2839,7 @@
             if(!modal) return;
             if (modal.classList.contains('active')) {
                 modal.classList.remove('active');
+                showBotButton();
             } else {
                 modal.classList.add('active');
                 setTimeout(() => {
@@ -2642,6 +2847,13 @@
                     if(inp) inp.focus();
                 }, 100);
             }
+        }
+
+        function hideBotButton() {
+            document.getElementById('btn-silobot').classList.add('hidden');
+        }
+        function showBotButton() {
+            document.getElementById('btn-silobot').classList.remove('hidden');
         }
 
         function handleChatEnter(e) {
@@ -2673,10 +2885,24 @@
             body.scrollTop = body.scrollHeight;
         }
 
-        // --- CEREBRO DEL SILOBOT 3.0 ---
+        // --- CEREBRO DEL SILOBOT 4.0 ---
         function processBotQuery(query) {
             let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             
+            // Comando Ayuda
+            if (q === 'ayuda' || q === 'hola' || q === 'menu' || q === 'opciones') {
+                let helpMsg = `🤖 <b>¡Hola! Soy SiloBot 4.0. Esto es lo que puedo hacer:</b><br><br>
+                🌾 <b>Cereales:</b> Escribí un cereal (ej: "Maíz G2") para ver stock y relleno.<br>
+                🛢️ <b>Tanques:</b> Escribí "Tanques" para ver un resumen de todos.<br>
+                🛠️ <b>Caños/Tolvas/Balanzas:</b> Escribí "Caños" o "Tolvas" para ver su estado.<br>
+                🔍 <b>Unidad específica:</b> Escribí "Tanque CTM", "Caño 1" o "Silo 501".<br>
+                🚚 <b>Logística:</b> Escribí "Camiones", "Vagones", o "Historial".<br>
+                🚨 <b>Alertas:</b> Escribí "Alertas" o "Problemas".<br>
+                ⛽ <b>Rellenos:</b> Escribí "Relleno de Maíz".`;
+                addChatMessage(helpMsg, 'bot');
+                return;
+            }
+
             if (procesarLogistica(q)) return;
 
             let response = "";
@@ -2698,7 +2924,49 @@
                 return capMaxTonTope - actual;
             }
 
-            // Buscar si mencionó un tanque específico o unidad de paso
+            // 1. Resumen por Categorías (Tanques, Caños, Tolvas, Balanzas, CER)
+            let catMatch = q.match(/\b(tanques|canos|caños|tolvas|balanzas|cer)\b/i);
+            if (catMatch && !q.match(/\b\d+\b/)) { 
+                let cat = catMatch[1].toLowerCase();
+                let tipoFiltro = '';
+                let nombreCat = '';
+                
+                if (cat.includes('tanque')) { tipoFiltro = 'TANQUE'; nombreCat = 'Tanques'; }
+                else if (cat.includes('cano') || cat.includes('caño')) { tipoFiltro = 'CAÑO'; nombreCat = 'Caños'; }
+                else if (cat.includes('tolva')) { tipoFiltro = 'TOLVA'; nombreCat = 'Tolvas'; }
+                else if (cat.includes('balanza')) { tipoFiltro = 'BALANZA'; nombreCat = 'Balanzas'; }
+                else if (cat.includes('cer')) { tipoFiltro = 'CER'; nombreCat = 'CER'; }
+
+                let vacios = [];
+                let cargados = [];
+                let totalTons = 0;
+
+                Object.keys(db.silos).forEach(num => {
+                    let d = db.silos[num];
+                    if(d.tipo === tipoFiltro) {
+                        if (d.estado === 'VACIO') vacios.push(num.replace('CANO','CAÑO'));
+                        else if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
+                            totalTons += (parseFloat(d.tonelaje) || 0);
+                            cargados.push(`${num.replace('CANO','CAÑO')}: ${d.cereal} (${d.tonelaje}t)`);
+                        }
+                    }
+                });
+
+                response = `📋 <b>Resumen de ${nombreCat}:</b><br><br>`;
+                response += `🚫 <b>Vacíos (${vacios.length}):</b> ${vacios.length > 0 ? vacios.join(', ') : 'Ninguno'}<br><br>`;
+                response += `📦 <b>Con Carga (${cargados.length}):</b><br>`;
+                if(cargados.length > 0) {
+                    cargados.forEach(c => { response += `- ${c}<br>`; });
+                    response += `<br><b>Total almacenado:</b> ${totalTons}t`;
+                } else {
+                    response += `Ninguno con carga.`;
+                }
+                
+                addChatMessage(response, 'bot');
+                return;
+            }
+
+            // 2. Unidad específica (Tanque o Paso)
             let matchTanque = q.match(/(tanque\s+)?([a-z]{2,4}\d*)/i);
             let matchPaso = q.match(/(cano|caño|tolva|balanza|cer)\s*(\d*)/i);
             
@@ -2718,7 +2986,8 @@
 
             if (unidadEncontrada) {
                 let d = getSiloData(unidadEncontrada);
-                response = `<b>📋 Unidad ${unidadEncontrada}</b><br>`;
+                let nombreVisual = unidadEncontrada.replace('CANO', 'CAÑO');
+                response = `<b>📋 Unidad ${nombreVisual}</b><br>`;
                 response += `Tipo: <b>${d.tipo}</b><br>`;
                 response += `Estado: <b>${d.estado.replace('_', ' ')}</b><br>`;
                 if(d.cereal) {
@@ -2772,7 +3041,7 @@
                 return;
             }
 
-            // --- RELLENO GENERAL (SIN CEREAL ESPECÍFICO) ---
+            // 3. Relleno general
             if (q === 'relleno' || q === 'rellenos' || (q.includes('espacio') && !cerealEncontrado)) {
                 let totEspacio = 0;
                 let porCereal = {};
@@ -2933,7 +3202,7 @@
                 let arr = [];
                 TODOS_LOS_SILOS.forEach(num => { let d = db.silos[num]; if(!d || d.estado === 'VACIO') arr.push(num); });
                 TANQUES_CONFIG.forEach(t => { let d = db.silos[t.id]; if(!d || d.estado === 'VACIO') arr.push(t.id); });
-                UNIDADES_PASO_CONFIG.forEach(u => { let d = db.silos[u.id]; if(d && d.estado === 'VACIO') arr.push(u.id); });
+                UNIDADES_PASO_CONFIG.forEach(u => { let d = db.silos[u.id]; if(d && d.estado === 'VACIO') arr.push(u.id.replace('CANO','CAÑO')); });
                 response = `🚫 <b>Unidades Vacías (${arr.length}):</b><br>${arr.join(', ')}`;
                 addChatMessage(response, 'bot');
                 return;
@@ -2962,8 +3231,8 @@
                 return;
             }
 
-            // Fallback (Modo Conversación Básico)
-            addChatMessage("🤔 No entendí. Probá con:<br>1️⃣ Cereales (Ej: <b>Maíz G2</b>)<br>2️⃣ Logística (Ej: <b>Historial de camiones</b>)<br>3️⃣ Unidades (Ej: <b>Silo 501</b>, <b>Tanque CTM</b>, <b>Caño 1</b>)<br>4️⃣ Operaciones (Ej: <b>Alertas</b> o <b>Rellenos</b>)", 'bot');
+            // Fallback
+            addChatMessage("🤔 No entendí. Escribí <b>'Ayuda'</b> para ver todo lo que puedo hacer.", 'bot');
         }
 
         // --- MOTOR DE LOGÍSTICA Y FECHAS ---
@@ -2983,7 +3252,6 @@
             let tituloFecha = "";
             let esHistorial = false;
 
-            // FIX: Detección de fechas mejorada
             if (q.includes('historial') || q.includes('historico')) {
                 esHistorial = true;
                 fechaInicio.setDate(hoy.getDate() - 30);
@@ -3007,7 +3275,6 @@
                     fechaFin = new Date(y, m-1, d);
                     tituloFecha = `${d}/${m}/${y}`;
                 } else {
-                    // Si no especifica, asumimos HOY
                     tituloFecha = "Hoy";
                 }
             }

@@ -406,7 +406,7 @@
         <!-- PESTAÑA: TANQUES / CIRCUITOS -->
         <div id="tanques" class="tab-content">
             <h2>Tanques y Circuitos</h2>
-            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Hacé clic en cualquier tanque para ver su flujo completo.</p>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Hacé clic en cualquier tanque para ver su flujo. Los caños, tolvas y balanzas se listan al final como unidades de paso/emergencia.</p>
             
             <div id="contenedor-todos-tanques"></div>
             
@@ -419,7 +419,8 @@
                 <div id="flow-container" class="flow-container"></div>
             </div>
 
-            <h3 style="margin-top:30px; font-size:1rem; color:var(--text-light);">Unidades de Paso (Solo con carga/tapados)</h3>
+            <div class="floor-header" style="margin-top:30px; border-bottom-color: #f59e0b;">Unidades de Paso / Emergencia</div>
+            <p style="font-size:0.8rem; color:var(--text-light); margin-bottom:15px;">(Caños, Tolvas, Balanzas, CER) - Solo se muestran si tienen carga o están fuera de servicio.</p>
             <div id="contenedor-unidades-paso" class="grid-tarjetas" style="grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px;"></div>
         </div>
 
@@ -565,12 +566,6 @@
             <h2>Administración</h2>
             
             <div class="card-panel">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Configuración de Tanques</h3>
-                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Conexiones y capacidades.</p>
-                <div id="config-tanques" style="font-size:0.85rem;"></div>
-            </div>
-
-            <div class="card-panel">
                 <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Mantenimiento (Memoria)</h3>
                 <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Si la app se pone lenta, descargá un backup y archivá los movimientos viejos (más de 6 meses) para liberar espacio.</p>
                 <button class="btn-save" style="background:#f59e0b; margin-top:0;" onclick="archivarHistorial()" type="button">🧹 Archivar Historial Antiguo</button>
@@ -634,8 +629,8 @@
             return false;
         };
 
-        const DB_VERSION = 22;
-        const DB_KEY = 'unidad7_db_v22';
+        const DB_VERSION = 23;
+        const DB_KEY = 'unidad7_db_v23';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -681,15 +676,25 @@
             { id: 'TA2', piso: 6, max: 130, padre: 'TA1' }
         ];
 
-        // SE MANTIENE ID "CANO-X" PERO VISUALMENTE SERÁ "CAÑO"
+        // LIMPIEZA DE NOMBRES Y EXTRAS REDUNDANTES
         const UNIDADES_PASO_CONFIG = [
-            { id: 'CER', tipo: 'CER', extra: 'Pulmón U6' },
-            { id: 'CANO-1', tipo: 'CAÑO', extra: '' }, { id: 'CANO-2', tipo: 'CAÑO', extra: '' }, { id: 'CANO-3', tipo: 'CAÑO', extra: '' },
-            { id: 'CANO-4', tipo: 'CAÑO', extra: '' }, { id: 'CANO-5', tipo: 'CAÑO', extra: '' }, { id: 'CANO-6', tipo: 'CAÑO', extra: '' },
-            { id: 'TOLVA-1', tipo: 'TOLVA', extra: 'Plataforma 10' }, { id: 'TOLVA-2', tipo: 'TOLVA', extra: 'Plataforma 9' },
-            { id: 'TOLVA-3', tipo: 'TOLVA', extra: 'Vagones' }, { id: 'TOLVA-4', tipo: 'TOLVA', extra: 'Vagones' },
-            { id: 'BALANZA-1', tipo: 'BALANZA', extra: '' }, { id: 'BALANZA-2', tipo: 'BALANZA', extra: '' }, { id: 'BALANZA-3', tipo: 'BALANZA', extra: '' },
-            { id: 'BALANZA-4', tipo: 'BALANZA', extra: '' }, { id: 'BALANZA-5', tipo: 'BALANZA', extra: '' }, { id: 'BALANZA-6', tipo: 'BALANZA', extra: '' }
+            { id: 'CER', tipo: 'CER', nombre: 'CER (Pulmón U6)' },
+            { id: 'CANO-1', tipo: 'CAÑO', nombre: 'CAÑO 1' }, 
+            { id: 'CANO-2', tipo: 'CAÑO', nombre: 'CAÑO 2' }, 
+            { id: 'CANO-3', tipo: 'CAÑO', nombre: 'CAÑO 3' },
+            { id: 'CANO-4', tipo: 'CAÑO', nombre: 'CAÑO 4' }, 
+            { id: 'CANO-5', tipo: 'CAÑO', nombre: 'CAÑO 5' }, 
+            { id: 'CANO-6', tipo: 'CAÑO', nombre: 'CAÑO 6' },
+            { id: 'TOLVA-1', tipo: 'TOLVA', nombre: 'TOLVA 1 (Plataforma 10)' }, 
+            { id: 'TOLVA-2', tipo: 'TOLVA', nombre: 'TOLVA 2 (Plataforma 9)' },
+            { id: 'TOLVA-3', tipo: 'TOLVA', nombre: 'TOLVA 3' }, 
+            { id: 'TOLVA-4', tipo: 'TOLVA', nombre: 'TOLVA 4' },
+            { id: 'BALANZA-1', tipo: 'BALANZA', nombre: 'BALANZA 1' }, 
+            { id: 'BALANZA-2', tipo: 'BALANZA', nombre: 'BALANZA 2' }, 
+            { id: 'BALANZA-3', tipo: 'BALANZA', nombre: 'BALANZA 3' },
+            { id: 'BALANZA-4', tipo: 'BALANZA', nombre: 'BALANZA 4' }, 
+            { id: 'BALANZA-5', tipo: 'BALANZA', nombre: 'BALANZA 5' }, 
+            { id: 'BALANZA-6', tipo: 'BALANZA', nombre: 'BALANZA 6' }
         ];
 
         const FILAS_TABLERO = {
@@ -715,7 +720,7 @@
         let db = { __version: DB_VERSION, cereales: [], silos: {}, herramienta: { cereales: [], silos: {} } };
         let backupDB = null;
         let cintaRellenoAbierta = null;
-        let cintasStockAbiertas = {}; // Ahora es un objeto para múltiples cereales
+        let cintasStockAbiertas = {};
         let cintasHerramientaAbiertas = { C1: true, C2: true, C3: true, C4: true };
         let silosModificadosReciente = [];
         let confirmCallback = null;
@@ -808,7 +813,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v21') || localStorage.getItem('unidad7_db_v20') || localStorage.getItem('unidad7_db_v19');
+                    let old = localStorage.getItem('unidad7_db_v22') || localStorage.getItem('unidad7_db_v21') || localStorage.getItem('unidad7_db_v20');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -845,10 +850,10 @@
 
             UNIDADES_PASO_CONFIG.forEach(u => {
                 if(!db.silos[u.id]) {
-                    db.silos[u.id] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, origen: null, lastUpdate: 0, tipo: u.tipo, extra: u.extra };
+                    db.silos[u.id] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, origen: null, lastUpdate: 0, tipo: u.tipo, extra: u.nombre };
                 } else {
                     db.silos[u.id].tipo = u.tipo;
-                    db.silos[u.id].extra = u.extra;
+                    db.silos[u.id].extra = u.nombre;
                 }
             });
 
@@ -962,14 +967,12 @@
             return 0;
         }
 
-        // --- DEBOUNCE BUSCADOR ---
         let searchTimeout;
         function filtrarSmartSearchDebounce() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(calcularStock, 300);
         }
 
-        // --- BORRADOR AUTOMÁTICO ---
         function guardarBorrador() {
             let lista = document.getElementById('lista-movimientos');
             if(lista) {
@@ -1061,7 +1064,7 @@
                 if (tipo === 'TANQUE') {
                     selSilo.innerHTML = TANQUES_CONFIG.map(t => `<option value="${t.id}">${t.id} (Piso ${t.piso})</option>`).join('');
                 } else if (tipo === 'PASO') {
-                    selSilo.innerHTML = UNIDADES_PASO_CONFIG.map(u => `<option value="${u.id}">${u.id.replace('CANO','CAÑO')} (${u.tipo})</option>`).join('');
+                    selSilo.innerHTML = UNIDADES_PASO_CONFIG.map(u => `<option value="${u.id}">${u.nombre}</option>`).join('');
                 }
             }
             
@@ -1356,7 +1359,7 @@
 
         function procesarMovimientos() {
             let btn = document.getElementById('btn-guardar-todos');
-            if(btn.disabled) return; // Evitar doble clic
+            if(btn.disabled) return;
 
             let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
             let silosEnLote = new Set();
@@ -1669,7 +1672,6 @@
             const contenedorPaso = document.getElementById('contenedor-unidades-paso');
             if(!contenedor) return;
 
-            // Agrupar por pisos
             let pisos = {1: '', 2: '', 3: '', 6: ''};
 
             TANQUES_CONFIG.forEach(t => {
@@ -1686,7 +1688,7 @@
                 let card = `
                     <div class="tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''}" onclick="abrirFlujoTanque('${t.id}')" style="min-height:80px;">
                         ${alertaHtml} ${fumigadoHtml}
-                        <span class="tag-tipo">Tanque P${t.piso}</span>
+                        <span class="tag-tipo">Tanque P${t.piso} ${t.padre ? '↳ '+t.padre : ''}</span>
                         <div class="t-num">${t.id}</div>
                         <div class="t-info">${textoCereal}</div>
                         <div class="t-info-2">${d.tonelaje} t (Max: ${t.max})</div>
@@ -1716,20 +1718,19 @@
                     if (!isVacio && !db.cereales.find(c => c.id === d.cereal)) claseCereal = 'bg-OTROS';
 
                     let alertaHtml = tieneAlerta(u.id) ? `<div class="t-alerta">!</div>` : '';
-                    let nombreVisual = u.id.replace('CANO', 'CAÑO');
                     
                     htmlPaso += `
                         <div class="tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''}" onclick="verHistorial('${u.id}')" style="min-height:80px;">
                             ${alertaHtml}
-                            <span class="tag-tipo">${u.tipo} ${u.extra ? '('+u.extra+')' : ''}</span>
-                            <div class="t-num" style="font-size:0.8rem; text-align:center;">${nombreVisual}</div>
+                            <span class="tag-tipo">${u.nombre}</span>
+                            <div class="t-num" style="font-size:0.8rem; text-align:center;">${u.tipo}</div>
                             <div class="t-info">${textoCereal}</div>
                             <div class="t-info-2">${d.tonelaje} t</div>
                         </div>
                     `;
                 }
             });
-            contenedorPaso.innerHTML = htmlPaso || '<p style="text-align:center; color:var(--text-light); font-size:0.85rem; grid-column: 1/-1;">No hay unidades de paso con carga.</p>';
+            contenedorPaso.innerHTML = htmlPaso || '<p style="text-align:center; color:var(--text-light); font-size:0.85rem; grid-column: 1/-1;">No hay unidades de paso con carga ni fuera de servicio.</p>';
         }
 
         function abrirFlujoTanque(id) {
@@ -1792,7 +1793,8 @@
                 ? `<button onclick="toggleAlertaCalidad('${num}')" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:0.85rem; margin-top:10px; width:100%;" type="button">🚨 Quitar Alerta Calidad</button>`
                 : `<button onclick="toggleAlertaCalidad('${num}')" style="background:#10b981; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:0.85rem; margin-top:10px; width:100%;" type="button">✅ Generar Alerta Calidad</button>`;
                 
-            document.getElementById('h-titulo').innerHTML = `Historial Unidad ${num.replace('CANO','CAÑO')}`;
+            let nombreVisual = num.replace('CANO','CAÑO');
+            document.getElementById('h-titulo').innerHTML = `Historial Unidad ${nombreVisual}`;
             
             let cont = document.getElementById('lista-historial');
             cont.innerHTML = `<div style="margin-bottom:15px;">${btnAlerta}</div>`;
@@ -2068,10 +2070,13 @@
                 if(counts[st] !== undefined) counts[st]++;
             });
 
+            // EXCLUIR UNIDADES DE PASO DEL CONTADOR DE VACIOS
             UNIDADES_PASO_CONFIG.forEach(u => {
                 let d = db.silos[u.id];
+                if(d && d.estado === 'CON_CARGA') counts.CON_CARGA++;
                 if(d && d.estado === 'TAPADA') counts.TAPADA++;
                 if(d && d.estado === 'FUERA_SERVICIO') counts.FUERA_SERVICIO++;
+                // NO sumar a VACIO
             });
 
             let v = document.getElementById('st-vacios');
@@ -2128,18 +2133,20 @@
                 }
             });
 
-            UNIDADES_PASO_CONFIG.forEach(u => {
-                let d = db.silos[u.id];
-                let st = d ? d.estado : 'VACIO';
-                if(st === estado) {
-                    hay = true;
-                    let cObj = d && d.cereal ? db.cereales.find(c=>c.id===d.cereal) : null;
-                    let color = cObj ? cObj.color : 'var(--bg)';
-                    let txtColor = d && d.cereal ? 'white' : 'var(--text-light)';
-                    let nombreVisual = u.id.replace('CANO', 'CAÑO');
-                    html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial('${u.id}')">${nombreVisual}</div>`;
-                }
-            });
+            if (estado !== 'VACIO') {
+                UNIDADES_PASO_CONFIG.forEach(u => {
+                    let d = db.silos[u.id];
+                    let st = d ? d.estado : 'VACIO';
+                    if(st === estado) {
+                        hay = true;
+                        let cObj = d && d.cereal ? db.cereales.find(c=>c.id===d.cereal) : null;
+                        let color = cObj ? cObj.color : 'var(--bg)';
+                        let txtColor = d && d.cereal ? 'white' : 'var(--text-light)';
+                        html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial('${u.id}')">${u.nombre}</div>`;
+                    }
+                });
+            }
+
             html += `</div>`;
             
             if(!hay) html += '<p style="text-align:center; font-size:0.85rem;">No hay unidades en este estado.</p>';
@@ -2602,16 +2609,7 @@
             if(!cont) return;
             cont.innerHTML = '';
             db.cereales.forEach(c => { cont.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);"><b>${c.nombre}</b> <span>PH: ${c.ph}</span></div>`; });
-
-            let contT = document.getElementById('config-tanques');
-            if(contT) {
-                contT.innerHTML = TANQUES_CONFIG.map(t => `
-                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border);">
-                        <span><b>${t.id}</b> (Piso ${t.piso}) - Max: ${t.max}t</span>
-                        <span>${t.padre ? `Recibe de: ${t.padre}` : 'Sin conexión'}</span>
-                    </div>
-                `).join('');
-            }
+            // Se eliminó la configuración de tanques de aquí
         }
 
         function agregarCerealNuevo() {
@@ -2701,7 +2699,7 @@
             db.cereales.forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
             
             let elTablero = document.getElementById('filtro-tablero');
-            let elStock = document.getElementById('sel-cereal-stock'); // Oculto ahora, pero mantenemos por compatibilidad
+            let elStock = document.getElementById('sel-cereal-stock');
             let elRelleno = document.getElementById('sel-cereal-relleno');
             let elCalc = document.getElementById('calc-cereal');
 
@@ -2776,7 +2774,6 @@
             body.scrollTop = body.scrollHeight;
         }
 
-        // --- CEREBRO DEL SILOBOT 4.0 ---
         function processBotQuery(query) {
             let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             
@@ -3089,7 +3086,7 @@
                 let arr = [];
                 TODOS_LOS_SILOS.forEach(num => { let d = db.silos[num]; if(!d || d.estado === 'VACIO') arr.push(num); });
                 TANQUES_CONFIG.forEach(t => { let d = db.silos[t.id]; if(!d || d.estado === 'VACIO') arr.push(t.id); });
-                UNIDADES_PASO_CONFIG.forEach(u => { let d = db.silos[u.id]; if(d && d.estado === 'VACIO') arr.push(u.id.replace('CANO','CAÑO')); });
+                UNIDADES_PASO_CONFIG.forEach(u => { let d = db.silos[u.id]; if(d && d.estado === 'VACIO') arr.push(u.nombre); });
                 response = `🚫 <b>Unidades Vacías (${arr.length}):</b><br>${arr.join(', ')}`;
                 addChatMessage(response, 'bot');
                 return;

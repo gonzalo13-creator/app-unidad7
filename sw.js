@@ -1,8 +1,8 @@
-const CACHE_NAME = 'silos-u7-v36'; 
+const CACHE_NAME = 'silos-u7-v37'; // IMPORTANTE: Cambiar este número cada vez que subas cambios a GitHub
 const urlsToCache = [ './', './index.html', './manifest.json' ];
 
 self.addEventListener('install', event => {
-    self.skipWaiting();
+    self.skipWaiting(); // Fuerza al nuevo Service Worker a activarse inmediatamente
     event.waitUntil( 
         caches.open(CACHE_NAME).then(cache => {
             return Promise.all(urlsToCache.map(url => cache.add(url).catch(() => console.log('Falló cache de: ' + url))));
@@ -11,9 +11,23 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-    event.respondWith( 
-        caches.match(event.request).then(response => response || fetch(event.request)) 
-    );
+    // ESTRATEGIA: Network First para el HTML (para que detecte actualizaciones rápido)
+    // Cache First para el resto (imágenes, etc.)
+    if (event.request.mode === 'navigate' || (event.request.method === 'GET' && event.request.headers.get('accept').includes('text/html'))) {
+        event.respondWith(
+            fetch(event.request).then(response => {
+                let responseClone = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+                return response;
+            }).catch(() => {
+                return caches.match(event.request);
+            })
+        );
+    } else {
+        event.respondWith( 
+            caches.match(event.request).then(response => response || fetch(event.request)) 
+        );
+    }
 });
 
 self.addEventListener('activate', event => {
@@ -26,4 +40,11 @@ self.addEventListener('activate', event => {
             );
         }).then(() => self.clients.claim())
     );
+});
+
+// Escuchar mensaje para aplicar actualización
+self.addEventListener('message', event => {
+    if (event.data && event.data.action === 'skipWaiting') {
+        self.skipWaiting();
+    }
 });

@@ -643,8 +643,8 @@
             return false;
         };
 
-        const DB_VERSION = 29;
-        const DB_KEY = 'unidad7_db_v29';
+        const DB_VERSION = 30;
+        const DB_KEY = 'unidad7_db_v30';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -744,7 +744,7 @@
         let historialSiloActivo = null;
 
         // Memoria del Bot IA
-        let botContext = { lastCereal: null, lastSilo: null, lastUnit: null };
+        let botContext = { lastCereal: null, lastSilo: null, lastUnit: null, justAskedHelp: false };
 
         function showToast(msg, type = 'info', duration = 3500) {
             const container = document.getElementById('toast-container');
@@ -830,7 +830,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v28') || localStorage.getItem('unidad7_db_v27');
+                    let old = localStorage.getItem('unidad7_db_v29') || localStorage.getItem('unidad7_db_v28');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -3234,11 +3234,18 @@
             
             // Sinónimos y Mapeos
             q = q.replace(/\b(batea|bateas|chupador|chupadores|pulmon|pulmones|plataforma 9|plataforma 10)\b/g, "tolva")
-                 .replace(/\b(tanqe|tanque|tanque)\b/g, "tanque")
+                 .replace(/\b(tanqe|tanque|tanque|tanqes)\b/g, "tanque")
+                 .replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas")
                  .replace(/\b(silo|silos)\b/g, "silo");
             
             if (q === 'ayuda' || q === '?') {
-                addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Maíz</i> (resumen completo)<br>- <i>¿Y el espacio?</i> (si ya preguntaste por un cereal)<br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Que puedo cargar en el 305</i><br>- <i>Cual es el silo mas vacio de soja</i><br>- <i>Simular ph 69 maiz</i><br>- <i>Tanques</i><br>- <i>Caño 1</i><br>- <i>Camiones ayer</i>", 'bot');
+                if (botContext.justAskedHelp) {
+                    addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando (ej: <i>Tanques</i>).", 'bot');
+                } else {
+                    addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Maíz</i> (resumen completo)<br>- <i>¿Y el espacio?</i> (si ya preguntaste por un cereal)<br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Que puedo cargar en el 305</i><br>- <i>Cual es el silo mas vacio de soja</i><br>- <i>Simular ph 69 maiz</i><br>- <i>Tanques</i><br>- <i>Caño 1</i><br>- <i>Camiones ayer</i>", 'bot');
+                    botContext.justAskedHelp = true;
+                    setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
+                }
                 return;
             }
 
@@ -3246,41 +3253,12 @@
                 addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Simular ph 74 maiz</i>", 'bot');
                 return;
             }
-            if (q === 'tanques') {
-                addChatMessage("🛢️ <b>Módulo de Tanques</b><br>Te doy el resumen de los tanques. Ejemplos:<br>- <i>Tanques</i><br>- <i>Tanque CTM</i><br>- <i>Tanque IL1</i>", 'bot');
-                return;
-            }
-            if (q === 'canos tolvas' || q === 'caños tolvas' || q === 'paso') {
-                addChatMessage("🛠️ <b>Módulo de Paso / Emergencia</b><br>Información sobre Caños, Tolvas, Balanzas y CER. Ejemplos:<br>- <i>Caños</i><br>- <i>Tolvas</i><br>- <i>Caño 1</i>", 'bot');
-                return;
-            }
-            if (q === 'rellenos') {
-                addChatMessage("⛽ <b>Módulo de Rellenos</b><br>Calculo espacios disponibles. Probá:<br>- <i>Relleno</i> (general)<br>- <i>Relleno de Maíz</i><br>- <i>Donde pongo 50t de Soja</i>", 'bot');
-                return;
-            }
-            if (q === 'alertas') {
-                addChatMessage("🚨 <b>Módulo de Alertas</b><br>Probá:<br>- <i>Alertas</i><br>- <i>Vencidas</i><br>- <i>Sin fumigar</i>", 'bot');
-                return;
-            }
-            if (q === 'pendientes') {
-                let arr = [];
-                Object.keys(db.silos).forEach(num => {
-                    let d = db.silos[num];
-                    if(d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
-                        let falta = [];
-                        if(!d.calidad) falta.push('Calidad');
-                        if(!d.fumigacion_fecha && (d.tipo==='SILO'||d.tipo==='TANQUE'||d.tipo==='ENTRESILO')) falta.push('Fumigación');
-                        if(!d.fecha_primera_carga) falta.push('F. Carga');
-                        if(falta.length > 0) arr.push(`${num} (Falta: ${falta.join(', ')})`);
-                    }
-                });
-                let resp = arr.length > 0 ? `⚠️ <b>Unidades con Datos Pendientes (${arr.length}):</b><br>` + arr.join('<br>') : "✅ No hay datos pendientes.";
-                addChatMessage(resp, 'bot');
-                return;
-            }
-            if (q === 'logistica' || q === 'historial') {
-                addChatMessage("🚚 <b>Módulo de Logística</b><br>Probá:<br>- <i>Camiones</i> (hoy)<br>- <i>Historial</i> (últimos 30 días)<br>- <i>Transile 01/10</i>", 'bot');
-                return;
+
+            // Extracción de Calidad antes de buscar
+            let calidadBuscada = null;
+            let matchCalidad = q.match(/\b(g1|g2|g3|m61|s\/c)\b/i);
+            if (matchCalidad) {
+                calidadBuscada = matchCalidad[1].toUpperCase();
             }
 
             if (procesarLogistica(q)) return;
@@ -3453,6 +3431,7 @@
                     Object.keys(db.silos).forEach(num => {
                         let d = db.silos[num];
                         if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                            if (calidadBuscada && d.calidad !== calidadBuscada) return; // Filtro de calidad aplicado aquí
                             let esp = getEspacioDisp(num);
                             if(esp >= tonsReq) {
                                 opciones.push({ num, esp, cal: d.calidad });
@@ -3462,14 +3441,14 @@
 
                     if(opciones.length > 0) {
                         opciones.sort((a,b) => a.esp - b.esp);
-                        response = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealEncontrado.nombre}:</b><br>`;
+                        response = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealEncontrado.nombre}${calidadBuscada ? ' '+calidadBuscada : ''}:</b><br>`;
                         response += `Silo <b>${opciones[0].num}</b> (${opciones[0].cal}) tiene <b>${opciones[0].esp}t</b> disponibles.<br><br>`;
                         if(opciones.length > 1) {
                             response += `<b>Otras opciones:</b><br>`;
                             opciones.slice(1, 4).forEach(o => { response += `- Silo ${o.num} (${o.cal}): ${o.esp}t<br>`; });
                         }
                     } else {
-                        response = `❌ No hay ningún silo de ${cerealEncontrado.nombre} con espacio para ${tonsReq}t de una sola vez.<br>Probá combinando o usá "Relleno de ${cerealEncontrado.nombre}".`;
+                        response = `❌ No hay ningún silo de ${cerealEncontrado.nombre}${calidadBuscada ? ' '+calidadBuscada : ''} con espacio para ${tonsReq}t de una sola vez.<br>Probá combinando o usá "Relleno de ${cerealEncontrado.nombre}".`;
                     }
                     addChatMessage(response, 'bot');
                     return;
@@ -3478,7 +3457,7 @@
 
             // --- FIN NUEVAS HABILIDADES ---
 
-            let catMatch = q.match(/\b(tanques|canos|caños|tolvas|balanzas|cer)\b/i);
+            let catMatch = q.match(/\b(tanques|tanque|canos|caños|caño|tolvas|tolva|balanzas|balanza|cer)\b/i);
             if (catMatch && !q.match(/\b\d+\b/)) { 
                 let cat = catMatch[1].toLowerCase();
                 let tipoFiltro = '';
@@ -3506,7 +3485,7 @@
                 });
 
                 response = `📋 <b>Resumen de ${nombreCat}:</b><br><br>`;
-                if (tipoFiltro !== 'TANQUE') {
+                if (tipoFiltro !== 'TANQUE' && tipoFiltro !== 'BALANZA') {
                     response += `🚫 <b>Vacíos (${vacios.length}):</b> ${vacios.length > 0 ? vacios.join(', ') : 'Ninguno'}<br><br>`;
                 }
                 response += `📦 <b>Con Carga (${cargados.length}):</b><br>`;
@@ -3563,20 +3542,8 @@
                 cerealEncontrado = db.cereales.find(c => c.id === botContext.lastCereal);
             }
 
-            let calidadBuscada = null;
             if (cerealEncontrado) {
                 botContext.lastCereal = cerealEncontrado.id;
-                let calidadesCereal = new Set();
-                Object.keys(db.silos).forEach(num => {
-                    let s = db.silos[num];
-                    if(s.cereal === cerealEncontrado.id && s.calidad) calidadesCereal.add(s.calidad.toUpperCase());
-                });
-                for (let cal of calidadesCereal) {
-                    if (q.toUpperCase().includes(cal)) {
-                        calidadBuscada = cal;
-                        break;
-                    }
-                }
             }
 
             let matchSilo = q.match(/\b(10[1-9]|11[0-8]|20[1-9]|21[0-7]|30[1-9]|31[0-8]|40[1-9]|41[0-7]|50[1-9]|51[0-8]|60[1-9]|61[0-7]|70[1-9]|71[0-8])\b/);

@@ -359,7 +359,7 @@
             <div class="chat-chips">
                 <button class="chip" onclick="sendChip('Buen día')" type="button">🌅 Buen día</button>
                 <button class="chip" onclick="sendChip('Maíz por línea')" type="button">🌾 Maíz por línea</button>
-                <button class="chip" onclick="sendChip('Dónde pongo 30t de Soja G2')" type="button">🎯 Dónde pongo</button>
+                <button class="chip" onclick="sendChip('Dónde pongo 30t de Maíz G2')" type="button">🎯 Dónde pongo</button>
                 <button class="chip" onclick="sendChip('Camiones de esta semana')" type="button">🚚 Camiones</button>
                 <button class="chip" onclick="sendChip('Clima')" type="button">☀️ Clima</button>
                 <button class="chip" onclick="sendChip('Alertas activas')" type="button">🚨 Alertas</button>
@@ -645,8 +645,8 @@
             return false;
         };
 
-        const DB_VERSION = 35;
-        const DB_KEY = 'unidad7_db_v35';
+        const DB_VERSION = 36;
+        const DB_KEY = 'unidad7_db_v36';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -832,7 +832,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v34') || localStorage.getItem('unidad7_db_v33');
+                    let old = localStorage.getItem('unidad7_db_v35') || localStorage.getItem('unidad7_db_v34');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -1016,6 +1016,24 @@
             if(MIN_14.includes(num)) return 14;
             if(MIN_10.includes(num)) return 10;
             return 0;
+        }
+
+        // --- FUNCIÓN GLOBAL getEspacioDisp (CORREGIDA) ---
+        function getEspacioDisp(num) {
+            let d = db.silos[num];
+            if(!d || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return 0;
+            let cereal = db.cereales.find(c => c.id === d.cereal);
+            if(!cereal) return 0;
+            let n = parseInt(num);
+            let tipo = esSiloTipo(n);
+            
+            if(SILOS_MANUALES.includes(n)) return d.relleno_manual || 0;
+            
+            let topeMetros = obtenerTopeMetros(n);
+            let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+            let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE);
+            let actual = parseFloat(d.tonelaje) || 0;
+            return capMaxTonTope - actual;
         }
 
         let searchTimeout;
@@ -3350,7 +3368,7 @@
                     if (botContext.justAskedHelp) {
                         addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando.", 'bot');
                     } else {
-                        addChatMessage("🧠 <b>Ayuda de MaizBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Soja G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
+                        addChatMessage("🧠 <b>Ayuda de MaizBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
                         botContext.justAskedHelp = true;
                         setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
                     }

@@ -120,9 +120,7 @@
         .row-inputs input:focus, .row-inputs select:focus { border-color: var(--primary); outline: none; }
         
         .row-inputs .header-actions { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
-        .row-inputs .btn-del { background: #fee2e2; color: #ef4444; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s;}
-        .row-inputs .btn-del:hover { background: #fca5a5; }
-        .row-inputs .btn-save-row { background: #10b981; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s; margin-right: 5px;}
+        .row-inputs .btn-save-row { background: #10b981; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; width: 100%;}
         .row-inputs .btn-save-row:hover { background: #059669; }
 
         @media (max-width: 768px) {
@@ -146,9 +144,6 @@
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
             .row-inputs { grid-template-columns: 1fr; padding: 15px; gap: 10px; }
-            
-            .action-buttons { position: fixed; bottom: 65px; left: 0; width: 100%; background: var(--bg); padding: 10px 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 999; display: flex; flex-direction: column; gap: 8px;}
-            .action-buttons .btn-save { margin-top: 0; padding: 14px; font-size: 1rem;}
 
             .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 4px; }
             .tarjeta { min-height: 60px; border-radius: 6px; }
@@ -333,7 +328,6 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE CONTRASEÑA -->
     <div id="login-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#1e293b; z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
         <h2 style="font-size: 2rem; margin-bottom: 10px;">🔒 App en Testeo</h2>
         <p style="color: #94a3b8; margin-bottom: 20px;">Ingresá tu contraseña para entrar</p>
@@ -342,7 +336,6 @@
         <p id="pass-error" style="color:#ef4444; display:none; margin-top:10px; font-weight: bold;">❌ Contraseña incorrecta</p>
     </div>
 
-    <!-- CONTENIDO DE LA APP -->
     <div id="app-content">
         <div id="toast-container"></div>
         
@@ -444,14 +437,9 @@
                 </div>
 
                 <div id="movimientos" class="tab-content">
-                    <h2>Movimientos</h2>
-                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Cargá las acciones y guardá de a una o todas juntas al final.</p>
+                    <h2>Registrar Movimiento</h2>
+                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Cargá los datos y presioná "Guardar". El formulario se reiniciará automáticamente para la siguiente acción.</p>
                     <div id="lista-movimientos"></div>
-                    <div class="action-buttons">
-                        <button class="btn-save" style="background:var(--secondary); margin:0;" onclick="agregarFilaMovimiento()" type="button">+ Agregar otra Acción</button>
-                        <button id="btn-guardar-todos" class="btn-save" style="background:#10b981; margin:0;" onclick="procesarMovimientos()" type="button">✅ GUARDAR TODOS</button>
-                        <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin:0;" onclick="deshacerUltimoCambio()" type="button">↩️ Deshacer</button>
-                    </div>
                 </div>
 
                 <div id="tanques" class="tab-content">
@@ -623,7 +611,6 @@
     </div>
 
     <script>
-        // --- SISTEMA DE CONTRASEÑA ---
         function checkPassword() {
             const pass = document.getElementById('pass-input').value;
             // ⚠️ ACÁ PODÉS CAMBIAR LA CONTRASEÑA "silos2026" POR LA QUE QUIERAS
@@ -631,12 +618,11 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-content').style.display = 'flex'; 
                 sessionStorage.setItem('loggedIn', 'true');
-                init(); // Arranca la app
+                init();
             } else {
                 document.getElementById('pass-error').style.display = 'block';
             }
         }
-        // -----------------------------
 
         window.onerror = function(msg, url, line, col, error) {
             console.error("Error crítico:", msg, {url, line, col, error});
@@ -684,7 +670,6 @@
         const CINTAS = { C1: { nombre: "Extracción 1 (700s / 600s)" }, C2: { nombre: "Extracción 2 (500s / 400s Pares)" }, C3: { nombre: "Extracción 3 (300s / 400s Impares)" }, C4: { nombre: "Extracción 4 (100s / 200s)" } };
 
         let db = { __version: DB_VERSION, cereales: [], silos: {}, herramienta: { cereales: [], silos: {} }, cierres: [] };
-        let backupDB = null;
         let cintaRellenoAbierta = null;
         let cintasStockAbiertas = {};
         let silosModificadosReciente = [];
@@ -783,8 +768,8 @@
             });
 
             guardarDB();
-            actualizarSelects(); dibujarTablero(); dibujarTanques(); dibujarCierres(); restaurarBorrador();
-            if(document.querySelectorAll('#lista-movimientos .row-inputs').length === 0) agregarFilaMovimiento();
+            actualizarSelects(); dibujarTablero(); dibujarTanques(); dibujarCierres();
+            document.getElementById('lista-movimientos').innerHTML = ''; agregarFilaMovimiento();
             renderHerramientaCerealesChk(); actualizarExistencias(); updateOnlineStatus();
         }
 
@@ -834,27 +819,23 @@
         function getEspacioDisp(num) { let d = db.silos[num]; if(!d || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return 0; let cereal = db.cereales.find(c => c.id === d.cereal); if(!cereal) return 0; let n = parseInt(num); let tipo = esSiloTipo(n); if(SILOS_MANUALES.includes(n)) return d.relleno_manual || 0; let topeMetros = obtenerTopeMetros(n); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros); let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE); let actual = parseFloat(d.tonelaje) || 0; return capMaxTonTope - actual; }
 
         let searchTimeout; function filtrarSmartSearchDebounce() { clearTimeout(searchTimeout); searchTimeout = setTimeout(calcularStock, 300); }
-        function guardarBorrador() { let lista = document.getElementById('lista-movimientos'); if(lista) localStorage.setItem('movimientos_borrador', lista.innerHTML); }
-        function restaurarBorrador() { let draft = localStorage.getItem('movimientos_borrador'); let lista = document.getElementById('lista-movimientos'); if(draft && lista) { lista.innerHTML = draft; lista.querySelectorAll('.m-tipo-accion').forEach(sel => cambiarTipoAccion(sel)); lista.querySelectorAll('.m-tipo-unidad').forEach(sel => cambiarTipoUnidad(sel)); showToast("📝 Borrador de movimientos restaurado", "info"); } }
-        function limpiarBorrador() { localStorage.removeItem('movimientos_borrador'); }
 
         function agregarFilaMovimiento() {
             let div = document.createElement('div'); div.className = 'row-inputs';
             div.innerHTML = `
-                <div class="header-actions"><span style="font-weight:bold; color:var(--primary);">Nueva Acción</span><div>
+                <div class="header-actions"><span style="font-weight:bold; color:var(--primary); font-size:1.1rem;">Nueva Acción</span><div>
                     <button class="btn-save-row" onclick="procesarMovimientos(this)" type="button">💾 Guardar Registro</button>
-                    <button class="btn-del" aria-label="Eliminar fila" onclick="this.closest('.row-inputs').remove(); guardarBorrador();" type="button">🗑️ Eliminar</button>
                 </div></div>
-                <div class="form-group full"><label>Tipo de Acción</label><select class="m-tipo-accion" onchange="cambiarTipoAccion(this); guardarBorrador();" style="font-weight:bold;"><option value="INGRESO">📥 Ingreso de Mercadería</option><option value="EGRESO">📤 Egreso / Baja</option><option value="RECIRCULACION">🔄 Recirculación</option><option value="ESTADO">🚫 Cambio de Estado</option></select></div>
-                <div class="form-group"><label>Tipo de Unidad</label><select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this); guardarBorrador();"><option value="SILO">Silo / Entresilo</option><option value="TANQUE">Tanque</option><option value="PASO">Caño / Tolva / Balanza / CER</option></select></div>
-                <div class="form-group"><label>Unidad</label><input type="number" placeholder="Ej: 501" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this); guardarBorrador();"><select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this); guardarBorrador();"></select></div>
-                <div class="form-group"><label>Fecha</label><input type="date" class="m-fecha" onchange="guardarBorrador();"></div>
+                <div class="form-group full"><label>Tipo de Acción</label><select class="m-tipo-accion" onchange="cambiarTipoAccion(this);" style="font-weight:bold;"><option value="INGRESO">📥 Ingreso de Mercadería</option><option value="EGRESO">📤 Egreso / Baja</option><option value="RECIRCULACION">🔄 Recirculación</option><option value="ESTADO">🚫 Cambio de Estado</option></select></div>
+                <div class="form-group"><label>Tipo de Unidad</label><select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this);"><option value="SILO">Silo / Entresilo</option><option value="TANQUE">Tanque</option><option value="PASO">Caño / Tolva / Balanza / CER</option></select></div>
+                <div class="form-group"><label>Unidad</label><input type="number" placeholder="Ej: 501" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this);"><select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this);"></select></div>
+                <div class="form-group"><label>Fecha</label><input type="date" class="m-fecha"></div>
                 <div class="campos-dinamicos" style="display:contents;"></div>
-                <div class="form-group full"><label>Observaciones (Opcional)</label><input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs" oninput="guardarBorrador();"></div>
+                <div class="form-group full"><label>Observaciones (Opcional)</label><input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs"></div>
             `;
             div.querySelector('.m-fecha').value = '';
             document.getElementById('lista-movimientos').appendChild(div);
-            cambiarTipoAccion(div.querySelector('.m-tipo-accion')); cambiarTipoUnidad(div.querySelector('.m-tipo-unidad')); guardarBorrador();
+            cambiarTipoAccion(div.querySelector('.m-tipo-accion')); cambiarTipoUnidad(div.querySelector('.m-tipo-unidad'));
         }
 
         function cambiarTipoUnidad(select) {
@@ -871,29 +852,29 @@
         function cambiarTipoAccion(select) {
             let row = select.closest('.row-inputs'); let tipoAccion = select.value; let tipoUnidad = row.querySelector('.m-tipo-unidad').value;
             let container = row.querySelector('.campos-dinamicos'); if(!container) return; container.innerHTML = '';
-            let inputSilo = row.querySelector('.m-silo'); if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); guardarBorrador(); };
+            let inputSilo = row.querySelector('.m-silo'); if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); };
             let esSilo = (tipoUnidad === 'SILO'); let esFumigable = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE');
 
             if(tipoAccion === 'INGRESO') {
-                let campos = `<div class="form-group"><label>Origen</label><select class="m-origen" onchange="validarOrigen(this); guardarBorrador();"><option value="CAMIONES">Camiones</option><option value="VAGONES">Vagones</option><option value="TRANSILE">Transile</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="LIMPIEZA">Limpieza</option></select></div><div class="form-group" id="div-unidad-origen" style="display:none;"><label>Unidad Origen</label><input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305" oninput="guardarBorrador();"></div><div class="form-group"><label>Cereal</label><select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs')); guardarBorrador();">${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}</select></div><div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2" oninput="guardarBorrador();"></div>`;
-                if (esFumigable) campos += `<div class="form-group"><label>¿Fumigado?</label><select class="m-fumigo" onchange="guardarBorrador();"><option value="NO">No se fumigó</option><option value="TOTAL">Fumigación Total</option><option value="LIQUIDO">Solo Líquido</option><option value="PASTILLAS">Solo Pastillas</option></select></div>`;
-                if (esSilo) campos += `<div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this); guardarBorrador();"></div><div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal" oninput="guardarBorrador();"></div>`;
-                else campos += `<div class="form-group full"><label>Tonelaje (Manual)</label><input type="number" class="m-tons-manual" min="0" placeholder="0" inputmode="decimal" oninput="guardarBorrador();"></div>`;
+                let campos = `<div class="form-group"><label>Origen</label><select class="m-origen" onchange="validarOrigen(this);"><option value="CAMIONES">Camiones</option><option value="VAGONES">Vagones</option><option value="TRANSILE">Transile</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="LIMPIEZA">Limpieza</option></select></div><div class="form-group" id="div-unidad-origen" style="display:none;"><label>Unidad Origen</label><input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305"></div><div class="form-group"><label>Cereal</label><select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'));">${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}</select></div><div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2"></div>`;
+                if (esFumigable) campos += `<div class="form-group"><label>¿Fumigado?</label><select class="m-fumigo"><option value="NO">No se fumigó</option><option value="TOTAL">Fumigación Total</option><option value="LIQUIDO">Solo Líquido</option><option value="PASTILLAS">Solo Pastillas</option></select></div>`;
+                if (esSilo) campos += `<div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this);"></div><div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal"></div>`;
+                else campos += `<div class="form-group full"><label>Tonelaje (Manual)</label><input type="number" class="m-tons-manual" min="0" placeholder="0" inputmode="decimal"></div>`;
                 container.innerHTML = campos;
             }
             else if(tipoAccion === 'EGRESO') {
-                let campos = `<div class="form-group"><label>Motivo Baja</label><select class="m-motivo-baja" onchange="guardarBorrador();"><option value="EMBARQUE">Embarque</option><option value="RECARGA">Recarga</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="TRANSILE">Transile</option><option value="LIMPIEZA">Limpieza</option></select></div>`;
-                if (esSilo) campos += `<div class="form-group"><label>Nueva Medida (m)</label><input type="number" class="m-nuevos-metros" step="0.5" min="0" inputmode="decimal" oninput="calcularEgresoPorMetros(this); guardarBorrador();" placeholder="Metros Vacíos"></div>`;
-                campos += `<div class="form-group"><label>Tonelaje a restar</label><input type="number" class="m-tons-baja" min="0" placeholder="0" inputmode="decimal" oninput="guardarBorrador();"></div>`;
+                let campos = `<div class="form-group"><label>Motivo Baja</label><select class="m-motivo-baja"><option value="EMBARQUE">Embarque</option><option value="RECARGA">Recarga</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="TRANSILE">Transile</option><option value="LIMPIEZA">Limpieza</option></select></div>`;
+                if (esSilo) campos += `<div class="form-group"><label>Nueva Medida (m)</label><input type="number" class="m-nuevos-metros" step="0.5" min="0" inputmode="decimal" oninput="calcularEgresoPorMetros(this);" placeholder="Metros Vacíos"></div>`;
+                campos += `<div class="form-group"><label>Tonelaje a restar</label><input type="number" class="m-tons-baja" min="0" placeholder="0" inputmode="decimal"></div>`;
                 container.innerHTML = campos;
             }
             else if(tipoAccion === 'RECIRCULACION') {
-                let campos = `<div class="form-group"><label>Motivo</label><select class="m-motivo-recir" onchange="guardarBorrador();"><option value="FUMIGACION">Fumigación</option><option value="MUESTREO">Muestreo / Control</option><option value="TEMPERATURA">Bajar Temperatura</option></select></div>`;
-                if (esFumigable) campos += `<div class="form-group"><label>¿Se fumigó en este evento?</label><select class="m-fumigo-recir" onchange="guardarBorrador();"><option value="NO">No se fumigó</option><option value="TOTAL">Fumigación Total</option><option value="LIQUIDO">Solo Líquido</option><option value="PASTILLAS">Solo Pastillas</option></select></div>`;
+                let campos = `<div class="form-group"><label>Motivo</label><select class="m-motivo-recir"><option value="FUMIGACION">Fumigación</option><option value="MUESTREO">Muestreo / Control</option><option value="TEMPERATURA">Bajar Temperatura</option></select></div>`;
+                if (esFumigable) campos += `<div class="form-group"><label>¿Se fumigó en este evento?</label><select class="m-fumigo-recir"><option value="NO">No se fumigó</option><option value="TOTAL">Fumigación Total</option><option value="LIQUIDO">Solo Líquido</option><option value="PASTILLAS">Solo Pastillas</option></select></div>`;
                 container.innerHTML = campos;
             }
             else if(tipoAccion === 'ESTADO') {
-                container.innerHTML = `<div class="form-group"><label>Nuevo Estado</label><select class="m-nuevo-estado" onchange="guardarBorrador();"><option value="TAPADA">Tapado</option><option value="FUERA_SERVICIO">Fuera de Servicio</option><option value="VACIO">Vacío (Borrar Carga)</option></select></div>`;
+                container.innerHTML = `<div class="form-group"><label>Nuevo Estado</label><select class="m-nuevo-estado"><option value="TAPADA">Tapado</option><option value="FUERA_SERVICIO">Fuera de Servicio</option><option value="VACIO">Vacío (Borrar Carga)</option></select></div>`;
             }
         }
 
@@ -934,131 +915,110 @@
             inputTonsBaja.value = tonsRestadas;
         }
 
-        function procesarMovimientos(targetBtn = null) {
-            let rowsToProcess = [];
-            if (targetBtn) {
-                rowsToProcess = [targetBtn.closest('.row-inputs')];
-            } else {
-                rowsToProcess = Array.from(document.querySelectorAll('#lista-movimientos .row-inputs'));
-            }
-
-            let silosEnLote = new Set(); let pendingMoves = []; let errores = []; let warningMsg = "";
-            let hoy = new Date(); hoy.setHours(0,0,0,0);
-
-            for (let i = 0; i < rowsToProcess.length; i++) {
-                let row = rowsToProcess[i]; let tipoAccion = row.querySelector('.m-tipo-accion').value; let tipoUnidad = row.querySelector('.m-tipo-unidad').value;
-                let inputSilo = row.querySelector('.m-silo'); let selSilo = row.querySelector('.m-silo-select'); let inputFecha = row.querySelector('.m-fecha'); let inputObs = row.querySelector('.m-obs');
-                let silo = inputSilo.style.display !== 'none' ? parseInt(inputSilo.value) : selSilo.value;
-                if(!silo && targetBtn) { showToast("Falta seleccionar la Unidad.", "error"); return; }
-                if(!silo) continue;
-                
-                let fecha = inputFecha.value; let obs = inputObs ? inputObs.value : '';
-                if(!esUnidadValida(silo)) { errores.push(`Unidad ${silo} no existe.`); continue; }
-                if(silosEnLote.has(silo)) { errores.push(`Unidad ${silo} está duplicada.`); continue; }
-                if(!fecha) { errores.push(`Unidad ${silo}: Falta la fecha.`); continue; }
-                let fDate = parseFechaLocal(fecha); if (fDate > hoy) { errores.push(`Unidad ${silo}: La fecha no puede ser futura.`); continue; }
-                let d = getSiloData(silo); let moveData = { silo, fecha, tipo: tipoAccion, obs, d };
-
-                if(tipoAccion === 'INGRESO') {
-                    let cereal = row.querySelector('.m-cereal').value; let calidad = row.querySelector('.m-calidad').value.toUpperCase().trim();
-                    let fumigo = row.querySelector('.m-fumigo') ? row.querySelector('.m-fumigo').value : 'NO'; let origen = row.querySelector('.m-origen').value; let uniOrigen = row.querySelector('.m-unidad-origen') ? row.querySelector('.m-unidad-origen').value : '';
-                    let tons = 0; let metros = 0;
-                    if (tipoUnidad === 'SILO') {
-                        metros = parseFloat(row.querySelector('.m-metros').value) || 0; tons = parseFloat(row.querySelector('.m-tons').value) || 0;
-                        if(MIN_14.includes(silo) && metros < 14) { errores.push(`Silo ${silo} requiere mín. 14m.`); continue; }
-                        if(MIN_10.includes(silo) && metros < 10) { errores.push(`Silo ${silo} requiere mín. 10m.`); continue; }
-                        let tipoU = esSiloTipo(silo); let topeMetros = obtenerTopeMetros(silo);
-                        let capMaxRefTope = interpolar(tipoU === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
-                        let cerealObj = db.cereales.find(c => c.id === cereal); let capMaxTon = Math.round(capMaxRefTope * (cerealObj ? cerealObj.ph : PH_BASE) / PH_BASE);
-                        if(tons > capMaxTon) { errores.push(`Silo ${silo}: Capacidad máxima excedida (~${capMaxTon}t).`); continue; }
-                    } else { tons = parseFloat(row.querySelector('.m-tons-manual').value) || 0; }
-                    if(tons <= 0) { errores.push(`Unidad ${silo}: Tonelaje debe ser > 0.`); continue; }
-                    if(d.cereal && d.cereal !== cereal && d.estado === 'CON_CARGA') { errores.push(`Unidad ${silo} ya contiene ${d.cereal}.`); continue; }
-                    if(!calidad) { errores.push(`Unidad ${silo}: Falta calidad.`); continue; }
-                    let detalleOrigen = origen; if(origen === 'TRANSILE' && uniOrigen) detalleOrigen += ` (desde ${uniOrigen})`;
-                    let txtFum = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE') ? (fumigo === 'NO' ? 'No fumigado' : `Fumigado (${fumigo})`) : 'No aplica';
-                    moveData.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen} | ${txtFum}`; moveData.tons = tons; moveData.cereal = cereal;
-                    moveData.nuevoEstado = { estado: 'CON_CARGA', cereal, calidad, tonelaje: tons, fumigacion_fecha: (fumigo !== 'NO' && (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE')) ? fecha : null, fumigacion_tipo: (fumigo !== 'NO' && (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE')) ? fumigo : null, fecha_primera_carga: d.fecha_primera_carga || fecha, origen: detalleOrigen };
-                }
-                else if(tipoAccion === 'EGRESO') {
-                    let motivo = row.querySelector('.m-motivo-baja').value; let tonsBaja = parseFloat(row.querySelector('.m-tons-baja').value) || 0;
-                    if(tonsBaja <= 0) { errores.push(`Unidad ${silo}: Tonelaje a restar debe ser > 0.`); continue; }
-                    if(tonsBaja > (parseFloat(d.tonelaje) || 0)) { errores.push(`Unidad ${silo}: Resta (${tonsBaja}t) supera stock actual (${d.tonelaje}t).`); continue; }
-                    let nuevoTonelaje = (parseFloat(d.tonelaje) || 0) - tonsBaja;
-                    if(nuevoTonelaje <= 0) warningMsg += `La unidad ${silo} quedará VACÍA.\n`;
-                    else if(tonsBaja >= d.tonelaje * 0.5) warningMsg += `La unidad ${silo} perderá más del 50% de su carga.\n`;
-                    moveData.detalle = `Egreso: ${tonsBaja}t por ${motivo}`; moveData.tons = tonsBaja; moveData.cereal = d.cereal;
-                    moveData.nuevoEstado = nuevoTonelaje <= 0 ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null } : { tonelaje: nuevoTonelaje };
-                }
-                else if(tipoAccion === 'RECIRCULACION') {
-                    if(d.estado === 'VACIO') { errores.push(`Unidad ${silo}: No se puede recircular vacía.`); continue; }
-                    let motivo = row.querySelector('.m-motivo-recir').value; let fumigo = row.querySelector('.m-fumigo-recir') ? row.querySelector('.m-fumigo-recir').value : 'NO';
-                    let txtFum = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE') ? (fumigo === 'NO' ? 'No fumigado' : `Fumigado (${fumigo})`) : 'No aplica';
-                    moveData.detalle = `Recirculación: ${motivo} | ${txtFum}`; moveData.tons = 0; moveData.cereal = d.cereal;
-                    moveData.nuevoEstado = (fumigo !== 'NO' && (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE')) ? { fumigacion_fecha: fecha, fumigacion_tipo: fumigo } : {};
-                }
-                else if(tipoAccion === 'ESTADO') {
-                    let nuevoEstado = row.querySelector('.m-nuevo-estado').value;
-                    if(nuevoEstado === 'FUERA_SERVICIO' && (parseFloat(d.tonelaje) > 0 || d.estado === 'CON_CARGA')) { errores.push(`Unidad ${silo}: No se puede poner Fuera de Servicio porque tiene mercadería (${d.tonelaje}t). Debe vaciarla primero.`); continue; }
-                    if(nuevoEstado === 'VACIO' && d.tonelaje > 0) warningMsg += `La unidad ${silo} TIENE CARGA y se borrará al pasarla a VACÍO.\n`;
-                    moveData.detalle = `Cambio estado a: ${nuevoEstado.replace('_',' ')}`; moveData.tons = 0; moveData.cereal = d.cereal;
-                    moveData.nuevoEstado = nuevoEstado === 'VACIO' ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null } : { estado: nuevoEstado };
-                }
-                silosEnLote.add(silo); pendingMoves.push(moveData);
-            }
-
-            if (errores.length > 0) { showToast(errores[0] + (errores.length > 1 ? ` (y ${errores.length-1} más)` : ""), "error"); console.error("Errores:", errores); return; }
-            if (pendingMoves.length === 0) { showToast("No hay datos nuevos para guardar.", "info"); return; }
+        function procesarMovimientos(targetBtn) {
+            let row = targetBtn.closest('.row-inputs');
+            let tipoAccion = row.querySelector('.m-tipo-accion').value; let tipoUnidad = row.querySelector('.m-tipo-unidad').value;
+            let inputSilo = row.querySelector('.m-silo'); let selSilo = row.querySelector('.m-silo-select'); let inputFecha = row.querySelector('.m-fecha'); let inputObs = row.querySelector('.m-obs');
+            let silo = inputSilo.style.display !== 'none' ? parseInt(inputSilo.value) : selSilo.value;
             
-            if (warningMsg) { 
-                showConfirm("⚠️ Advertencia", warningMsg + "\n¿Estás seguro de continuar?", (ok) => { 
-                    if(ok) ejecutarMovimientos(pendingMoves, targetBtn ? targetBtn.closest('.row-inputs') : null); 
-                }); 
-            } else { 
-                ejecutarMovimientos(pendingMoves, targetBtn ? targetBtn.closest('.row-inputs') : null); 
+            if(!silo) { showToast("Falta seleccionar la Unidad.", "error"); return; }
+            
+            let fecha = inputFecha.value; let obs = inputObs ? inputObs.value : '';
+            if(!esUnidadValida(silo)) { showToast(`Unidad ${silo} no existe.`, "error"); return; }
+            if(!fecha) { showToast(`Falta la fecha.`, "error"); return; }
+            
+            let hoy = new Date(); hoy.setHours(0,0,0,0);
+            let fDate = parseFechaLocal(fecha); if (fDate > hoy) { showToast(`La fecha no puede ser futura.`, "error"); return; }
+            
+            let d = getSiloData(silo); let moveData = { silo, fecha, tipo: tipoAccion, obs, d };
+
+            if(tipoAccion === 'INGRESO') {
+                let cereal = row.querySelector('.m-cereal').value; let calidad = row.querySelector('.m-calidad').value.toUpperCase().trim();
+                let fumigo = row.querySelector('.m-fumigo') ? row.querySelector('.m-fumigo').value : 'NO'; let origen = row.querySelector('.m-origen').value; let uniOrigen = row.querySelector('.m-unidad-origen') ? row.querySelector('.m-unidad-origen').value : '';
+                let tons = 0; let metros = 0;
+                if (tipoUnidad === 'SILO') {
+                    metros = parseFloat(row.querySelector('.m-metros').value) || 0; tons = parseFloat(row.querySelector('.m-tons').value) || 0;
+                    if(MIN_14.includes(silo) && metros < 14) { showToast(`Silo ${silo} requiere mín. 14m.`, "error"); return; }
+                    if(MIN_10.includes(silo) && metros < 10) { showToast(`Silo ${silo} requiere mín. 10m.`, "error"); return; }
+                    let tipoU = esSiloTipo(silo); let topeMetros = obtenerTopeMetros(silo);
+                    let capMaxRefTope = interpolar(tipoU === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+                    let cerealObj = db.cereales.find(c => c.id === cereal); let capMaxTon = Math.round(capMaxRefTope * (cerealObj ? cerealObj.ph : PH_BASE) / PH_BASE);
+                    if(tons > capMaxTon) { showToast(`Silo ${silo}: Capacidad máxima excedida (~${capMaxTon}t).`, "error"); return; }
+                } else { tons = parseFloat(row.querySelector('.m-tons-manual').value) || 0; }
+                if(tons <= 0) { showToast(`El tonelaje debe ser > 0.`, "error"); return; }
+                if(d.cereal && d.cereal !== cereal && d.estado === 'CON_CARGA') { showToast(`La unidad ya contiene ${d.cereal}.`, "error"); return; }
+                if(!calidad) { showToast(`Falta la calidad.`, "error"); return; }
+                let detalleOrigen = origen; if(origen === 'TRANSILE' && uniOrigen) detalleOrigen += ` (desde ${uniOrigen})`;
+                let txtFum = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE') ? (fumigo === 'NO' ? 'No fumigado' : `Fumigado (${fumigo})`) : 'No aplica';
+                moveData.detalle = `Ingreso: ${tons}t - ${cereal} (${calidad}) | Origen: ${detalleOrigen} | ${txtFum}`; moveData.tons = tons; moveData.cereal = cereal;
+                moveData.nuevoEstado = { estado: 'CON_CARGA', cereal, calidad, tonelaje: tons, fumigacion_fecha: (fumigo !== 'NO' && (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE')) ? fecha : null, fumigacion_tipo: (fumigo !== 'NO' && (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE')) ? fumigo : null, fecha_primera_carga: d.fecha_primera_carga || fecha, origen: detalleOrigen };
             }
+            else if(tipoAccion === 'EGRESO') {
+                let motivo = row.querySelector('.m-motivo-baja').value; let tonsBaja = parseFloat(row.querySelector('.m-tons-baja').value) || 0;
+                if(tonsBaja <= 0) { showToast(`El tonelaje a restar debe ser > 0.`, "error"); return; }
+                if(tonsBaja > (parseFloat(d.tonelaje) || 0)) { showToast(`La resta (${tonsBaja}t) supera el stock actual (${d.tonelaje}t).`, "error"); return; }
+                let nuevoTonelaje = (parseFloat(d.tonelaje) || 0) - tonsBaja;
+                let warningMsg = "";
+                if(nuevoTonelaje <= 0) warningMsg += `La unidad quedará VACÍA.\n`;
+                else if(tonsBaja >= d.tonelaje * 0.5) warningMsg += `La unidad perderá más del 50% de su carga.\n`;
+                
+                if(warningMsg) {
+                    showConfirm("⚠️ Advertencia", warningMsg + "\n¿Estás seguro de continuar?", (ok) => { if(ok) {
+                        moveData.detalle = `Egreso: ${tonsBaja}t por ${motivo}`; moveData.tons = tonsBaja; moveData.cereal = d.cereal;
+                        moveData.nuevoEstado = nuevoTonelaje <= 0 ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null } : { tonelaje: nuevoTonelaje };
+                        ejecutarMovimientos([moveData], row);
+                    }});
+                    return;
+                }
+                moveData.detalle = `Egreso: ${tonsBaja}t por ${motivo}`; moveData.tons = tonsBaja; moveData.cereal = d.cereal;
+                moveData.nuevoEstado = nuevoTonelaje <= 0 ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null } : { tonelaje: nuevoTonelaje };
+            }
+            else if(tipoAccion === 'RECIRCULACION') {
+                if(d.estado === 'VACIO') { showToast(`No se puede recircular una unidad vacía.`, "error"); return; }
+                let motivo = row.querySelector('.m-motivo-recir').value; let fumigo = row.querySelector('.m-fumigo-recir') ? row.querySelector('.m-fumigo-recir').value : 'NO';
+                let txtFum = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE') ? (fumigo === 'NO' ? 'No fumigado' : `Fumigado (${fumigo})`) : 'No aplica';
+                moveData.detalle = `Recirculación: ${motivo} | ${txtFum}`; moveData.tons = 0; moveData.cereal = d.cereal;
+                moveData.nuevoEstado = (fumigo !== 'NO' && (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE')) ? { fumigacion_fecha: fecha, fumigacion_tipo: fumigo } : {};
+            }
+            else if(tipoAccion === 'ESTADO') {
+                let nuevoEstado = row.querySelector('.m-nuevo-estado').value;
+                if(nuevoEstado === 'FUERA_SERVICIO' && (parseFloat(d.tonelaje) > 0 || d.estado === 'CON_CARGA')) { showToast(`No se puede poner Fuera de Servicio porque tiene mercadería (${d.tonelaje}t).`, "error"); return; }
+                
+                let warningMsg = "";
+                if(nuevoEstado === 'VACIO' && d.tonelaje > 0) warningMsg += `La unidad TIENE CARGA y se borrará al pasarla a VACÍO.\n`;
+                
+                if(warningMsg) {
+                    showConfirm("⚠️ Advertencia", warningMsg + "\n¿Estás seguro de continuar?", (ok) => { if(ok) {
+                        moveData.detalle = `Cambio estado a: ${nuevoEstado.replace('_',' ')}`; moveData.tons = 0; moveData.cereal = d.cereal;
+                        moveData.nuevoEstado = nuevoEstado === 'VACIO' ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null } : { estado: nuevoEstado };
+                        ejecutarMovimientos([moveData], row);
+                    }});
+                    return;
+                }
+                moveData.detalle = `Cambio estado a: ${nuevoEstado.replace('_',' ')}`; moveData.tons = 0; moveData.cereal = d.cereal;
+                moveData.nuevoEstado = nuevoEstado === 'VACIO' ? { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, alerta_manual: false, relleno_manual: null, origen: null } : { estado: nuevoEstado };
+            }
+
+            ejecutarMovimientos([moveData], row);
         }
 
-        function ejecutarMovimientos(moves, rowToRemove = null) {
-            if (!rowToRemove) {
-                let btn = document.getElementById('btn-guardar-todos'); 
-                if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Guardando..."; }
-            }
+        function ejecutarMovimientos(moves, rowToRemove) {
+            let btn = rowToRemove.querySelector('.btn-save-row'); 
+            if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Guardando..."; }
 
             setTimeout(() => {
-                backupDB = JSON.parse(JSON.stringify(db)); silosModificadosReciente = [];
+                silosModificadosReciente = [];
                 moves.forEach(m => { let d = m.d; d.historial.push({ fecha: m.fecha, tipo: m.tipo, obs: m.obs, detalle: m.detalle, tons: m.tons, cereal: m.cereal }); Object.assign(d, m.nuevoEstado); d.lastUpdate = Date.now(); silosModificadosReciente.push(m.silo); });
-                guardarDB(); limpiarBorrador(); 
+                guardarDB(); 
                 
-                if (rowToRemove) {
-                    rowToRemove.remove();
-                    if (document.querySelectorAll('#lista-movimientos .row-inputs').length === 0) {
-                        agregarFilaMovimiento();
-                    }
-                } else {
-                    document.getElementById('lista-movimientos').innerHTML = ''; 
-                    agregarFilaMovimiento(); 
-                }
+                rowToRemove.remove();
+                agregarFilaMovimiento();
                 
                 dibujarTablero(); dibujarTanques(); actualizarExistencias();
                 if (document.getElementById('existencias').classList.contains('active')) calcularStock();
                 if (document.getElementById('rellenos').classList.contains('active')) calcularRellenos();
-                showToast(`✅ Se guardaron ${moves.length} acciones.`, "success"); 
-                document.getElementById('btn-desahacer').style.display = 'block';
-                
-                if (!rowToRemove) {
-                    let btn = document.getElementById('btn-guardar-todos'); 
-                    if (btn) { btn.disabled = false; btn.innerHTML = "✅ GUARDAR TODOS"; }
-                }
+                showToast(`✅ Movimiento guardado correctamente.`, "success"); 
             }, 100);
-        }
-
-        function deshacerUltimoCambio() {
-            if(!backupDB) return;
-            showConfirm("↩️ Deshacer", "Se restaurará el estado anterior de las unidades. ¿Continuar?", (ok) => {
-                if(!ok) return;
-                db = backupDB; guardarDB(); document.getElementById('btn-desahacer').style.display = 'none'; document.getElementById('lista-movimientos').innerHTML = ''; agregarFilaMovimiento(); dibujarTablero(); dibujarTanques(); actualizarExistencias(); showToast("Cambios revertidos.", "success");
-            });
         }
 
         function dibujarTablero() {
@@ -1526,16 +1486,15 @@
                 if (matchAnotar) {
                     let tons = matchAnotar[1]; let cerealName = matchAnotar[2].trim(); let siloId = matchAnotar[3].trim().toUpperCase(); let cerealObj = findCereal(cerealName);
                     if (cerealObj) {
-                        let filas = document.querySelectorAll('#lista-movimientos .row-inputs'); let targetRow = null;
-                        for (let row of filas) { let inp = row.querySelector('.m-silo'); if (inp && inp.value === '') { targetRow = row; break; } }
-                        if (!targetRow) { agregarFilaMovimiento(); filas = document.querySelectorAll('#lista-movimientos .row-inputs'); targetRow = filas[filas.length - 1]; }
+                        agregarFilaMovimiento();
+                        let filas = document.querySelectorAll('#lista-movimientos .row-inputs'); let targetRow = filas[filas.length - 1];
                         targetRow.querySelector('.m-tipo-accion').value = 'INGRESO'; cambiarTipoAccion(targetRow.querySelector('.m-tipo-accion'));
                         targetRow.querySelector('.m-silo').value = siloId; autocompletarSilo(targetRow.querySelector('.m-silo'));
                         let inputTons = targetRow.querySelector('.m-tons'); if(inputTons) { inputTons.value = tons; } else { inputTons = targetRow.querySelector('.m-tons-manual'); if(inputTons) inputTons.value = tons; }
                         let inputCereal = targetRow.querySelector('.m-cereal'); if(inputCereal) inputCereal.value = cerealObj.id;
                         targetRow.querySelector('.m-fecha').value = getFechaLocal();
                         cambiarTab('movimientos', document.querySelectorAll('.nav-btn')[1]); showToast("✅ Movimiento preparado. Revisalo y guardá.", "success");
-                        addChatMessage(`✅ Listo. Dejé preparado el ingreso de <b>${tons}t de ${cerealObj.nombre}</b> en el silo <b>${siloId}</b>.<br>Andá a la pestaña <b>Movs</b> para revisarlo y tocá "Guardar Todos".`, 'bot'); return;
+                        addChatMessage(`✅ Listo. Dejé preparado el ingreso de <b>${tons}t de ${cerealObj.nombre}</b> en el silo <b>${siloId}</b>.<br>Andá a la pestaña <b>Movs</b> para revisarlo y tocá "Guardar Registro".`, 'bot'); return;
                     } else { addChatMessage("No reconocí el cereal. ¿Podés repetirlo?", 'bot'); return; }
                 }
 

@@ -100,10 +100,10 @@
         .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 20px; outline: none; font-size: 16px !important;}
         .chat-input-area button { background: #f59e0b; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;}
 
-        /* FORMULARIO DE MOVIMIENTOS MEJORADO (FLEXBOX) */
+        /* FORMULARIO DE MOVIMIENTOS MEJORADO (GRID 3 COLUMNAS) */
         .row-inputs { 
-            display: flex; 
-            flex-wrap: wrap; 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
             gap: 15px; 
             margin-bottom: 15px; 
             background: var(--card); 
@@ -114,13 +114,13 @@
             position: relative;
             align-items: flex-start;
         }
-        .row-inputs .form-group { flex: 1 1 150px; min-width: 120px; }
-        .row-inputs .form-group.full { flex: 1 1 100%; }
+        .row-inputs .form-group { width: 100%; }
+        .row-inputs .form-group.full { grid-column: 1 / -1; }
         .row-inputs label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 4px; display: block;}
         .row-inputs input, .row-inputs select { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); transition: border 0.2s; height: 48px;}
         .row-inputs input:focus, .row-inputs select:focus { border-color: var(--primary); outline: none; }
         
-        .row-inputs .header-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
+        .row-inputs .header-actions { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
         .row-inputs .btn-del { background: #fee2e2; color: #ef4444; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s;}
         .row-inputs .btn-del:hover { background: #fca5a5; }
         .row-inputs .btn-dup { background: #e0f2fe; color: #0284c7; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s; margin-right: 5px;}
@@ -146,8 +146,7 @@
             .buscador { padding: 6px; font-size: 0.8rem !important; }
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
-            .row-inputs { padding: 15px; gap: 10px; flex-direction: column; }
-            .row-inputs .form-group { min-width: 100%; flex-basis: 100%; }
+            .row-inputs { grid-template-columns: 1fr; padding: 15px; gap: 10px; }
             
             .action-buttons { position: fixed; bottom: 65px; left: 0; width: 100%; background: var(--bg); padding: 10px 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 999; display: flex; flex-direction: column; gap: 8px;}
             .action-buttons .btn-save { margin-top: 0; padding: 14px; font-size: 1rem;}
@@ -348,15 +347,15 @@
         </div>
     </div>
 
-    <!-- ICONO SILOBOT (SILO REAL) -->
+    <!-- ICONO SILOBOT (ROBOT) -->
     <button id="btn-silobot" onclick="toggleSiloBot()" type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,2C8.13,2 5,5.13 5,9V22H19V9C19,5.13 15.87,2 12,2M12,4C14.76,4 17,6.24 17,9H7C7,6.24 9.24,4 12,4M7,11H17V13H7V11M7,15H17V17H7V15M7,19H17V21H7V19Z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M7.5,13A2.5,2.5 0 0,0 5,15.5A2.5,2.5 0 0,0 7.5,18A2.5,2.5 0 0,0 10,15.5A2.5,2.5 0 0,0 7.5,13M16.5,13A2.5,2.5 0 0,0 14,15.5A2.5,2.5 0 0,0 16.5,18A2.5,2.5 0 0,0 19,15.5A2.5,2.5 0 0,0 16.5,13Z" /></svg>
     </button>
 
     <div id="silobot-modal">
         <div class="chat-window">
             <div class="chat-header">
-                <span>🌾 SiloBot IA</span>
+                <span>🤖 SiloBot IA</span>
                 <button onclick="toggleSiloBot()" type="button">×</button>
             </div>
             <div class="chat-body" id="chat-body">
@@ -755,7 +754,7 @@
         // Memoria del Bot IA
         let botContext = { lastCereal: null, lastSilo: null, lastUnit: null, justAskedHelp: false };
 
-        // --- ESTÁNDARES DE CALIDAD (Res. 1075/94 y modificatorias) ---
+        // --- ESTÁNDARES DE CALIDAD (Enciclopedia del Agro) ---
         const ESTANDARES_CALIDAD = {
             'MAIZ': {
                 nombre: 'MAÍZ (Norma XII)',
@@ -784,8 +783,8 @@
             },
             'ARVEJA': {
                 nombre: 'ARVEJA (Norma XXVII)',
-                sistema: 'grados',
-                detalle: '• <b>Grado 1:</b> P.H. > 78 kg/hl. Dañados < 1.5%. Mat. extrañas < 0.5%.<br>• <b>Grado 2:</b> P.H. > 75 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 3:</b> P.H. > 72 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br><br><i>Base: Humedad 14%, Grado 2.</i>'
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Humedad 14% máx. Materias extrañas 1.0% máx. Granos dañados 3.0% máx. Granos quebrados 2.0% máx.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo. La mercadería que excede las tolerancias se considera <b>Fuera de Base</b> (con rebajas).'
             },
             'GARBANZO': {
                 nombre: 'GARBANZO (Norma XXX - Res. 48/2025)',
@@ -1296,7 +1295,7 @@
 
                 if (esFumigable) {
                     campos += `
-                    <div class="form-group full"><label>¿Fumigado?</label>
+                    <div class="form-group"><label>¿Fumigado?</label>
                         <select class="m-fumigo" onchange="guardarBorrador();">
                             <option value="NO">No se fumigó</option>
                             <option value="TOTAL">Fumigación Total</option>
@@ -1320,7 +1319,7 @@
             } 
             else if(tipoAccion === 'EGRESO') {
                 let campos = `
-                    <div class="form-group full"><label>Motivo Baja</label>
+                    <div class="form-group"><label>Motivo Baja</label>
                         <select class="m-motivo-baja" onchange="guardarBorrador();">
                             <option value="EMBARQUE">Embarque</option>
                             <option value="RECARGA">Recarga</option>
@@ -1348,7 +1347,7 @@
             } 
             else if(tipoAccion === 'RECIRCULACION') {
                 let campos = `
-                    <div class="form-group full"><label>Motivo</label>
+                    <div class="form-group"><label>Motivo</label>
                         <select class="m-motivo-recir" onchange="guardarBorrador();">
                             <option value="FUMIGACION">Fumigación</option>
                             <option value="MUESTREO">Muestreo / Control</option>
@@ -1358,7 +1357,7 @@
                 `;
                 if (esFumigable) {
                     campos += `
-                    <div class="form-group full"><label>¿Se fumigó en este evento?</label>
+                    <div class="form-group"><label>¿Se fumigó en este evento?</label>
                         <select class="m-fumigo-recir" onchange="guardarBorrador();">
                             <option value="NO">No se fumigó</option>
                             <option value="TOTAL">Fumigación Total</option>
@@ -1371,7 +1370,7 @@
             } 
             else if(tipoAccion === 'ESTADO') {
                 container.innerHTML = `
-                    <div class="form-group full"><label>Nuevo Estado</label>
+                    <div class="form-group"><label>Nuevo Estado</label>
                         <select class="m-nuevo-estado" onchange="guardarBorrador();">
                             <option value="TAPADA">Tapado</option>
                             <option value="FUERA_SERVICIO">Fuera de Servicio</option>

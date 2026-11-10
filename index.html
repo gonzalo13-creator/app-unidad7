@@ -98,13 +98,28 @@
         .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 20px; outline: none; font-size: 16px !important;}
         .chat-input-area button { background: #f59e0b; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;}
 
-        /* FORMULARIO RAPIDO DE INGRESO */
-        .quick-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f0fdf4; border: 2px solid #22c55e; border-radius: 8px; padding: 15px; margin-bottom: 20px;}
-        body.dark-mode .quick-form { background: #064e3b; border-color: #16a34a; }
-        .quick-form label { font-size: 0.75rem; font-weight: bold; margin-bottom: 3px; color: #166534; display: block;}
-        body.dark-mode .quick-form label { color: #86efac; }
-        .quick-form input, .quick-form select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #86efac; font-size: 1rem;}
-        body.dark-mode .quick-form input, body.dark-mode .quick-form select { background: #064e3b; color: white; border-color: #166534; }
+        /* FORMULARIO DE MOVIMIENTOS MEJORADO VISUALMENTE */
+        .row-inputs { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 15px; 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .row-inputs .form-group { min-width: 100%; }
+        .row-inputs .form-group.full { grid-column: 1 / -1; }
+        .row-inputs label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 4px; display: block;}
+        .row-inputs input, .row-inputs select { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); transition: border 0.2s;}
+        .row-inputs input:focus, .row-inputs select:focus { border-color: var(--primary); outline: none; }
+        .row-inputs .btn-del { position: absolute; top: 15px; right: 15px; background: #fee2e2; color: #ef4444; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s;}
+        .row-inputs .btn-del:hover { background: #fca5a5; }
+        .row-inputs .btn-dup { position: absolute; top: 15px; right: 55px; background: #e0f2fe; color: #0284c7; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s;}
+        .row-inputs .btn-dup:hover { background: #bae6fd; }
 
         @media (max-width: 768px) {
             .global-header { padding: 10px; }
@@ -126,10 +141,9 @@
             .buscador { padding: 6px; font-size: 0.8rem !important; }
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
-            .row-inputs { flex-direction: column; padding: 12px; gap: 10px; }
-            .row-inputs .form-group { min-width: 100%; flex-basis: 100%; }
-            .row-inputs .btn-del { top: 8px; right: 8px; padding: 6px 10px; font-size: 1rem; }
-            .row-inputs .btn-dup { position: absolute; top: 8px; right: 40px; background: #3b82f6; color: white; border: none; border-radius: 4px; padding: 6px 10px; font-size: 1rem; cursor: pointer;}
+            .row-inputs { grid-template-columns: 1fr; padding: 15px; gap: 10px; }
+            .row-inputs .btn-del { top: 10px; right: 10px; padding: 6px 10px; font-size: 1rem; }
+            .row-inputs .btn-dup { top: 10px; right: 45px; padding: 6px 10px; font-size: 1rem;}
             
             .action-buttons { position: fixed; bottom: 65px; left: 0; width: 100%; background: var(--bg); padding: 10px 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 999; display: flex; flex-direction: column; gap: 8px;}
             .action-buttons .btn-save { margin-top: 0; padding: 14px; font-size: 1rem;}
@@ -163,18 +177,11 @@
             #btn-silobot { bottom: 140px; right: 15px; }
             .chat-window { margin: 0; max-width: 100%; border-radius: 20px 20px 0 0; height: 90vh; }
             #toast-container { bottom: 80px; }
-            .quick-form { grid-template-columns: 1fr; }
         }
 
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--text); font-weight: 600; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
         .top-controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;}
         .buscador { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); outline: none;}
-        
-        .row-inputs { display: flex; gap: 8px; margin-bottom: 15px; align-items: flex-start; background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; position: relative; transition: border 0.3s;}
-        .row-inputs .btn-del { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-weight: bold;}
-        .row-inputs .btn-dup { position: absolute; top: 10px; right: 40px; background: #3b82f6; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-weight: bold;}
-        .row-inputs label { font-size: 0.7rem; margin-bottom: 2px; margin-top: 5px; font-weight: 600;}
-        .row-inputs input, .row-inputs select { padding: 10px; font-size: 0.85rem; margin: 0; flex: 1; min-width: 90px; border: 1px solid var(--border); border-radius: 4px;}
         
         .form-group { display: flex; flex-direction: column; flex: 1; min-width: 110px; }
         .form-group.full { flex-basis: 100%; }
@@ -313,7 +320,7 @@
         .cierre-historial-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
         @media print {
-            .global-header, .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #btn-silobot, #silobot-modal, .stat-box.clickable, .alert-accordion-item button, .no-print, .quick-form { display: none !important; }
+            .global-header, .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #btn-silobot, #silobot-modal, .stat-box.clickable, .alert-accordion-item button, .no-print, .row-inputs { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; display: table !important;}
@@ -342,18 +349,18 @@
     <div id="silobot-modal">
         <div class="chat-window">
             <div class="chat-header">
-                <span>🌽 MazorcaBot IA</span>
+                <span>🌽 MaizBot IA</span>
                 <button onclick="toggleSiloBot()" type="button">×</button>
             </div>
             <div class="chat-body" id="chat-body">
-                <div class="chat-msg bot">¡Hola! Soy el MazorcaBot. Escribí <b>Ayuda</b> para ver todo lo que sé hacer.</div>
+                <div class="chat-msg bot">¡Hola! Soy el MaizBot. Escribí <b>Ayuda</b> para ver todo lo que sé hacer.</div>
             </div>
             <div class="chat-chips">
                 <button class="chip" onclick="sendChip('Buen día')" type="button">🌅 Buen día</button>
                 <button class="chip" onclick="sendChip('Maíz por línea')" type="button">🌾 Maíz por línea</button>
-                <button class="chip" onclick="sendChip('Donde pongo 30t de Soja')" type="button">🎯 Dónde pongo</button>
+                <button class="chip" onclick="sendChip('Dónde pongo 30t de Soja')" type="button">🎯 Dónde pongo</button>
                 <button class="chip" onclick="sendChip('Camiones de esta semana')" type="button">🚚 Camiones</button>
-                <button class="chip" onclick="sendChip('Alertas')" type="button">🚨 Alertas</button>
+                <button class="chip" onclick="sendChip('Alertas activas')" type="button">🚨 Alertas</button>
                 <button class="chip" onclick="sendChip('Ayuda')" type="button">❓ Ayuda</button>
             </div>
             <div class="chat-input-area">
@@ -424,36 +431,12 @@
             <!-- PESTAÑA: MOVIMIENTOS INTELIGENTES -->
             <div id="movimientos" class="tab-content">
                 <h2>Movimientos</h2>
-                
-                <!-- FORMULARIO RÁPIDO -->
-                <div class="quick-form">
-                    <div>
-                        <label>N° de Silo / Unidad</label>
-                        <input type="number" id="q-silo" placeholder="Ej: 405" inputmode="numeric">
-                    </div>
-                    <div>
-                        <label>Cereal</label>
-                        <select id="q-cereal"></select>
-                    </div>
-                    <div>
-                        <label>Calidad</label>
-                        <input type="text" id="q-calidad" placeholder="Ej: G2">
-                    </div>
-                    <div>
-                        <label>Toneladas</label>
-                        <input type="number" id="q-tons" placeholder="Ej: 30">
-                    </div>
-                    <div style="grid-column: 1 / -1; margin-top: 5px;">
-                        <button onclick="quickAddIngreso()" style="background:#22c55e; color:white; border:none; padding:12px; border-radius:6px; width:100%; font-weight:bold; font-size:1rem; cursor:pointer;">➕ Agregar Ingreso Rápido</button>
-                    </div>
-                </div>
-
-                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">O usá las acciones avanzadas abajo para egresos, recirculaciones o cambios de estado.</p>
+                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Cargá las acciones y luego presioná "GUARDAR TODOS".</p>
                 
                 <div id="lista-movimientos"></div>
                 
                 <div class="action-buttons">
-                    <button class="btn-save" style="background:var(--secondary); margin:0;" onclick="agregarFilaMovimiento()" type="button">+ Acción Avanzada</button>
+                    <button class="btn-save" style="background:var(--secondary); margin:0;" onclick="agregarFilaMovimiento()" type="button">+ Agregar otra Acción</button>
                     <button id="btn-guardar-todos" class="btn-save" style="background:#10b981; margin:0;" onclick="procesarMovimientos()" type="button">✅ GUARDAR TODOS</button>
                     <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin:0;" onclick="deshacerUltimoCambio()" type="button">↩️ Deshacer</button>
                 </div>
@@ -656,12 +639,12 @@
                 errDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#ef4444;color:white;padding:15px;z-index:99999;font-size:14px;text-align:center;';
                 document.body.appendChild(errDiv);
             }
-            errDiv.innerHTML = "<b>⚠️ Ocurrió un error al cargar la app.</b><br>Por favor, recargá la página (Ctrl+F5) o borrá los datos del sitio.";
+            errDiv.innerHTML = "<b>⚠️ Ocurrió un error.</b><br>Por favor, recargá la página (Ctrl+F5) o borrá los datos del sitio.";
             return false;
         };
 
-        const DB_VERSION = 33;
-        const DB_KEY = 'unidad7_db_v33';
+        const DB_VERSION = 34;
+        const DB_KEY = 'unidad7_db_v34';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -847,7 +830,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v32') || localStorage.getItem('unidad7_db_v31');
+                    let old = localStorage.getItem('unidad7_db_v33') || localStorage.getItem('unidad7_db_v32');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -953,11 +936,6 @@
             if(id === 'rellenos') { actualizarOpcionesRelleno(); }
             if(id === 'tablero') { dibujarTablero(); }
             if(id === 'herramienta') renderHerramientaCintas();
-            if(id === 'movimientos') { 
-                // Actualizar el select del form rápido
-                let sel = document.getElementById('q-cereal');
-                if(sel) sel.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-            }
         }
 
         function cambiarSubTab(id, btn) {
@@ -1064,88 +1042,14 @@
             localStorage.removeItem('movimientos_borrador');
         }
 
-        function quickAddIngreso() {
-            let silo = document.getElementById('q-silo').value;
-            let cereal = document.getElementById('q-cereal').value;
-            let calidad = document.getElementById('q-calidad').value.toUpperCase().trim();
-            let tons = document.getElementById('q-tons').value;
-
-            if(!silo || !cereal || !calidad || !tons) {
-                showToast("Completá todos los campos para el ingreso rápido.", "warning");
-                return;
-            }
-
-            // Crear una fila con los datos pre-cargados
-            let div = document.createElement('div');
-            div.className = 'row-inputs';
-            div.style.border = "2px solid #22c55e"; // Resaltar que vino del form rápido
-            div.innerHTML = `
-                <div class="form-group full" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
-                    <label style="color:var(--primary); font-size:0.9rem;">Tipo de Acción</label>
-                    <select class="m-tipo-accion" onchange="cambiarTipoAccion(this); guardarBorrador();" style="font-weight:bold;">
-                        <option value="INGRESO">📥 Ingreso de Mercadería</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Tipo de Unidad</label>
-                    <select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this); guardarBorrador();" style="font-weight:bold;">
-                        <option value="SILO">Silo / Entresilo</option>
-                        <option value="TANQUE">Tanque</option>
-                        <option value="PASO">Caño / Tolva / Balanza / CER</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Unidad</label>
-                    <input type="number" value="${silo}" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this); guardarBorrador();">
-                    <select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this); guardarBorrador();"></select>
-                </div>
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" class="m-fecha" value="${getFechaLocal()}" style="flex:1;" onchange="guardarBorrador();">
-                </div>
-
-                <div class="campos-dinamicos" style="display:flex; gap:8px; flex-wrap:wrap; flex-basis:100%; margin-top:5px;"></div>
-
-                <div class="form-group full" style="margin-top:5px;">
-                    <label>Observaciones (Opcional)</label>
-                    <input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs" oninput="guardarBorrador();">
-                </div>
-
-                <button class="btn-dup" aria-label="Duplicar fila" onclick="duplicarFila(this)" type="button">📋</button>
-                <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove(); guardarBorrador();" type="button">X</button>
-            `;
-            
-            document.getElementById('lista-movimientos').appendChild(div);
-            
-            // Llenar datos dinámicos
-            cambiarTipoAccion(div.querySelector('.m-tipo-accion'));
-            cambiarTipoUnidad(div.querySelector('.m-tipo-unidad'));
-            
-            let inputCereal = div.querySelector('.m-cereal');
-            if(inputCereal) inputCereal.value = cereal;
-            
-            let inputCalidad = div.querySelector('.m-calidad');
-            if(inputCalidad) inputCalidad.value = calidad;
-            
-            let inputTons = div.querySelector('.m-tons');
-            if(inputTons) inputTons.value = tons;
-            
-            // Limpiar form rápido
-            document.getElementById('q-silo').value = '';
-            document.getElementById('q-calidad').value = '';
-            document.getElementById('q-tons').value = '';
-            
-            guardarBorrador();
-            showToast("Ingreso agregado a la lista. Tocá GUARDAR TODOS al final.", "success");
-        }
-
         function agregarFilaMovimiento() {
             let div = document.createElement('div');
             div.className = 'row-inputs';
             div.innerHTML = `
-                <div class="form-group full" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
+                <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove(); guardarBorrador();" type="button">X</button>
+                <button class="btn-dup" aria-label="Duplicar fila" onclick="duplicarFila(this)" type="button">📋</button>
+                
+                <div class="form-group full" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:5px;">
                     <label style="color:var(--primary); font-size:0.9rem;">Tipo de Acción</label>
                     <select class="m-tipo-accion" onchange="cambiarTipoAccion(this); guardarBorrador();" style="font-weight:bold;">
                         <option value="INGRESO">📥 Ingreso de Mercadería</option>
@@ -1157,7 +1061,7 @@
                 
                 <div class="form-group">
                     <label>Tipo de Unidad</label>
-                    <select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this); guardarBorrador();" style="font-weight:bold;">
+                    <select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this); guardarBorrador();">
                         <option value="SILO">Silo / Entresilo</option>
                         <option value="TANQUE">Tanque</option>
                         <option value="PASO">Caño / Tolva / Balanza / CER</option>
@@ -1169,20 +1073,18 @@
                     <input type="number" placeholder="Ej: 501" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this); guardarBorrador();">
                     <select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this); guardarBorrador();"></select>
                 </div>
+                
                 <div class="form-group">
                     <label>Fecha</label>
                     <input type="date" class="m-fecha" style="flex:1;" onchange="guardarBorrador();">
                 </div>
 
-                <div class="campos-dinamicos" style="display:flex; gap:8px; flex-wrap:wrap; flex-basis:100%; margin-top:5px;"></div>
+                <div class="campos-dinamicos" style="display:contents;"></div>
 
                 <div class="form-group full" style="margin-top:5px;">
                     <label>Observaciones (Opcional)</label>
                     <input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs" oninput="guardarBorrador();">
                 </div>
-
-                <button class="btn-dup" aria-label="Duplicar fila" onclick="duplicarFila(this)" type="button">📋</button>
-                <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove(); guardarBorrador();" type="button">X</button>
             `;
             div.querySelector('.m-fecha').value = '';
             document.getElementById('lista-movimientos').appendChild(div);
@@ -3183,7 +3085,6 @@
             let elStock = document.getElementById('sel-cereal-stock');
             let elRelleno = document.getElementById('sel-cereal-relleno');
             let elCalc = document.getElementById('calc-cereal');
-            let elQuickCereal = document.getElementById('q-cereal');
 
             let prevTablero = elTablero ? elTablero.value : '';
             let prevRelleno = elRelleno ? elRelleno.value : '';
@@ -3193,7 +3094,6 @@
             if(elStock) elStock.innerHTML = opt;
             if(elRelleno) elRelleno.innerHTML = opt;
             if(elCalc) elCalc.innerHTML = opt;
-            if(elQuickCereal) elQuickCereal.innerHTML = opt;
             
             if(prevTablero && elTablero) elTablero.value = prevTablero;
             if(prevRelleno && elRelleno) elRelleno.value = prevRelleno;
@@ -3347,264 +3247,278 @@
         }
 
         function processBotQuery(query) {
-            let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-            
-            q = q.replace(/\b(batea|bateas|chupador|chupadores|pulmon|pulmones|plataforma 9|plataforma 10)\b/g, "tolva")
-                 .replace(/\b(tanqe|tanque|tanque|tanqes)\b/g, "tanque")
-                 .replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas")
-                 .replace(/\b(silo|silos)\b/g, "silo");
-            
-            // 1. Saludos y Resumen Ejecutivo
-            if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal')) {
-                let alertasCount = 0;
-                Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) alertasCount++; });
-                let totalStock = 0;
-                Object.keys(db.silos).forEach(k => { if(db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA') totalStock += (parseFloat(db.silos[k].tonelaje) || 0); });
+            try {
+                let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
                 
-                addChatMessage(`👋 ¡Buen día! Aquí tienes el resumen de la planta:<br><br>📦 Stock Total: <b>${totalStock}t</b><br>🚨 Alertas Críticas: <b>${alertasCount}</b><br><br>¿En qué te puedo ayudar hoy? Podés pedirme que anote un movimiento, consulte stock o simule escenarios.`, 'bot');
-                return;
-            }
+                q = q.replace(/\b(batea|bateas|chupador|chupadores|pulmon|pulmones|plataforma 9|plataforma 10)\b/g, "tolva")
+                     .replace(/\b(tanqe|tanque|tanque|tanqes)\b/g, "tanque")
+                     .replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas")
+                     .replace(/\b(silo|silos)\b/g, "silo");
+                
+                // 1. Saludos y Resumen Ejecutivo
+                if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal')) {
+                    let alertasCount = 0;
+                    Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) alertasCount++; });
+                    let totalStock = 0;
+                    Object.keys(db.silos).forEach(k => { if(db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA') totalStock += (parseFloat(db.silos[k].tonelaje) || 0); });
+                    
+                    addChatMessage(`👋 ¡Buen día! Aquí tienes el resumen de la planta:<br><br>📦 Stock Total: <b>${totalStock}t</b><br>🚨 Alertas Críticas: <b>${alertasCount}</b><br><br>¿En qué te puedo ayudar hoy? Podés pedirme que anote un movimiento, consulte stock o simule escenarios.`, 'bot');
+                    return;
+                }
 
-            // 2. Modo Borrador (Acciones)
-            let matchAnotar = q.match(/(?:anota|anotar|prepara|preparar|carga|cargar)\s+(\d+)\s*(?:t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)\s+en\s+(?:el\s+)?(?:silo\s+)?([a-z0-9\-]+)/i);
-            if (matchAnotar) {
-                let tons = matchAnotar[1];
-                let cerealName = matchAnotar[2].trim();
-                let siloId = matchAnotar[3].trim().toUpperCase();
+                // 2. Alertas
+                if (q.includes('alerta') || q.includes('problema') || q.includes('alerta activa')) {
+                    let arr = [];
+                    Object.keys(db.silos).forEach(num => { if(tieneAlerta(num)) arr.push(num); });
+                    let response = arr.length > 0 ? `🚨 <b>Alertas Activas (${arr.length}):</b><br>` + arr.join(', ') : "✅ No hay alertas.";
+                    addChatMessage(response, 'bot');
+                    return;
+                }
+
+                // 3. Logística y Fechas
+                let qFecha = q;
+                let fechaInicio = new Date();
+                let fechaFin = new Date();
+                let tituloFecha = "Hoy";
                 
-                let cerealObj = findCereal(cerealName);
-                if (cerealObj) {
-                    let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
-                    let targetRow = null;
-                    for (let row of filas) {
-                        let inp = row.querySelector('.m-silo');
-                        if (inp && inp.value === '') { targetRow = row; break; }
-                    }
-                    if (!targetRow) {
-                        agregarFilaMovimiento();
-                        filas = document.querySelectorAll('#lista-movimientos .row-inputs');
-                        targetRow = filas[filas.length - 1];
-                    }
-                    
-                    targetRow.querySelector('.m-tipo-accion').value = 'INGRESO';
-                    cambiarTipoAccion(targetRow.querySelector('.m-tipo-accion'));
-                    
-                    targetRow.querySelector('.m-silo').value = siloId;
-                    autocompletarSilo(targetRow.querySelector('.m-silo'));
-                    
-                    let inputTons = targetRow.querySelector('.m-tons');
-                    if(inputTons) {
-                        inputTons.value = tons;
+                if (q.includes('esta semana')) {
+                    fechaInicio.setDate(fechaInicio.getDate() - fechaInicio.getDay());
+                    tituloFecha = "Esta Semana";
+                } else if (q.includes('mes pasado')) {
+                    fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1);
+                    fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0);
+                    tituloFecha = "Mes Pasado";
+                } else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) {
+                    fechaInicio.setDate(1);
+                    tituloFecha = "Este Mes";
+                } else if (q.includes('ayer')) {
+                    fechaInicio.setDate(fechaInicio.getDate() - 1);
+                    fechaFin.setDate(fechaFin.getDate() - 1);
+                    tituloFecha = "Ayer";
+                } else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias')) {
+                    fechaInicio.setDate(fechaInicio.getDate() - 30);
+                    tituloFecha = "Últimos 30 días";
+                }
+
+                let fIniStr = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
+                let fFinStr = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
+                
+                if (procesarLogistica(q, fIniStr, fFinStr, tituloFecha)) return;
+
+                if (q === 'ayuda' || q === '?') {
+                    if (botContext.justAskedHelp) {
+                        addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando (ej: <i>Anotá 30t de trigo en el 405</i>).", 'bot');
                     } else {
-                        inputTons = targetRow.querySelector('.m-tons-manual');
-                        if(inputTons) inputTons.value = tons;
+                        addChatMessage("🧠 <b>Ayuda de MaizBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i> (crea el borrador)<br>- <i>Qué pasa si vacío el 305</i> (simulación)<br>- <i>Maíz por línea</i><br>- <i>Cuánto maíz hay desde el 101 al 118</i><br>- <i>Donde pongo 30t de Soja</i><br>- <i>Camiones de esta semana</i><br>- <i>Alertas activas</i><br>- <i>Tanques</i>", 'bot');
+                        botContext.justAskedHelp = true;
+                        setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
                     }
-                    
-                    let inputCereal = targetRow.querySelector('.m-cereal');
-                    if(inputCereal) inputCereal.value = cerealObj.id;
-                    
-                    targetRow.querySelector('.m-fecha').value = getFechaLocal();
-                    
-                    cambiarTab('movimientos', document.querySelectorAll('.nav-btn')[1]);
-                    showToast("✅ Movimiento preparado. Revisalo y guardá.", "success");
-                    addChatMessage(`✅ Listo. Dejé preparado el ingreso de <b>${tons}t de ${cerealObj.nombre}</b> en el silo <b>${siloId}</b>.<br>Andá a la pestaña <b>Movs</b> para revisarlo y tocá "Guardar Todos".`, 'bot');
-                    return;
-                } else {
-                    addChatMessage("No reconocí el cereal. ¿Podés repetirlo?", 'bot');
                     return;
                 }
-            }
 
-            // 3. Simulador What-If
-            let matchSimularVacio = q.match(/que pasa si vacio el (silo )?(\d+)/i);
-            if (matchSimularVacio) {
-                let num = matchSimularVacio[2];
-                let d = getSiloData(num);
-                if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
-                    let cereal = db.cereales.find(c => c.id === d.cereal);
-                    let totalCerealGlobal = 0;
-                    Object.keys(db.silos).forEach(k => {
-                        if (db.silos[k].cereal === d.cereal && (db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA')) {
-                            totalCerealGlobal += (parseFloat(db.silos[k].tonelaje) || 0);
+                if (q === 'cereales' || q === 'stock') {
+                    addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Maíz por línea</i>", 'bot');
+                    return;
+                }
+
+                let cerealEncontrado = findCereal(q);
+                
+                if (!cerealEncontrado && (q.includes('espacio') || q.includes('stock') || q.includes('cuanto hay') || q.includes('tanque')) && botContext.lastCereal) {
+                    cerealEncontrado = db.cereales.find(c => c.id === botContext.lastCereal);
+                }
+                if (cerealEncontrado) botContext.lastCereal = cerealEncontrado.id;
+
+                // 4. Anotar movimiento
+                let matchAnotar = q.match(/(?:anota|anotar|prepara|preparar|carga|cargar)\s+(\d+)\s*(?:t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)\s+en\s+(?:el\s+)?(?:silo\s+)?([a-z0-9\-]+)/i);
+                if (matchAnotar) {
+                    let tons = matchAnotar[1];
+                    let cerealName = matchAnotar[2].trim();
+                    let siloId = matchAnotar[3].trim().toUpperCase();
+                    
+                    let cerealObj = findCereal(cerealName);
+                    if (cerealObj) {
+                        let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
+                        let targetRow = null;
+                        for (let row of filas) {
+                            let inp = row.querySelector('.m-silo');
+                            if (inp && inp.value === '') { targetRow = row; break; }
                         }
-                    });
-                    let nuevoTotal = totalCerealGlobal - d.tonelaje;
-                    addChatMessage(`🧪 <b>Simulación:</b> Si vacías el silo ${num}...<br><br>• El stock de ${cereal ? cereal.nombre : d.cereal} bajaría de <b>${totalCerealGlobal}t</b> a <b>${nuevoTotal}t</b>.<br>• Liberarías <b>${d.tonelaje}t</b> de mercadería.<br>• El silo pasaría a estar VACÍO y listo para nueva carga.`, 'bot');
-                } else {
-                    addChatMessage(`El silo ${num} ya está vacío.`, 'bot');
+                        if (!targetRow) {
+                            agregarFilaMovimiento();
+                            filas = document.querySelectorAll('#lista-movimientos .row-inputs');
+                            targetRow = filas[filas.length - 1];
+                        }
+                        
+                        targetRow.querySelector('.m-tipo-accion').value = 'INGRESO';
+                        cambiarTipoAccion(targetRow.querySelector('.m-tipo-accion'));
+                        
+                        targetRow.querySelector('.m-silo').value = siloId;
+                        autocompletarSilo(targetRow.querySelector('.m-silo'));
+                        
+                        let inputTons = targetRow.querySelector('.m-tons');
+                        if(inputTons) {
+                            inputTons.value = tons;
+                        } else {
+                            inputTons = targetRow.querySelector('.m-tons-manual');
+                            if(inputTons) inputTons.value = tons;
+                        }
+                        
+                        let inputCereal = targetRow.querySelector('.m-cereal');
+                        if(inputCereal) inputCereal.value = cerealObj.id;
+                        
+                        targetRow.querySelector('.m-fecha').value = getFechaLocal();
+                        
+                        cambiarTab('movimientos', document.querySelectorAll('.nav-btn')[1]);
+                        showToast("✅ Movimiento preparado. Revisalo y guardá.", "success");
+                        addChatMessage(`✅ Listo. Dejé preparado el ingreso de <b>${tons}t de ${cerealObj.nombre}</b> en el silo <b>${siloId}</b>.<br>Andá a la pestaña <b>Movs</b> para revisarlo y tocá "Guardar Todos".`, 'bot');
+                        return;
+                    } else {
+                        addChatMessage("No reconocí el cereal. ¿Podés repetirlo?", 'bot');
+                        return;
+                    }
                 }
-                return;
-            }
 
-            // 4. Fechas y Logística (Arreglado)
-            let qFecha = q;
-            let fechaInicio = new Date();
-            let fechaFin = new Date();
-            let tituloFecha = "Hoy";
-            
-            if (q.includes('esta semana')) {
-                fechaInicio.setDate(fechaInicio.getDate() - fechaInicio.getDay());
-                tituloFecha = "Esta Semana";
-            } else if (q.includes('mes pasado')) {
-                fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1);
-                fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0);
-                tituloFecha = "Mes Pasado";
-            } else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) {
-                fechaInicio.setDate(1);
-                tituloFecha = "Este Mes";
-            } else if (q.includes('ayer')) {
-                fechaInicio.setDate(fechaInicio.getDate() - 1);
-                fechaFin.setDate(fechaFin.getDate() - 1);
-                tituloFecha = "Ayer";
-            } else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias')) {
-                fechaInicio.setDate(fechaInicio.getDate() - 30);
-                tituloFecha = "Últimos 30 días";
-            }
-
-            let fIniStr = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
-            let fFinStr = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
-            
-            if (procesarLogistica(q, fIniStr, fFinStr, tituloFecha)) return;
-
-            if (q === 'ayuda' || q === '?') {
-                if (botContext.justAskedHelp) {
-                    addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando (ej: <i>Anotá 30t de trigo en el 405</i>).", 'bot');
-                } else {
-                    addChatMessage("🧠 <b>Ayuda de MazorcaBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i> (crea el borrador)<br>- <i>Qué pasa si vacío el 305</i> (simulación)<br>- <i>Maíz por línea</i><br>- <i>Cuánto maíz hay desde el 101 al 118</i><br>- <i>Donde pongo 30t de Soja</i><br>- <i>Camiones de esta semana</i><br>- <i>Tanques</i>", 'bot');
-                    botContext.justAskedHelp = true;
-                    setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
+                // 5. Simulador What-If
+                let matchSimularVacio = q.match(/que pasa si vacio el (silo )?(\d+)/i);
+                if (matchSimularVacio) {
+                    let num = matchSimularVacio[2];
+                    let d = getSiloData(num);
+                    if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
+                        let cereal = db.cereales.find(c => c.id === d.cereal);
+                        let totalCerealGlobal = 0;
+                        Object.keys(db.silos).forEach(k => {
+                            if (db.silos[k].cereal === d.cereal && (db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA')) {
+                                totalCerealGlobal += (parseFloat(db.silos[k].tonelaje) || 0);
+                            }
+                        });
+                        let nuevoTotal = totalCerealGlobal - d.tonelaje;
+                        addChatMessage(`🧪 <b>Simulación:</b> Si vacías el silo ${num}...<br><br>• El stock de ${cereal ? cereal.nombre : d.cereal} bajaría de <b>${totalCerealGlobal}t</b> a <b>${nuevoTotal}t</b>.<br>• Liberarías <b>${d.tonelaje}t</b> de mercadería.<br>• El silo pasaría a estar VACÍO y listo para nueva carga.`, 'bot');
+                    } else {
+                        addChatMessage(`El silo ${num} ya está vacío.`, 'bot');
+                    }
+                    return;
                 }
-                return;
-            }
 
-            if (q === 'cereales' || q === 'stock') {
-                addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Maíz por línea</i>", 'bot');
-                return;
-            }
+                let matchRange = q.match(/(?:del|desde el?)?\s*\b(\d{3})\s*(?:al|a|-)\s*(\d{3})\b/i);
+                if (matchRange) {
+                    let start = parseInt(matchRange[1]);
+                    let end = parseInt(matchRange[2]);
+                    if (cerealEncontrado) {
+                        let total = 0;
+                        let detalles = [];
+                        for(let i=start; i<=end; i++) {
+                            let d = getSiloData(i);
+                            if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                                total += (parseFloat(d.tonelaje) || 0);
+                                detalles.push(`Silo ${i}: ${d.tonelaje}t (${d.calidad})`);
+                            }
+                        }
+                        addChatMessage(`📊 <b>${cerealEncontrado.nombre} entre ${start} y ${end}:</b><br>Total: <b>${total}t</b><br><br>${detalles.length > 0 ? detalles.join('<br>') : 'No hay carga en ese rango.'}`, 'bot');
+                        return;
+                    }
+                }
 
-            let cerealEncontrado = findCereal(q);
-            
-            if (!cerealEncontrado && (q.includes('espacio') || q.includes('stock') || q.includes('cuanto hay') || q.includes('tanque')) && botContext.lastCereal) {
-                cerealEncontrado = db.cereales.find(c => c.id === botContext.lastCereal);
-            }
-            if (cerealEncontrado) botContext.lastCereal = cerealEncontrado.id;
+                if (q.includes('por linea') || q.includes('por fila') || q.includes('por cinta')) {
+                    if (cerealEncontrado) {
+                        let lineas = { '100':0, '200':0, '300':0, '400':0, '500':0, '600':0, '700':0 };
+                        Object.keys(db.silos).forEach(num => {
+                            let d = db.silos[num];
+                            if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                                let n = parseInt(num);
+                                let centena = Math.floor(n / 100) * 100;
+                                if(lineas[centena] !== undefined) lineas[centena] += (parseFloat(d.tonelaje) || 0);
+                            }
+                        });
+                        let resp = `📊 <b>${cerealEncontrado.nombre} por Línea:</b><br><br>`;
+                        for(let l in lineas) {
+                            if(lineas[l] > 0) resp += `Línea ${l}s: <b>${lineas[l]}t</b><br>`;
+                        }
+                        addChatMessage(resp, 'bot');
+                        return;
+                    }
+                }
 
-            let matchRange = q.match(/(?:del|desde el?)?\s*\b(\d{3})\s*(?:al|a|-)\s*(\d{3})\b/i);
-            if (matchRange) {
-                let start = parseInt(matchRange[1]);
-                let end = parseInt(matchRange[2]);
-                if (cerealEncontrado) {
+                if (q === 'tanques' || q === 'tanque') {
                     let total = 0;
-                    let detalles = [];
-                    for(let i=start; i<=end; i++) {
-                        let d = getSiloData(i);
-                        if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                            total += (parseFloat(d.tonelaje) || 0);
-                            detalles.push(`Silo ${i}: ${d.tonelaje}t (${d.calidad})`);
-                        }
-                    }
-                    addChatMessage(`📊 <b>${cerealEncontrado.nombre} entre ${start} y ${end}:</b><br>Total: <b>${total}t</b><br><br>${detalles.length > 0 ? detalles.join('<br>') : 'No hay carga en ese rango.'}`, 'bot');
+                    TANQUES_FINALES.forEach(t => {
+                        let d = getSiloData(t.id);
+                        if(d.estado === 'CON_CARGA' || d.estado === 'TAPADA') total += (parseFloat(d.tonelaje) || 0);
+                    });
+                    addChatMessage(`🛢️ Hay un total de <b>${total}t</b> almacenadas en los Tanques.<br><br>Para ver el detalle exacto, podés preguntarme por un tanque específico (ej: <i>Tanque CTM</i>).`, 'bot');
                     return;
                 }
-            }
 
-            if (q.includes('por linea') || q.includes('por fila') || q.includes('por cinta')) {
+                let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
+                if (matchDondePongo) {
+                    let tonsReq = parseFloat(matchDondePongo[2]);
+                    let cerealQ = matchDondePongo[4].trim();
+                    let cerealTarget = findCereal(cerealQ);
+                    
+                    if (cerealTarget) {
+                        let opciones = [];
+                        Object.keys(db.silos).forEach(num => {
+                            let d = db.silos[num];
+                            if(d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                                let esp = getEspacioDisp(num);
+                                if(esp >= tonsReq) opciones.push({ num, esp, cal: d.calidad, alerta: tieneAlerta(num) });
+                            }
+                        });
+
+                        if(opciones.length > 0) {
+                            opciones.sort((a,b) => a.alerta - b.alerta || a.esp - b.esp);
+                            let mejor = opciones[0];
+                            let msg = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealTarget.nombre}:</b><br>`;
+                            msg += `Silo <b>${mejor.num}</b> (${mejor.cal}) tiene <b>${mejor.esp}t</b>. ${mejor.alerta ? '⚠️ OJO: Tiene alerta.' : '✅ Sin alertas.'}<br><br>`;
+                            if(opciones.length > 1) {
+                                msg += `<b>Otras opciones:</b><br>`;
+                                opciones.slice(1, 4).forEach(o => { msg += `- Silo ${o.num} (${o.cal}): ${o.esp}t ${o.alerta?'⚠️':''}<br>`; });
+                            }
+                            addChatMessage(msg, 'bot');
+                        } else {
+                            addChatMessage(`❌ No hay silos de ${cerealTarget.nombre} con espacio para ${tonsReq}t de una sola vez.`, 'bot');
+                        }
+                        return;
+                    }
+                }
+
                 if (cerealEncontrado) {
-                    let lineas = { '100':0, '200':0, '300':0, '400':0, '500':0, '600':0, '700':0 };
+                    let cId = cerealEncontrado.id;
+                    let stocks = { total: 0, calidades: {}, silos: 0, tanques: 0, paso: 0 };
+                    let totEspacio = 0;
+                    let alertas = 0;
+
                     Object.keys(db.silos).forEach(num => {
                         let d = db.silos[num];
-                        if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                            let n = parseInt(num);
-                            let centena = Math.floor(n / 100) * 100;
-                            if(lineas[centena] !== undefined) lineas[centena] += (parseFloat(d.tonelaje) || 0);
-                        }
-                    });
-                    let resp = `📊 <b>${cerealEncontrado.nombre} por Línea:</b><br><br>`;
-                    for(let l in lineas) {
-                        if(lineas[l] > 0) resp += `Línea ${l}s: <b>${lineas[l]}t</b><br>`;
-                    }
-                    addChatMessage(resp, 'bot');
-                    return;
-                }
-            }
-
-            if (q === 'tanques' || q === 'tanque') {
-                let total = 0;
-                TANQUES_FINALES.forEach(t => {
-                    let d = getSiloData(t.id);
-                    if(d.estado === 'CON_CARGA' || d.estado === 'TAPADA') total += (parseFloat(d.tonelaje) || 0);
-                });
-                addChatMessage(`🛢️ Hay un total de <b>${total}t</b> almacenadas en los Tanques.<br><br>Para ver el detalle exacto, podés preguntarme por un tanque específico (ej: <i>Tanque CTM</i>).`, 'bot');
-                return;
-            }
-
-            let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
-            if (matchDondePongo) {
-                let tonsReq = parseFloat(matchDondePongo[2]);
-                let cerealQ = matchDondePongo[4].trim();
-                let cerealTarget = findCereal(cerealQ);
-                
-                if (cerealTarget) {
-                    let opciones = [];
-                    Object.keys(db.silos).forEach(num => {
-                        let d = db.silos[num];
-                        if(d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                            let esp = getEspacioDisp(num);
-                            if(esp >= tonsReq) opciones.push({ num, esp, cal: d.calidad, alerta: tieneAlerta(num) });
+                        if(d.cereal === cId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                            let tons = parseFloat(d.tonelaje) || 0;
+                            stocks.total += tons;
+                            let cal = d.calidad || 'S/C';
+                            if(!stocks.calidades[cal]) stocks.calidades[cal] = 0;
+                            stocks.calidades[cal] += tons;
+                            
+                            if(d.tipo === 'SILO' || d.tipo === 'ENTRESILO') { stocks.silos += tons; totEspacio += getEspacioDisp(num); }
+                            else if(d.tipo === 'TANQUE') stocks.tanques += tons;
+                            else stocks.paso += tons;
+                            
+                            if(tieneAlerta(num)) alertas++;
                         }
                     });
 
-                    if(opciones.length > 0) {
-                        opciones.sort((a,b) => a.alerta - b.alerta || a.esp - b.esp);
-                        let mejor = opciones[0];
-                        let msg = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealTarget.nombre}:</b><br>`;
-                        msg += `Silo <b>${mejor.num}</b> (${mejor.cal}) tiene <b>${mejor.esp}t</b>. ${mejor.alerta ? '⚠️ OJO: Tiene alerta.' : '✅ Sin alertas.'}<br><br>`;
-                        if(opciones.length > 1) {
-                            msg += `<b>Otras opciones:</b><br>`;
-                            opciones.slice(1, 4).forEach(o => { msg += `- Silo ${o.num} (${o.cal}): ${o.esp}t ${o.alerta?'⚠️':''}<br>`; });
-                        }
-                        addChatMessage(msg, 'bot');
-                    } else {
-                        addChatMessage(`❌ No hay silos de ${cerealTarget.nombre} con espacio para ${tonsReq}t de una sola vez.`, 'bot');
-                    }
+                    let msg = `🌾 <b>Resumen de ${cerealEncontrado.nombre}:</b><br><br>`;
+                    msg += `📦 <b>Stock Total:</b> ${stocks.total}t<br>`;
+                    msg += `  - Silos: ${stocks.silos}t<br>  - Tanques: ${stocks.tanques}t<br>  - Paso: ${stocks.paso}t<br><br>`;
+                    for(let cal in stocks.calidades) msg += `Calidad <b>${cal}</b>: ${stocks.calidades[cal]}t<br>`;
+                    msg += `<br>⛽ <b>Espacio Disp. (Silos):</b> ~${totEspacio}t<br>`;
+                    msg += `<br>🚨 <b>Alertas:</b> ${alertas > 0 ? alertas + ' unidades' : 'Ninguna'}`;
+                    addChatMessage(msg, 'bot');
                     return;
                 }
+
+                addChatMessage("🤔 No entendí. Escribí <b>'Ayuda'</b> o tocá los botones abajo.", 'bot');
+            } catch (e) {
+                console.error("Error en Bot:", e);
+                addChatMessage("Ups, tuve un pequeño problema procesando eso. ¿Podrías intentar de nuevo?", 'bot');
             }
-
-            if (cerealEncontrado) {
-                let cId = cerealEncontrado.id;
-                let stocks = { total: 0, calidades: {}, silos: 0, tanques: 0, paso: 0 };
-                let totEspacio = 0;
-                let alertas = 0;
-
-                Object.keys(db.silos).forEach(num => {
-                    let d = db.silos[num];
-                    if(d.cereal === cId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                        let tons = parseFloat(d.tonelaje) || 0;
-                        stocks.total += tons;
-                        let cal = d.calidad || 'S/C';
-                        if(!stocks.calidades[cal]) stocks.calidades[cal] = 0;
-                        stocks.calidades[cal] += tons;
-                        
-                        if(d.tipo === 'SILO' || d.tipo === 'ENTRESILO') { stocks.silos += tons; totEspacio += getEspacioDisp(num); }
-                        else if(d.tipo === 'TANQUE') stocks.tanques += tons;
-                        else stocks.paso += tons;
-                        
-                        if(tieneAlerta(num)) alertas++;
-                    }
-                });
-
-                let msg = `🌾 <b>Resumen de ${cerealEncontrado.nombre}:</b><br><br>`;
-                msg += `📦 <b>Stock Total:</b> ${stocks.total}t<br>`;
-                msg += `  - Silos: ${stocks.silos}t<br>  - Tanques: ${stocks.tanques}t<br>  - Paso: ${stocks.paso}t<br><br>`;
-                for(let cal in stocks.calidades) msg += `Calidad <b>${cal}</b>: ${stocks.calidades[cal]}t<br>`;
-                msg += `<br>⛽ <b>Espacio Disp. (Silos):</b> ~${totEspacio}t<br>`;
-                msg += `<br>🚨 <b>Alertas:</b> ${alertas > 0 ? alertas + ' unidades' : 'Ninguna'}`;
-                addChatMessage(msg, 'bot');
-                return;
-            }
-
-            addChatMessage("🤔 No entendí. Escribí <b>'Ayuda'</b> o tocá los botones abajo.", 'bot');
         }
 
         function procesarLogistica(q, fIniStr, fFinStr, tituloFecha) {

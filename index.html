@@ -934,7 +934,7 @@
             let inputSilo = row.querySelector('.m-silo'); if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); };
             let esSilo = (tipoUnidad === 'SILO'); let esFumigable = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE');
             
-            // Solo muestra los cereales que el usuario tiene activos en Admin
+            // Toma los cereales directamente de la base de datos (los que están configurados en Admin)
             let cerealesSelect = db.cereales.sort((a,b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
             if(tipoAccion === 'INGRESO') {
@@ -1914,9 +1914,10 @@
             if(!cont) return;
             let html = '';
             db.cereales.sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(c => {
+                // Se quitó la muestra del ID entre paréntesis para evitar redundancia visual
                 html += `
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding: 8px 0;">
-                        <span style="font-weight:bold; color:${c.color || 'var(--text)'};">${c.nombre} (${c.id})</span>
+                        <span style="font-weight:bold; color:${c.color || 'var(--text)'};">${c.nombre}</span>
                         <div style="display:flex; gap:5px; align-items:center;">
                             <label style="font-size:0.8rem; margin-right:5px;">PH:</label>
                             <input type="number" step="0.1" id="ph-input-${c.id}" value="${c.ph}" style="width: 70px; padding: 4px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text);">

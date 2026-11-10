@@ -111,13 +111,12 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             position: relative;
         }
-        .row-inputs .form-group { min-width: 0; } /* Fix para que no se desborde la grilla */
+        .row-inputs .form-group { min-width: 0; }
         .row-inputs .form-group.full { grid-column: 1 / -1; }
         .row-inputs label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 4px; display: block;}
         .row-inputs input, .row-inputs select { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); transition: border 0.2s; height: 48px;}
         .row-inputs input:focus, .row-inputs select:focus { border-color: var(--primary); outline: none; }
         
-        /* Barra de acciones dentro de la tarjeta */
         .row-inputs .header-actions { display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
         .row-inputs .btn-del { background: #fee2e2; color: #ef4444; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s;}
         .row-inputs .btn-del:hover { background: #fca5a5; }
@@ -366,7 +365,7 @@
                 <button class="chip" onclick="sendChip('Dónde pongo 30t de Maíz G2')" type="button">🎯 Dónde pongo</button>
                 <button class="chip" onclick="sendChip('Camiones de esta semana')" type="button">🚚 Camiones</button>
                 <button class="chip" onclick="sendChip('Clima')" type="button">☀️ Clima</button>
-                <button class="chip" onclick="sendChip('Estándar de calidad')" type="button">📜 Calidades</button>
+                <button class="chip" onclick="sendChip('Estándar de Maíz')" type="button">📜 Estándares</button>
                 <button class="chip" onclick="sendChip('Alertas activas')" type="button">🚨 Alertas</button>
                 <button class="chip" onclick="sendChip('Ayuda')" type="button">❓ Ayuda</button>
             </div>
@@ -650,8 +649,8 @@
             return false;
         };
 
-        const DB_VERSION = 37;
-        const DB_KEY = 'unidad7_db_v37';
+        const DB_VERSION = 38;
+        const DB_KEY = 'unidad7_db_v38';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -837,7 +836,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v36') || localStorage.getItem('unidad7_db_v35');
+                    let old = localStorage.getItem('unidad7_db_v37') || localStorage.getItem('unidad7_db_v36');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -3285,124 +3284,9 @@
                      .replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas")
                      .replace(/\b(silo|silos)\b/g, "silo");
                 
-                // 1. Clima
-                if (q.includes('clima') || q.includes('tiempo') || q.includes('pronostico')) {
-                    if (!navigator.onLine) {
-                        addChatMessage("🌐 Para ver el clima necesito conexión a internet. ¡Pero podés seguir usando el resto de la app sin problemas!", 'bot');
-                        return;
-                    }
-                    let locationMatch = q.match(/en\s+([a-z\s]+)/i);
-                    let loc = locationMatch ? locationMatch[1].trim() : '';
-                    addChatMessage("Consultando el clima...", 'bot');
-                    
-                    try {
-                        let url = loc ? `https://wttr.in/${encodeURIComponent(loc)}?format=j1` : `https://wttr.in/?format=j1`;
-                        let res = await fetch(url);
-                        let data = await res.json();
-                        let current = data.current_condition[0];
-                        let area = data.nearest_area[0].areaName[0].value;
-                        let temp = current.temp_C;
-                        let desc = current.lang_es ? current.lang_es[0].value : current.weatherDesc[0].value;
-                        
-                        let forecastHtml = '';
-                        for(let i=1; i<=3; i++) {
-                            if(data.weather && data.weather[i]) {
-                                let day = data.weather[i];
-                                let date = day.date;
-                                let max = day.maxtempC;
-                                let min = day.mintempC;
-                                let descD = day.hourly[4].lang_es ? day.hourly[4].lang_es[0].value : day.hourly[4].weatherDesc[0].value;
-                                forecastHtml += `<br>📅 ${date}: ${descD}. Max ${max}°C / Min ${min}°C`;
-                            }
-                        }
-                        
-                        addChatMessage(`☀️ <b>Clima en ${area}</b><br>Actual: ${desc}, ${temp}°C<br><br><b>Próximos días:</b>${forecastHtml}`, 'bot');
-                    } catch(e) {
-                        addChatMessage("No pude obtener el clima en este momento. Revisá tu conexión.", 'bot');
-                    }
-                    return;
-                }
-
-                // 2. Estándares de Calidad
-                if (q.includes('estandar') || q.includes('calidad') || q.includes('g1') || q.includes('g2') || q.includes('g3') || q.includes('resolucion 1075')) {
-                    addChatMessage("📜 <b>Estándares de Calidad (Res. 1075/94):</b><br><br>En Argentina, los granos se clasifican según su calidad:<br><br>• <b>Grado 1 (G1):</b> Calidad superior, máxima bonificación.<br>• <b>Grado 2 (G2):</b> Calidad estándar, base de comercialización.<br>• <b>Grado 3 (G3):</b> Calidad inferior, con rebajas.<br>• <b>S/C:</b> Sin Clasificar (fuera de estándar).<br><br>Los parámetros varían según el cereal (humedad, daño, cuerpos extraños, etc.). Para maíz, el estándar base suele ser G2 con 14% de humedad.", 'bot');
-                    return;
-                }
-
-                // 3. Saludos
-                if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal')) {
-                    let alertasCount = 0;
-                    Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) alertasCount++; });
-                    let totalStock = 0;
-                    Object.keys(db.silos).forEach(k => { if(db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA') totalStock += (parseFloat(db.silos[k].tonelaje) || 0); });
-                    
-                    addChatMessage(`👋 ¡Buen día! Aquí tienes el resumen de la planta:<br><br>📦 Stock Total: <b>${totalStock}t</b><br>🚨 Alertas Críticas: <b>${alertasCount}</b><br><br>¿En qué te puedo ayudar hoy?`, 'bot');
-                    return;
-                }
-
-                // 4. Alertas
-                if (q.includes('alerta') || q.includes('problema') || q.includes('alerta activa')) {
-                    let arr = [];
-                    Object.keys(db.silos).forEach(num => { if(tieneAlerta(num)) arr.push(num); });
-                    let response = arr.length > 0 ? `🚨 <b>Alertas Activas (${arr.length}):</b><br>` + arr.join(', ') : "✅ No hay alertas.";
-                    addChatMessage(response, 'bot');
-                    return;
-                }
-
-                // 5. Logística y Fechas
-                let qFecha = q;
-                let fechaInicio = new Date();
-                let fechaFin = new Date();
-                let tituloFecha = "Hoy";
+                // --- PRIORIDAD 1: ACCIONES Y OPERACIONES ---
                 
-                if (q.includes('esta semana')) {
-                    fechaInicio.setDate(fechaInicio.getDate() - fechaInicio.getDay());
-                    tituloFecha = "Esta Semana";
-                } else if (q.includes('mes pasado')) {
-                    fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1);
-                    fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0);
-                    tituloFecha = "Mes Pasado";
-                } else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) {
-                    fechaInicio.setDate(1);
-                    tituloFecha = "Este Mes";
-                } else if (q.includes('ayer')) {
-                    fechaInicio.setDate(fechaInicio.getDate() - 1);
-                    fechaFin.setDate(fechaFin.getDate() - 1);
-                    tituloFecha = "Ayer";
-                } else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias')) {
-                    fechaInicio.setDate(fechaInicio.getDate() - 30);
-                    tituloFecha = "Últimos 30 días";
-                }
-
-                let fIniStr = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
-                let fFinStr = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
-                
-                if (procesarLogistica(q, fIniStr, fFinStr, tituloFecha)) return;
-
-                if (q === 'ayuda' || q === '?') {
-                    if (botContext.justAskedHelp) {
-                        addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando.", 'bot');
-                    } else {
-                        addChatMessage("🧠 <b>Ayuda de MaizBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Estándar de calidad</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
-                        botContext.justAskedHelp = true;
-                        setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
-                    }
-                    return;
-                }
-
-                if (q === 'cereales' || q === 'stock') {
-                    addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Maíz por línea</i>", 'bot');
-                    return;
-                }
-
-                let cerealEncontrado = findCereal(q);
-                
-                if (!cerealEncontrado && (q.includes('espacio') || q.includes('stock') || q.includes('cuanto hay') || q.includes('tanque')) && botContext.lastCereal) {
-                    cerealEncontrado = db.cereales.find(c => c.id === botContext.lastCereal);
-                }
-                if (cerealEncontrado) botContext.lastCereal = cerealEncontrado.id;
-
-                // 6. Anotar movimiento
+                // 1. Anotar movimiento
                 let matchAnotar = q.match(/(?:anota|anotar|prepara|preparar|carga|cargar)\s+(\d+)\s*(?:t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)\s+en\s+(?:el\s+)?(?:silo\s+)?([a-z0-9\-]+)/i);
                 if (matchAnotar) {
                     let tons = matchAnotar[1];
@@ -3452,7 +3336,48 @@
                     }
                 }
 
-                // 7. Simulador What-If
+                // 2. Dónde pongo (Prioridad sobre la explicación de calidad)
+                let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
+                if (matchDondePongo) {
+                    let tonsReq = parseFloat(matchDondePongo[2]);
+                    let cerealQ = matchDondePongo[4].trim();
+                    let cerealTarget = findCereal(cerealQ);
+                    
+                    let calidadBuscada = null;
+                    let matchCalidad = q.match(/\b(g1|g2|g3|m61|s\/c)\b/i);
+                    if (matchCalidad) {
+                        calidadBuscada = matchCalidad[1].toUpperCase();
+                    }
+
+                    if (cerealTarget) {
+                        let opciones = [];
+                        Object.keys(db.silos).forEach(num => {
+                            let d = db.silos[num];
+                            if(d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                                if (calidadBuscada && d.calidad !== calidadBuscada) return;
+                                let esp = getEspacioDisp(num);
+                                if(esp >= tonsReq) opciones.push({ num, esp, cal: d.calidad, alerta: tieneAlerta(num) });
+                            }
+                        });
+
+                        if(opciones.length > 0) {
+                            opciones.sort((a,b) => a.alerta - b.alerta || a.esp - b.esp);
+                            let mejor = opciones[0];
+                            let msg = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealTarget.nombre}${calidadBuscada ? ' '+calidadBuscada : ''}:</b><br>`;
+                            msg += `Silo <b>${mejor.num}</b> (${mejor.cal}) tiene <b>${mejor.esp}t</b>. ${mejor.alerta ? '⚠️ OJO: Tiene alerta.' : '✅ Sin alertas.'}<br><br>`;
+                            if(opciones.length > 1) {
+                                msg += `<b>Otras opciones:</b><br>`;
+                                opciones.slice(1, 4).forEach(o => { msg += `- Silo ${o.num} (${o.cal}): ${o.esp}t ${o.alerta?'⚠️':''}<br>`; });
+                            }
+                            addChatMessage(msg, 'bot');
+                        } else {
+                            addChatMessage(`❌ No hay silos de ${cerealTarget.nombre}${calidadBuscada ? ' '+calidadBuscada : ''} con espacio para ${tonsReq}t de una sola vez.`, 'bot');
+                        }
+                        return;
+                    }
+                }
+
+                // 3. Simulador What-If
                 let matchSimularVacio = q.match(/que pasa si vacio el (silo )?(\d+)/i);
                 if (matchSimularVacio) {
                     let num = matchSimularVacio[2];
@@ -3472,6 +3397,150 @@
                     }
                     return;
                 }
+
+                // 4. Logística y Fechas
+                let qFecha = q;
+                let fechaInicio = new Date();
+                let fechaFin = new Date();
+                let tituloFecha = "Hoy";
+                
+                if (q.includes('esta semana')) {
+                    fechaInicio.setDate(fechaInicio.getDate() - fechaInicio.getDay());
+                    tituloFecha = "Esta Semana";
+                } else if (q.includes('mes pasado')) {
+                    fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1);
+                    fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0);
+                    tituloFecha = "Mes Pasado";
+                } else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) {
+                    fechaInicio.setDate(1);
+                    tituloFecha = "Este Mes";
+                } else if (q.includes('ayer')) {
+                    fechaInicio.setDate(fechaInicio.getDate() - 1);
+                    fechaFin.setDate(fechaFin.getDate() - 1);
+                    tituloFecha = "Ayer";
+                } else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias')) {
+                    fechaInicio.setDate(fechaInicio.getDate() - 30);
+                    tituloFecha = "Últimos 30 días";
+                }
+
+                let fIniStr = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
+                let fFinStr = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
+                
+                if (procesarLogistica(q, fIniStr, fFinStr, tituloFecha)) return;
+
+                // --- PRIORIDAD 2: CONSULTAS DE INFORMACIÓN ---
+
+                // 5. Estándares de Calidad (Si se pide explícitamente)
+                if (q.includes('estandar') || q.includes('norma')) {
+                    let cerealMatch = findCereal(q);
+                    if (cerealMatch) {
+                        let std = {
+                            'MAIZ': "🌽 <b>Estándar de Calidad: MAÍZ (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> Peso Hectolítrico > 75 kg/hl. Dañados < 3%. Quebrados < 2%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 72 kg/hl. Dañados < 5%. Quebrados < 3%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 69 kg/hl. Dañados < 8%. Quebrados < 5%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 14%, Grado 2. Límite máximo de humedad: 14.5%.</i>",
+                            'TRIGO': "🌾 <b>Estándar de Calidad: TRIGO (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 79 kg/hl. Dañados < 1.5%. Materias extrañas < 0.5%.<br>• <b>Grado 2:</b> PH > 76 kg/hl. Dañados < 3%. Materias extrañas < 1%.<br>• <b>Grado 3:</b> PH > 73 kg/hl. Dañados < 5%. Materias extrañas < 1.5%.<br><br><i>Base de comercialización: Humedad 14%, Grado 2. Límite máximo de humedad: 14.5%.</i>",
+                            'SOJA': "🫘 <b>Estándar de Calidad: SOJA (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 73 kg/hl. Dañados < 2%. Quebrados < 1%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 71 kg/hl. Dañados < 4%. Quebrados < 2%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 68 kg/hl. Dañados < 6%. Quebrados < 3%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 13.5%, Grado 2. Límite máximo de humedad: 14%.</i>",
+                            'GIRASOL': "🌻 <b>Estándar de Calidad: GIRASOL (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 38 kg/hl. Dañados < 3%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 35 kg/hl. Dañados < 5%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 32 kg/hl. Dañados < 8%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 11%, Grado 2. Límite máximo de humedad: 11.5%.</i>",
+                            'SORGO': "🌾 <b>Estándar de Calidad: SORGO (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 74 kg/hl. Dañados < 3%. Quebrados < 1%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 72 kg/hl. Dañados < 5%. Quebrados < 2%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 70 kg/hl. Dañados < 8%. Quebrados < 3%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 14%, Grado 2. Límite máximo de humedad: 14.5%.</i>"
+                        };
+                        let cId = cerealMatch.id;
+                        if (std[cId]) {
+                            addChatMessage(std[cId], 'bot');
+                        } else {
+                            addChatMessage(`No tengo el estándar detallado para ${cerealMatch.nombre} en este momento.`, 'bot');
+                        }
+                    } else {
+                        addChatMessage("📜 <b>Estándares de Calidad (Res. 1075/94):</b><br><br>Decime de qué cereal querés saber: <i>estándar de maíz</i>, <i>norma de trigo</i>, <i>calidad de soja</i>, etc.", 'bot');
+                    }
+                    return;
+                }
+
+                if (q.includes('que significa g1') || q.includes('que significa g2') || q.includes('que significa g3')) {
+                    addChatMessage("📜 <b>Grados de Calidad:</b><br><br>• <b>G1:</b> Calidad superior, máxima bonificación.<br>• <b>G2:</b> Calidad estándar, base de comercialización (sin bonificación ni rebaja).<br>• <b>G3:</b> Calidad inferior, con rebajas.<br><br>Los parámetros varían según el cereal. Preguntame por el 'estándar de [cereal]' para ver los detalles técnicos.", 'bot');
+                    return;
+                }
+
+                // 6. Clima
+                if (q.includes('clima') || q.includes('tiempo') || q.includes('pronostico')) {
+                    if (!navigator.onLine) {
+                        addChatMessage("🌐 Para ver el clima necesito conexión a internet. ¡Pero podés seguir usando el resto de la app sin problemas!", 'bot');
+                        return;
+                    }
+                    let locationMatch = q.match(/en\s+([a-z\s]+)/i);
+                    let loc = locationMatch ? locationMatch[1].trim() : '';
+                    addChatMessage("Consultando el clima...", 'bot');
+                    
+                    try {
+                        let url = loc ? `https://wttr.in/${encodeURIComponent(loc)}?format=j1` : `https://wttr.in/?format=j1`;
+                        let res = await fetch(url);
+                        let data = await res.json();
+                        let current = data.current_condition[0];
+                        let area = data.nearest_area[0].areaName[0].value;
+                        let temp = current.temp_C;
+                        let desc = current.lang_es ? current.lang_es[0].value : current.weatherDesc[0].value;
+                        
+                        let forecastHtml = '';
+                        for(let i=1; i<=3; i++) {
+                            if(data.weather && data.weather[i]) {
+                                let day = data.weather[i];
+                                let date = day.date;
+                                let max = day.maxtempC;
+                                let min = day.mintempC;
+                                let descD = day.hourly[4].lang_es ? day.hourly[4].lang_es[0].value : day.hourly[4].weatherDesc[0].value;
+                                forecastHtml += `<br>📅 ${date}: ${descD}. Max ${max}°C / Min ${min}°C`;
+                            }
+                        }
+                        
+                        addChatMessage(`☀️ <b>Clima en ${area}</b><br>Actual: ${desc}, ${temp}°C<br><br><b>Próximos días:</b>${forecastHtml}`, 'bot');
+                    } catch(e) {
+                        addChatMessage("No pude obtener el clima en este momento. Revisá tu conexión.", 'bot');
+                    }
+                    return;
+                }
+
+                // 7. Saludos
+                if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal')) {
+                    let alertasCount = 0;
+                    Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) alertasCount++; });
+                    let totalStock = 0;
+                    Object.keys(db.silos).forEach(k => { if(db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA') totalStock += (parseFloat(db.silos[k].tonelaje) || 0); });
+                    
+                    addChatMessage(`👋 ¡Buen día! Aquí tienes el resumen de la planta:<br><br>📦 Stock Total: <b>${totalStock}t</b><br>🚨 Alertas Críticas: <b>${alertasCount}</b><br><br>¿En qué te puedo ayudar hoy?`, 'bot');
+                    return;
+                }
+
+                // 8. Alertas
+                if (q.includes('alerta') || q.includes('problema') || q.includes('alerta activa')) {
+                    let arr = [];
+                    Object.keys(db.silos).forEach(num => { if(tieneAlerta(num)) arr.push(num); });
+                    let response = arr.length > 0 ? `🚨 <b>Alertas Activas (${arr.length}):</b><br>` + arr.join(', ') : "✅ No hay alertas.";
+                    addChatMessage(response, 'bot');
+                    return;
+                }
+
+                // 9. Ayuda
+                if (q === 'ayuda' || q === '?') {
+                    if (botContext.justAskedHelp) {
+                        addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando.", 'bot');
+                    } else {
+                        addChatMessage("🧠 <b>Ayuda de MaizBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Estándar de maíz</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
+                        botContext.justAskedHelp = true;
+                        setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
+                    }
+                    return;
+                }
+
+                if (q === 'cereales' || q === 'stock') {
+                    addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Maíz por línea</i>", 'bot');
+                    return;
+                }
+
+                // --- PRIORIDAD 3: CONSULTAS GENERALES DE CEREALES ---
+
+                let cerealEncontrado = findCereal(q);
+                
+                if (!cerealEncontrado && (q.includes('espacio') || q.includes('stock') || q.includes('cuanto hay') || q.includes('tanque')) && botContext.lastCereal) {
+                    cerealEncontrado = db.cereales.find(c => c.id === botContext.lastCereal);
+                }
+                if (cerealEncontrado) botContext.lastCereal = cerealEncontrado.id;
 
                 let matchRange = q.match(/(?:del|desde el?)?\s*\b(\d{3})\s*(?:al|a|-)\s*(\d{3})\b/i);
                 if (matchRange) {
@@ -3520,46 +3589,6 @@
                     });
                     addChatMessage(`🛢️ Hay un total de <b>${total}t</b> almacenadas en los Tanques.<br><br>Para ver el detalle exacto, podés preguntarme por un tanque específico (ej: <i>Tanque CTM</i>).`, 'bot');
                     return;
-                }
-
-                let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
-                if (matchDondePongo) {
-                    let tonsReq = parseFloat(matchDondePongo[2]);
-                    let cerealQ = matchDondePongo[4].trim();
-                    let cerealTarget = findCereal(cerealQ);
-                    
-                    let calidadBuscada = null;
-                    let matchCalidad = q.match(/\b(g1|g2|g3|m61|s\/c)\b/i);
-                    if (matchCalidad) {
-                        calidadBuscada = matchCalidad[1].toUpperCase();
-                    }
-
-                    if (cerealTarget) {
-                        let opciones = [];
-                        Object.keys(db.silos).forEach(num => {
-                            let d = db.silos[num];
-                            if(d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                                if (calidadBuscada && d.calidad !== calidadBuscada) return;
-                                let esp = getEspacioDisp(num);
-                                if(esp >= tonsReq) opciones.push({ num, esp, cal: d.calidad, alerta: tieneAlerta(num) });
-                            }
-                        });
-
-                        if(opciones.length > 0) {
-                            opciones.sort((a,b) => a.alerta - b.alerta || a.esp - b.esp);
-                            let mejor = opciones[0];
-                            let msg = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealTarget.nombre}${calidadBuscada ? ' '+calidadBuscada : ''}:</b><br>`;
-                            msg += `Silo <b>${mejor.num}</b> (${mejor.cal}) tiene <b>${mejor.esp}t</b>. ${mejor.alerta ? '⚠️ OJO: Tiene alerta.' : '✅ Sin alertas.'}<br><br>`;
-                            if(opciones.length > 1) {
-                                msg += `<b>Otras opciones:</b><br>`;
-                                opciones.slice(1, 4).forEach(o => { msg += `- Silo ${o.num} (${o.cal}): ${o.esp}t ${o.alerta?'⚠️':''}<br>`; });
-                            }
-                            addChatMessage(msg, 'bot');
-                        } else {
-                            addChatMessage(`❌ No hay silos de ${cerealTarget.nombre}${calidadBuscada ? ' '+calidadBuscada : ''} con espacio para ${tonsReq}t de una sola vez.`, 'bot');
-                        }
-                        return;
-                    }
                 }
 
                 if (cerealEncontrado) {

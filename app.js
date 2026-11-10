@@ -458,6 +458,696 @@ function deshacerUltimoCambio() {
     });
 }
 
-// ... (El resto de las funciones son idénticas al archivo anterior, las copio y pego aquí adentro)
-// NOTA: Para no hacer el mensaje infinito, asumí que ya pegaste el resto de las funciones (dibujarTablero, dibujarTanques, etc.) aquí abajo.
-// Si te falta alguna, avisame y te la paso de nuevo.
+function dibujarTablero() {
+    const contenedor = document.getElementById('contenedor-tablero'); if(!contenedor) return;
+    const filtroCereal = document.getElementById('filtro-tablero').value; const filtroVista = document.getElementById('filtro-cinta-tablero').value;
+    let fragment = document.createDocumentFragment(); let silosCarga = 0, silosVacios = 0, silosTapados = 0, silosFuera = 0;
+    const ordenFilas = ['700', '600', '500', '400', '300', '200', '100'];
+
+    ordenFilas.forEach(prefijo => {
+        let silosFila = FILAS_TABLERO[prefijo]; let rowDiv = document.createElement('div'); rowDiv.className = 'fila-cinta';
+        let gridDiv = document.createElement('div'); gridDiv.className = 'grid-tarjetas'; let haySilosEnFila = false;
+
+        silosFila.forEach(num => {
+            if (filtroVista === 'CE1') { if (num < 701 || num > 718) return; }
+            else if (filtroVista === 'CE2') { if (num < 701 || num > 717) return; }
+            else if (filtroVista === 'CD1') { if (!((num >= 501 && num <= 518) || (num >= 601 && num <= 617))) return; }
+            else if (filtroVista === 'CD2') { if (!((num >= 301 && num <= 318) || (num >= 401 && num <= 417))) return; }
+            else if (filtroVista === 'CD3') { if (!((num >= 101 && num <= 118) || (num >= 201 && num <= 217))) return; }
+            else if (filtroVista.startsWith('C')) {
+                let esC1 = num >= 600 && num <= 718; let esC2 = (num >= 501 && num <= 518) || (num >= 402 && num <= 416 && num % 2 === 0); let esC3 = (num >= 301 && num <= 318) || (num >= 401 && num <= 417 && num % 2 !== 0); let esC4 = num >= 101 && num <= 217;
+                let pertenece = false; if(filtroVista === 'C1' && esC1) pertenece = true; if(filtroVista === 'C2' && esC2) pertenece = true; if(filtroVista === 'C3' && esC3) pertenece = true; if(filtroVista === 'C4' && esC4) pertenece = true;
+                if(!pertenece) return;
+            } else if (filtroVista !== 'TODAS') { if (filtroVista !== prefijo) return; }
+
+            let d = getSiloData(num); if(filtroCereal !== 'TODOS' && d.cereal !== filtroCereal && d.estado !== 'VACIO') return;
+            haySilosEnFila = true; let isVacio = d.estado === 'VACIO'; let textoCereal = isVacio ? 'VACÍO' : d.cereal;
+            if(d.estado === 'CON_CARGA') silosCarga++; else if (isVacio) silosVacios++; else if (d.estado === 'TAPADA') silosTapados++; else if (d.estado === 'FUERA_SERVICIO') silosFuera++;
+            let claseCereal = isVacio ? 'bg-VACIO' : 'bg-' + d.cereal; if (!isVacio && !db.cereales.find(c => c.id === d.cereal)) claseCereal = 'bg-OTROS';
+            let alertaHtml = tieneAlerta(num) ? `<div class="t-alerta">!</div>` : '';
+            let fumigadoHtml = ''; if(d.fumigacion_tipo === 'TOTAL') fumigadoHtml = `<div class="t-fumigado">🧪</div>`; else if(d.fumigacion_tipo === 'LIQUIDO') fumigadoHtml = `<div class="t-fumigado">💧</div>`; else if(d.fumigacion_tipo === 'PASTILLAS') fumigadoHtml = `<div class="t-fumigado">💊</div>`; else if(d.fumigacion_fecha) fumigadoHtml = `<div class="t-fumigado">🧪</div>`;
+            let animateClass = silosModificadosReciente.includes(num) ? 'destacado' : '';
+
+            let card = document.createElement('div');
+            card.className = `tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''} ${animateClass}`;
+            card.onclick = () => verHistorial(num);
+            card.innerHTML = `${alertaHtml} ${fumigadoHtml}<div class="t-num">${num}</div><div class="t-info">${textoCereal}</div><div class="t-info-3">${d.calidad||''}</div><div class="t-info-2">${d.tonelaje>0?d.tonelaje+'t':''}</div>`;
+            gridDiv.appendChild(card);
+        });
+        if(haySilosEnFila) { rowDiv.appendChild(gridDiv); fragment.appendChild(rowDiv); }
+    });
+
+    contenedor.innerHTML = ''; contenedor.appendChild(fragment);
+    if(contenedor.innerHTML === '') contenedor.innerHTML = '<p style="text-align:center; color:var(--text-light);">No se encontraron silos.</p>';
+    let resumenDiv = document.getElementById('tablero-resumen');
+    if(resumenDiv) { resumenDiv.innerHTML = `<span>📦 Con Carga: <b>${silosCarga}</b></span><span>🚫 Vacíos: <b>${silosVacios}</b></span><span>⚠️ Tapados: <b>${silosTapados}</b></span><span>🛑 F. Servicio: <b>${silosFuera}</b></span>`; }
+    actualizarBadgeAlertas(); setTimeout(() => { silosModificadosReciente = []; }, 1500);
+}
+
+function tieneCargaSuperior(tanqueId) {
+    let config = TANQUES_CONFIG.find(t => t.id === tanqueId); if(!config || !config.padre) return false;
+    let parentData = db.silos[config.padre]; if(!parentData) return false;
+    if(parentData.estado === 'CON_CARGA' || parentData.estado === 'TAPADA') return true;
+    return tieneCargaSuperior(config.padre);
+}
+
+function dibujarTanques() {
+    const contenedor = document.getElementById('contenedor-todos-tanques'); const contenedorPaso = document.getElementById('contenedor-unidades-paso'); if(!contenedor) return;
+    let pisos = {1: '', 2: '', 3: '', 6: ''};
+    TANQUES_FINALES.forEach(t => {
+        let d = getSiloData(t.id); let isVacio = d.estado === 'VACIO'; let textoCereal = isVacio ? 'VACÍO' : d.cereal;
+        let claseCereal = isVacio ? 'bg-VACIO' : 'bg-' + d.cereal; if (!isVacio && !db.cereales.find(c => c.id === d.cereal)) claseCereal = 'bg-OTROS';
+        let alertaHtml = tieneAlerta(t.id) ? `<div class="t-alerta">!</div>` : ''; let fumigadoHtml = (d.fumigacion_fecha) ? `<div class="t-fumigado">🧪</div>` : '';
+        let warningSuperior = ''; if (isVacio && tieneCargaSuperior(t.id)) warningSuperior = `<div style="position:absolute; bottom:2px; background:#ef4444; color:white; font-size:0.5rem; padding:1px 4px; border-radius:4px; font-weight:bold; width:90%; text-align:center;">⚠️ Carga Sup.</div>`;
+        let card = `<div class="tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''}" onclick="abrirFlujoTanque('${t.id}')" style="min-height:85px;">${alertaHtml} ${fumigadoHtml}<span class="tag-tipo">Piso ${t.piso}</span><div class="t-num">${t.id}</div><div class="t-info">${textoCereal}</div><div class="t-info-2">${d.tonelaje} t (Max: ${t.max})</div>${warningSuperior}</div>`;
+        if(pisos[t.piso] !== undefined) pisos[t.piso] += card;
+    });
+
+    let htmlFinal = ''; [1, 2, 3, 6].forEach(p => { if(pisos[p] !== '') { htmlFinal += `<div class="floor-header">Piso ${p}</div><div class="grid-tarjetas" style="grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px; margin-bottom:20px;">${pisos[p]}</div>`; } });
+    contenedor.innerHTML = htmlFinal;
+
+    let htmlPaso = '';
+    UNIDADES_PASO_CONFIG.forEach(u => {
+        let d = getSiloData(u.id);
+        if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA' || d.estado === 'FUERA_SERVICIO') {
+            let isVacio = d.estado === 'VACIO'; let textoCereal = isVacio ? 'VACÍO' : d.cereal;
+            let claseCereal = isVacio ? 'bg-VACIO' : 'bg-' + d.cereal; if (!isVacio && !db.cereales.find(c => c.id === d.cereal)) claseCereal = 'bg-OTROS';
+            let alertaHtml = tieneAlerta(u.id) ? `<div class="t-alerta">!</div>` : '';
+            htmlPaso += `<div class="tarjeta ${claseCereal} ${d.estado==='TAPADA'?'estado-tapado':''} ${d.estado==='FUERA_SERVICIO'?'estado-fuera':''}" onclick="verHistorial('${u.id}')" style="min-height:80px;">${alertaHtml}<span class="tag-tipo">${u.nombre}</span><div class="t-num" style="font-size:0.8rem; text-align:center;">${u.tipo}</div><div class="t-info">${textoCereal}</div><div class="t-info-2">${d.tonelaje} t</div></div>`;
+        }
+    });
+    contenedorPaso.innerHTML = htmlPaso || '<p style="text-align:center; color:var(--text-light); font-size:0.85rem; grid-column: 1/-1;">No hay unidades de paso con carga ni fuera de servicio.</p>';
+}
+
+function actualizarResumenTanques() {
+    let cont = document.getElementById('tanques-resumen'); if(!cont) return;
+    let carga = 0, vacios = 0, tapados = 0, fuera = 0; let porCereal = {}; let totalTons = 0;
+    TANQUES_CONFIG.forEach(t => {
+        let d = getSiloData(t.id); if(d.estado === 'CON_CARGA') carga++; else if(d.estado === 'VACIO') vacios++; else if(d.estado === 'TAPADA') tapados++; else if(d.estado === 'FUERA_SERVICIO') fuera++;
+        if (d.tonelaje > 0 && d.cereal) { let tons = parseFloat(d.tonelaje) || 0; totalTons += tons; if(!porCereal[d.cereal]) porCereal[d.cereal] = 0; porCereal[d.cereal] += tons; }
+    });
+    let desgloseHtml = ''; let keys = Object.keys(porCereal).sort((a,b) => porCereal[b] - porCereal[a]);
+    if (keys.length > 0) { desgloseHtml = `<div style="width:100%; border-top:1px solid var(--border); padding-top:10px; margin-top:5px; display:flex; flex-wrap:wrap; gap:10px;">`; keys.forEach(k => { desgloseHtml += `<span style="font-size:0.85rem; background:rgba(0,0,0,0.05); padding:4px 8px; border-radius:4px;"><b>${k}:</b> ${porCereal[k]}t</span>`; }); desgloseHtml += `</div>`; }
+    cont.innerHTML = `<div style="display:flex; justify-content:space-around; text-align:center; flex-wrap:wrap; gap:10px;"><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:#10b981;">${carga}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Con Carga</div></div><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:var(--text-light);">${vacios}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Vacíos</div></div><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${tapados}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Tapados</div></div><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:#ef4444;">${fuera}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">F. Servicio</div></div><div style="flex:2; min-width:120px; border-left:1px solid var(--border); padding-left:15px; text-align:left;"><div style="font-size:1.4rem; font-weight:bold; color:var(--primary);">${totalTons}t</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Total</div></div></div>${desgloseHtml}`;
+}
+
+function abrirFlujoTanque(id) {
+    let panel = document.getElementById('panel-flujo-tanque'); let titulo = document.getElementById('titulo-flujo'); let flow = document.getElementById('flow-container');
+    if (tanqueAbierto === id) { cerrarFlujo(); return; }
+    tanqueAbierto = id; panel.classList.add('open'); titulo.innerText = 'Conjunto seleccionado: ' + id;
+    let chain = []; let current = TANQUES_CONFIG.find(t => t.id === id);
+    while(current) { chain.unshift(current); current = TANQUES_CONFIG.find(t => t.id === current.padre); }
+    let totalTons = 0;
+    let htmlChain = chain.map((t, idx) => {
+        let d = getSiloData(t.id); totalTons += (parseFloat(d.tonelaje) || 0);
+        let isVacio = d.estado === 'VACIO'; let textoCereal = isVacio ? 'VACÍO' : d.cereal; let claseCereal = isVacio ? 'bg-VACIO' : 'bg-' + d.cereal;
+        if (!isVacio && !db.cereales.find(c => c.id === d.cereal)) claseCereal = 'bg-OTROS';
+        let arrow = idx < chain.length - 1 ? '<div class="flow-arrow">➔</div>' : '';
+        return `<div class="tarjeta ${claseCereal}" style="width:110px; min-height:70px;" onclick="verHistorial('${t.id}')"><span class="tag-tipo">Piso ${t.piso}</span><div class="t-num">${t.id}</div><div class="t-info">${textoCereal}</div><div class="t-info-2">${d.tonelaje} t</div></div>${arrow}`;
+    }).join('');
+    flow.innerHTML = htmlChain + `<div style="margin-left:20px; font-weight:bold;">Total: ${totalTons}t</div>`;
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+}
+
+function cerrarFlujo() { let panel = document.getElementById('panel-flujo-tanque'); panel.classList.remove('open'); setTimeout(() => { tanqueAbierto = null; }, 400); }
+
+function verHistorial(num) {
+    let d = getSiloData(num); historialSiloActivo = num;
+    let btnAlerta = d.alerta_manual ? `<button onclick="toggleAlertaCalidad('${num}')" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:0.85rem; margin-top:10px; width:100%;" type="button">🚨 Quitar Alerta Calidad</button>` : `<button onclick="toggleAlertaCalidad('${num}')" style="background:#10b981; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:0.85rem; margin-top:10px; width:100%;" type="button">✅ Generar Alerta Calidad</button>`;
+    let nombreVisual = String(num).replace('CANO','CAÑO'); document.getElementById('h-titulo').innerHTML = `Historial Unidad ${nombreVisual}`;
+    let cont = document.getElementById('lista-historial'); cont.innerHTML = `<div style="margin-bottom:15px;">${btnAlerta}</div>`;
+    document.querySelectorAll('.hist-filter-btn').forEach(b => b.classList.remove('active')); document.querySelector('.hist-filter-btn').classList.add('active'); historialFiltroActual = 'TODOS';
+    renderHistorialLista(); document.getElementById('modal-historial').classList.add('active');
+}
+
+function filtrarHistorial(tipo, btn) { document.querySelectorAll('.hist-filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); historialFiltroActual = tipo; renderHistorialLista(); }
+
+function renderHistorialLista() {
+    let num = historialSiloActivo; if(!num) return; let d = getSiloData(num); let cont = document.getElementById('lista-historial');
+    let btnAlertaHTML = cont.firstElementChild ? cont.firstElementChild.innerHTML : ''; cont.innerHTML = `<div style="margin-bottom:15px;">${btnAlertaHTML}</div>`;
+    if(d.historial.length === 0) { cont.innerHTML += '<p style="text-align:center;">Sin movimientos registrados.</p>'; return; }
+    let hist = [...d.historial].sort((a,b) => b.fecha.localeCompare(a.fecha));
+    if(historialFiltroActual !== 'TODOS') hist = hist.filter(h => h.tipo === historialFiltroActual);
+    if(hist.length === 0) { cont.innerHTML += '<p style="text-align:center;">No hay movimientos de este tipo.</p>'; return; }
+    hist.forEach((h, index) => {
+        let realIndex = d.historial.findIndex(orig => orig.fecha === h.fecha && orig.detalle === h.detalle && orig.tipo === h.tipo);
+        let fechaStr = h.fecha.split('-').reverse().join('/');
+        let tipoClass = h.tipo === 'INGRESO' ? 'tipo-ingreso' : (h.tipo === 'EGRESO' ? 'tipo-egreso' : (h.tipo === 'RECIRCULACION' ? 'tipo-recir' : 'tipo-estado'));
+        let tipoNombre = h.tipo === 'RECIRCULACION' ? 'RECIRCULACIÓN' : (h.tipo === 'ESTADO' ? 'CAMBIO ESTADO' : h.tipo);
+        cont.innerHTML += `<div class="hist-item"><button class="btn-del-hist" onclick="borrarHistorial('${num}', ${realIndex})" title="Eliminar Registro" aria-label="Eliminar registro" type="button">🗑️</button><div class="hist-date"><span>${fechaStr}</span></div><span class="hist-tipo ${tipoClass}">${tipoNombre}</span><div class="hist-details" style="font-weight:bold; color:var(--text); margin-top:5px; padding-right:30px;">${h.detalle}</div>${h.obs ? `<div style="margin-top:5px; color:#d97706; font-size:0.85rem; border-top:1px dashed var(--border); padding-top:5px;">📝 ${h.obs}</div>` : ''}</div>`;
+    });
+}
+
+function toggleAlertaCalidad(num) { let d = getSiloData(num); d.alerta_manual = !d.alerta_manual; d.lastUpdate = Date.now(); guardarDB(); verHistorial(num); dibujarTablero(); dibujarTanques(); }
+
+function borrarHistorial(num, index) {
+    showConfirm("Eliminar Registro", "¿Borrar este registro del historial?\n\nEsto NO cambia el estado actual.", (ok) => {
+        if(!ok) return;
+        let d = getSiloData(num); d.historial.splice(index, 1); d.lastUpdate = Date.now(); guardarDB(); verHistorial(num); dibujarTablero(); dibujarTanques();
+    });
+}
+
+function actualizarBadgeAlertas() {
+    let countAlertas = 0; Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) countAlertas++; });
+    let b = document.getElementById('badge-alertas'); if(b) { if(countAlertas > 0) { b.innerText = countAlertas; b.style.display = 'inline-block'; } else { b.style.display = 'none'; } }
+}
+
+function tieneAlerta(num) {
+    let d = getSiloData(num); if(d.estado === 'VACIO') return false; if(d.alerta_manual) return true; if(d.estado === 'TAPADA') return true;
+    let esFumigable = (d.tipo === 'SILO' || d.tipo === 'ENTRESILO' || d.tipo === 'TANQUE'); if(!esFumigable) return false;
+    if(!d.fumigacion_fecha) return true;
+    let hoy = new Date(); let fumDate = parseFechaLocal(d.fumigacion_fecha);
+    if(!isNaN(fumDate.getTime())) { let diffFum = (hoy - fumDate) / (1000 * 60 * 60 * 24); if(diffFum > 50) return true; }
+    if(d.fecha_primera_carga) { let cargaDate = parseFechaLocal(d.fecha_primera_carga); if(!isNaN(cargaDate.getTime())) { let diffCarga = (hoy - cargaDate) / (1000 * 60 * 60 * 24); if(diffCarga > 90) return true; } }
+    return false;
+}
+
+function dibujarAlertas() {
+    let cont = document.getElementById('alertas-acordeon'); if(!cont) return;
+    let cats = { sin_fumigar: { titulo: '🚨 Sin Fumigar', color: '#ef4444', items: [] }, tapados: { titulo: '⚠️ Tapados', color: '#f59e0b', items: [] }, fuera_servicio: { titulo: '🛑 Fuera de Servicio', color: '#dc2626', items: [] }, revision: { titulo: '🔍 Necesita Revisión (Alerta Calidad)', color: '#3b82f6', items: [] }, vencidos: { titulo: '⏳ Refumigación Vencida (+50d)', color: '#8b5cf6', items: [] }, viejos: { titulo: '📅 Más de 90 días cargado', color: '#64748b', items: [] } };
+    let hoy = new Date();
+    Object.keys(db.silos).forEach(num => {
+        let d = db.silos[num]; if(d.estado === 'VACIO') return; let nombreVisual = String(num).replace('CANO','CAÑO');
+        if(d.alerta_manual) cats.revision.items.push(nombreVisual); if(d.estado === 'TAPADA') cats.tapados.items.push(nombreVisual); if(d.estado === 'FUERA_SERVICIO') cats.fuera_servicio.items.push(nombreVisual);
+        let esFumigable = (d.tipo === 'SILO' || d.tipo === 'ENTRESILO' || d.tipo === 'TANQUE');
+        if (esFumigable) {
+            if(!d.fumigacion_fecha) cats.sin_fumigar.items.push(nombreVisual); else { let fumDate = parseFechaLocal(d.fumigacion_fecha); if(!isNaN(fumDate.getTime())) { let diffFum = (hoy - fumDate) / (1000 * 60 * 60 * 24); if(diffFum > 50) cats.vencidos.items.push(`${nombreVisual} (${Math.floor(diffFum)}d)`); } }
+            if(d.fecha_primera_carga) { let cargaDate = parseFechaLocal(d.fecha_primera_carga); if(!isNaN(cargaDate.getTime())) { let diffCarga = (hoy - cargaDate) / (1000 * 60 * 60 * 24); if(diffCarga > 90) cats.viejos.items.push(`${nombreVisual} (${Math.floor(diffCarga)}d)`); } }
+        }
+    });
+    let totalAlertas = 0; let html = '';
+    Object.keys(cats).forEach(key => {
+        let cat = cats[key];
+        if(cat.items.length > 0) { totalAlertas += cat.items.length; html += `<div class="alert-accordion-item"><div class="alert-header" onclick="toggleAcordeonAlerta(this)"><span style="color:${cat.color};">${cat.titulo}</span><div style="display:flex; align-items:center; gap:10px;"><span class="alert-badge" style="background:${cat.color};">${cat.items.length}</span><span style="font-size:1.2rem;">🔽</span></div></div><div class="alert-body"><div style="display:flex; flex-wrap:wrap; gap:8px;">${cat.items.map(item => `<span class="silo-tag" style="border-color:${cat.color}; color:${cat.color};" onclick="verHistorial('${item.split(' ')[0]}')">${item}</span>`).join('')}</div></div></div>`; }
+    });
+    if(totalAlertas === 0) html = '<div class="card-panel" style="text-align:center; color:#10b981; font-weight:bold; font-size:1.2rem;">✅ No hay alertas activas. Todo en orden.</div>';
+    let header = `<div class="card-panel" style="display:flex; justify-content:space-between; align-items:center; border-left:4px solid #ef4444; background:#fef2f2;"><div><div style="font-size:0.8rem; color:#b91c1c; font-weight:bold; text-transform:uppercase;">Estado Operativo</div><div style="font-size:1.2rem; font-weight:bold; color:#991b1b;">Alertas Activas: ${totalAlertas}</div></div><div style="font-size:2.5rem; font-weight:bold; color:#ef4444;">!</div></div>`;
+    cont.innerHTML = header + html;
+}
+
+function toggleAcordeonAlerta(header) { let body = header.nextElementSibling; let icon = header.querySelector('span:last-child'); if(body.classList.contains('active')) { body.classList.remove('active'); icon.innerText = '🔽'; } else { body.classList.add('active'); icon.innerText = '🔼'; } }
+
+function compartirDatos() {
+    let dataStr = JSON.stringify(db); let fileName = `silos_u7_${getFechaLocal()}.json`;
+    try { let file = new File([dataStr], fileName, {type: 'application/json'}); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Respaldo de Silos', text: 'Datos actualizados de la Unidad 7' }).catch(err => console.log('Error al compartir:', err)); return; } } catch(e) { /* Fallback */ }
+    let blob = new Blob([dataStr], {type: "application/json"}); let url = URL.createObjectURL(blob); let a = document.createElement('a'); a.href = url; a.download = fileName; a.click();
+}
+
+function fusionarDatos(event) {
+    let file = event.target.files[0]; if(!file) return; let reader = new FileReader();
+    reader.onload = function(e) { 
+        try { 
+            let importedData = JSON.parse(e.target.result); if(!importedData.silos) throw new Error("Formato inválido");
+            let importados = 0; let keysSilos = Object.keys(importedData.silos).filter(k => k !== '__proto__' && k !== 'constructor' && k !== 'prototype');
+            if(importedData.cereales) { importedData.cereales.forEach(cImp => { if(!db.cereales.find(c => c.id === cImp.id)) { db.cereales.push(cImp); importados++; } }); }
+            keysSilos.forEach(num => {
+                let localSilo = getSiloData(num); let impSilo = importedData.silos[num];
+                if(impSilo.lastUpdate && impSilo.lastUpdate > (localSilo.lastUpdate || 0)) {
+                    let mergedHist = [...(impSilo.historial || []), ...(localSilo.historial || [])]; let uniqueHist = []; let seen = new Set();
+                    mergedHist.forEach(h => { let key = JSON.stringify(h); if (!seen.has(key)) { seen.add(key); uniqueHist.push(h); } });
+                    uniqueHist.sort((a,b) => a.fecha.localeCompare(b.fecha)); db.silos[num] = { ...impSilo, historial: uniqueHist }; importados++;
+                } else if (!localSilo.lastUpdate) { db.silos[num] = impSilo; importados++; }
+            });
+            guardarDB(); showToast(`🎉 Sincronización exitosa. (${importados} registros)`, "success"); setTimeout(() => location.reload(), 1500);
+        } catch(err) { showToast("❌ Archivo inválido o dañado.", "error"); } finally { event.target.value = ''; }
+    }; reader.readAsText(file);
+}
+
+function cargarDatosPrueba() {
+    showConfirm("Cargar Datos de Prueba", "Esto sobreescribirá los datos actuales con un inventario ficticio. ¿Continuar?", (ok) => {
+        if(!ok) return; let now = Date.now(); let hoy = new Date();
+        let fechaPasada = (dias) => { let d = new Date(hoy); d.setDate(d.getDate() - dias); return d.toISOString().split('T')[0]; };
+        TODOS_LOS_SILOS.forEach((num, idx) => {
+            let d = getSiloData(num);
+            if (idx % 25 === 0) { d.estado = 'VACIO'; d.cereal = ''; d.tonelaje = 0; d.calidad = ''; d.fecha_primera_carga = null; d.fumigacion_fecha = null; d.historial = []; d.alerta_manual = false; }
+            else {
+                let cereales = ['MAIZ', 'SOJA', 'TRIGO', 'GIRASOL', 'SORGO', 'MEZCLA']; let c = cereales[idx % cereales.length]; let cal = (idx % 3 === 0) ? 'G1' : ((idx % 5 === 0) ? 'M61' : 'G2');
+                let sinFumigar = (idx % 10 === 0); let viejo = (idx % 15 === 0); let tapado = (idx % 20 === 0); let alertaCal = (idx % 30 === 0); let sinCalidad = (idx % 40 === 0);
+                let tipo = esSiloTipo(num); let topeMetros = obtenerTopeMetros(num); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+                let cObj = db.cereales.find(cr => cr.id === c); let ph = cObj ? cObj.ph : 76; let capMaxTon = Math.round(capMaxRefTope * ph / PH_BASE); let tonsReales = Math.floor(capMaxTon * (0.3 + Math.random() * 0.6));
+                d.cereal = c; d.calidad = sinCalidad ? '' : cal; d.estado = tapado ? 'TAPADA' : 'CON_CARGA'; d.tonelaje = tonsReales;
+                d.fecha_primera_carga = fechaPasada(viejo ? (Math.floor(Math.random() * 50) + 100) : (Math.floor(Math.random() * 50) + 5));
+                d.fumigacion_fecha = sinFumigar ? null : fechaPasada(Math.floor(Math.random() * 40) + 1); d.fumigacion_tipo = sinFumigar ? null : ((idx % 2 === 0) ? 'TOTAL' : 'PASTILLAS');
+                d.origen = (idx % 4 === 0) ? 'Transile' : 'Camiones'; d.alerta_manual = alertaCal; d.lastUpdate = now;
+                d.historial = [{ fecha: d.fecha_primera_carga, tipo: 'INGRESO', detalle: `Ingreso: ${d.tonelaje}t - ${c} (${d.calidad||'S/C'}) | Origen: ${d.origen} | No fumigado`, tons: d.tonelaje, cereal: c }];
+                if (d.tonelaje > 300) { let tonsRestar = Math.floor(d.tonelaje * 0.3); d.historial.push({ fecha: fechaPasada(10), tipo: 'EGRESO', detalle: `Egreso: ${tonsRestar}t por Embarque`, tons: tonsRestar, cereal: c }); d.tonelaje -= tonsRestar; }
+            }
+        });
+        TANQUES_CONFIG.forEach((t, idx) => { let d = getSiloData(t.id); if (idx % 3 !== 0) { d.estado = 'CON_CARGA'; d.cereal = (idx % 2 === 0) ? 'MAIZ' : 'MEZCLA'; d.calidad = 'G2'; d.tonelaje = Math.floor(t.max * 0.8); d.fecha_primera_carga = fechaPasada(50); d.lastUpdate = now; } });
+        UNIDADES_PASO_CONFIG.forEach((u, idx) => { if (idx % 2 === 0) { let d = getSiloData(u.id); d.estado = 'CON_CARGA'; d.cereal = 'MAIZ'; d.calidad = 'G1'; d.tonelaje = 30; d.fecha_primera_carga = fechaPasada(20); d.lastUpdate = now; } });
+        db.cierres = [{ fecha: fechaPasada(1), data: JSON.parse(JSON.stringify(db.silos)) }, { fecha: fechaPasada(2), data: JSON.parse(JSON.stringify(db.silos)) }];
+        guardarDB(); showToast("Datos de prueba cargados.", "success"); setTimeout(() => location.reload(), 1000);
+    });
+}
+
+function actualizarExistencias() {
+    let counts = { VACIO:0, CON_CARGA:0, TAPADA:0, FUERA_SERVICIO:0 };
+    TODOS_LOS_SILOS.forEach(num => { let d = db.silos[num]; let st = d ? d.estado : 'VACIO'; if(counts[st] !== undefined) counts[st]++; });
+    TANQUES_CONFIG.forEach(t => { let d = db.silos[t.id]; let st = d ? d.estado : 'VACIO'; if(counts[st] !== undefined) counts[st]++; });
+    UNIDADES_PASO_CONFIG.forEach(u => { let d = db.silos[u.id]; if(d && d.estado === 'CON_CARGA') counts.CON_CARGA++; if(d && d.estado === 'TAPADA') counts.TAPADA++; if(d && d.estado === 'FUERA_SERVICIO') counts.FUERA_SERVICIO++; });
+    let v = document.getElementById('st-vacios'); let c = document.getElementById('st-carga'); let t = document.getElementById('st-tapados'); let f = document.getElementById('st-fuera');
+    if(v) v.innerText = counts.VACIO; if(c) c.innerText = counts.CON_CARGA; if(t) t.innerText = counts.TAPADA; if(f) f.innerText = counts.FUERA_SERVICIO;
+}
+
+function mostrarSilosPorEstado(estado, el) {
+    let cont = document.getElementById('lista-silos-por-estado');
+    document.querySelectorAll('.stat-box.clickable').forEach(b => b.classList.remove('active'));
+    if (estadoFiltradoActual === estado) { cont.style.display = 'none'; cont.innerHTML = ''; estadoFiltradoActual = null; return; }
+    estadoFiltradoActual = estado; el.classList.add('active'); cont.style.display = 'block';
+    let html = `<h4 style="margin-top:0; color:var(--text); font-size:0.95rem;">Unidades en estado: ${estado.replace('_', ' ')}</h4><div style="display:flex; flex-wrap:wrap; gap:5px;">`; let hay = false;
+    TODOS_LOS_SILOS.forEach(num => { let d = db.silos[num]; let st = d ? d.estado : 'VACIO'; if(st === estado) { hay = true; let cObj = d && d.cereal ? db.cereales.find(c=>c.id===d.cereal) : null; let color = cObj ? cObj.color : 'var(--bg)'; let txtColor = d && d.cereal ? 'white' : 'var(--text-light)'; html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial(${num})">${num}</div>`; } });
+    TANQUES_CONFIG.forEach(t => { let d = db.silos[t.id]; let st = d ? d.estado : 'VACIO'; if(st === estado) { hay = true; let cObj = d && d.cereal ? db.cereales.find(c=>c.id===d.cereal) : null; let color = cObj ? cObj.color : 'var(--bg)'; let txtColor = d && d.cereal ? 'white' : 'var(--text-light)'; html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial('${t.id}')">${t.id}</div>`; } });
+    if (estado !== 'VACIO') { UNIDADES_PASO_CONFIG.forEach(u => { let d = db.silos[u.id]; let st = d ? d.estado : 'VACIO'; if(st === estado) { hay = true; let cObj = d && d.cereal ? db.cereales.find(c=>c.id===d.cereal) : null; let color = cObj ? cObj.color : 'var(--bg)'; let txtColor = d && d.cereal ? 'white' : 'var(--text-light)'; html += `<div class="silo-tag" style="background:${color}; color:${txtColor};" onclick="verHistorial('${u.id}')">${u.nombre}</div>`; } }); }
+    html += `</div>`; if(!hay) html += '<p style="text-align:center; font-size:0.85rem;">No hay unidades en este estado.</p>'; cont.innerHTML = html;
+}
+
+function calcularStock() {
+    let query = document.getElementById('smart-search').value.toLowerCase().trim(); let cont = document.getElementById('existencias-cintas-container'); if(!cont) return; cont.innerHTML = ''; let cerealesConStock = [];
+    db.cereales.forEach(cereal => {
+        let totalSilos = 0; let totalTanques = 0; let totalPaso = 0; let totalGeneral = 0; let calidades = {}; 
+        Object.keys(db.silos).forEach(num => {
+            let d = db.silos[num];
+            if(d.cereal === cereal.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                let t = parseFloat(d.tonelaje) || 0; totalGeneral += t; let cal = d.calidad || 'S/C';
+                if(!calidades[cal]) calidades[cal] = { silos:0, tanques:0, paso:0, total:0, pendientes: [] }; calidades[cal].total += t;
+                let falta = []; if (!d.calidad) falta.push('Calidad'); if (!d.fumigacion_fecha && (d.tipo==='SILO'||d.tipo==='TANQUE'||d.tipo==='ENTRESILO')) falta.push('Fumigación'); if (!d.fecha_primera_carga) falta.push('F. Carga'); if (falta.length > 0) calidades[cal].pendientes.push(`${num} (${falta.join(', ')})`);
+                if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') { totalSilos += t; calidades[cal].silos += t; } else if (d.tipo === 'TANQUE') { totalTanques += t; calidades[cal].tanques += t; } else { totalPaso += t; calidades[cal].paso += t; }
+            }
+        });
+        if(query && !cereal.nombre.toLowerCase().includes(query)) return;
+        if(totalGeneral > 0) cerealesConStock.push({ cereal, totalSilos, totalTanques, totalPaso, totalGeneral, calidades });
+    });
+    if(cerealesConStock.length === 0) { cont.innerHTML = '<p style="text-align:center;">No hay stock registrado para este filtro.</p>'; return; }
+    cerealesConStock.forEach((data) => {
+        let cObj = data.cereal; let isOpen = cintasStockAbiertas[cObj.id]; let htmlDetalle = '';
+        if(isOpen) {
+            htmlDetalle = `<div style="padding:10px; border-top:1px dashed var(--border);"><div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; font-size:0.85rem; background:var(--bg); padding:10px; border-radius:6px;"><div style="flex:1;">Silos/Entresilos: <b>${data.totalSilos}t</b></div><div style="flex:1;">Tanques: <b>${data.totalTanques}t</b></div><div style="flex:1;">Paso/Emerg: <b>${data.totalPaso}t</b></div></div><div class="table-responsive"><table class="data-table" style="margin-top:0;"><thead><tr><th>Calidad</th><th>Unidades (t)</th><th>Tanques (t)</th><th>Paso/Emerg (t)</th><th>Total (t)</th><th>Pendientes</th></tr></thead><tbody>${Object.keys(data.calidades).map(cal => { let c = data.calidades[cal]; let titleText = c.pendientes.join('\n'); let pendHtml = c.pendientes.length > 0 ? `<span style="color:#ef4444; font-weight:bold; cursor:help;" title="${titleText}">⚠️ ${c.pendientes.length} unidades</span>` : '—'; return `<tr><td><b>${cal}</b></td><td>${c.silos} t</td><td>${c.tanques} t</td><td>${c.paso} t</td><td><b>${c.total} t</b></td><td>${pendHtml}</td></tr>`; }).join('')}</tbody></table></div>${Object.keys(data.calidades).some(k => data.calidades[k].pendientes.length > 0) ? `<div style="margin-top:10px; font-size:0.8rem; color:#b91c1c; background:#fef2f2; padding:10px; border-radius:6px; border:1px solid #fecaca;"><b>Detalle de pendientes:</b><br>${Object.keys(data.calidades).map(k => data.calidades[k].pendientes.length > 0 ? `- ${k}: ${data.calidades[k].pendientes.join(' | ')}` : '').filter(f=>f).join('<br>')}</div>` : ''}</div>`;
+        }
+        cont.innerHTML += `<div class="card-panel" style="margin-bottom:10px; padding:0; overflow:hidden; cursor:pointer;" onclick="toggleStockCereal('${cObj.id}')"><div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:var(--bg); border-left:4px solid ${cObj.color};"><div style="font-weight:bold; font-size:1.1rem; color:var(--text);">${cObj.nombre}</div><div style="font-size:1.2rem; font-weight:900; color:${cObj.color};">${data.totalGeneral} t</div></div>${htmlDetalle}</div>`;
+    });
+}
+
+function toggleStockCereal(cerealId) { cintasStockAbiertas[cerealId] = !cintasStockAbiertas[cerealId]; calcularStock(); }
+
+function actualizarOpcionesRelleno() {
+    let cerealId = document.getElementById('sel-cereal-relleno').value; let selCal = document.getElementById('sel-calidad-relleno'); if(!selCal) return;
+    let prevCal = selCal.value; selCal.innerHTML = '<option value="TODAS">Todas</option>';
+    if(cerealId) { let calidades = new Set(); Object.keys(db.silos).forEach(num => { let d = db.silos[num]; if(d.cereal === cerealId && d.calidad) calidades.add(d.calidad); }); calidades.forEach(c => selCal.innerHTML += `<option value="${c}">${c}</option>`); }
+    if(prevCal && prevCal !== 'TODAS' && Array.from(selCal.options).some(o => o.value === prevCal)) selCal.value = prevCal;
+    calcularRellenos();
+}
+
+function calcularRellenos() {
+    let cerealId = document.getElementById('sel-cereal-relleno').value; let calidadFiltro = document.getElementById('sel-calidad-relleno').value;
+    let cont = document.getElementById('rellenos-cintas-container'); let detalleCont = document.getElementById('detalle-relleno-container'); if(!cont || !detalleCont) return;
+    cont.innerHTML = ''; detalleCont.style.display = 'none'; cintaRellenoAbierta = null; if(!cerealId) return;
+    let cereal = db.cereales.find(c => c.id === cerealId); let totalesCinta = { C1: 0, C2: 0, C3: 0, C4: 0 }; let silosPorCinta = { C1: [], C2: [], C3: [], C4: [] };
+    Object.keys(db.silos).forEach(num => {
+        let d = db.silos[num]; if(d.tipo !== 'SILO' && d.tipo !== 'ENTRESILO') return; if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return; if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
+        let espacio = 0; let manual = false; let n = parseInt(num); let tipo = esSiloTipo(n);
+        if(SILOS_MANUALES.includes(n)) { manual = true; espacio = d.relleno_manual || 0; }
+        else { let topeMetros = obtenerTopeMetros(n); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros); let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE); let actual = parseFloat(d.tonelaje) || 0; espacio = capMaxTonTope - actual; }
+        if(espacio > 0 || manual) { let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4')); totalesCinta[cinta] += espacio; silosPorCinta[cinta].push({ num: n, espacio: espacio, manual: manual, fumigacion: d.fumigacion_fecha }); }
+    });
+    ['C1','C2','C3','C4'].forEach(c => {
+        let nombre = c==='C1'?'Extracción 1':(c==='C2'?'Extracción 2':(c==='C3'?'Extracción 3':'Extracción 4')); let total = totalesCinta[c];
+        if(total > 0 || silosPorCinta[c].length > 0) { cont.innerHTML += `<div class="cinta-card" id="card-${c}" onclick="toggleDetalleRelleno('${c}', '${cerealId}', '${calidadFiltro}')"><div><div class="cinta-title">${nombre}</div><div style="font-size:0.75rem; color:var(--text-light);">${silosPorCinta[c].length} unidades disponibles</div></div><div class="cinta-total" style="color:${cereal.color};">${total} t</div></div>`; }
+    });
+    if(cont.innerHTML === '') cont.innerHTML = '<p style="text-align:center;">No hay silos con espacio para este cereal/calidad.</p>';
+}
+
+function toggleDetalleRelleno(cinta, cerealId, calFiltro) {
+    let detalleCont = document.getElementById('detalle-relleno-container'); let titulo = document.getElementById('detalle-relleno-titulo'); let tbody = document.querySelector('#tabla-rellenos tbody'); if(!detalleCont || !titulo || !tbody) return;
+    if(cintaRellenoAbierta === cinta) { detalleCont.style.display = 'none'; document.querySelectorAll('[id^="card-"]').forEach(c => c.classList.remove('active')); cintaRellenoAbierta = null; return; }
+    cintaRellenoAbierta = cinta; document.querySelectorAll('[id^="card-"]').forEach(c => c.classList.remove('active')); document.getElementById(`card-${cinta}`).classList.add('active');
+    let nombreCinta = cinta==='C1'?'Extracción 1':(cinta==='C2'?'Extracción 2':(cinta==='C3'?'Extracción 3':'Extracción 4')); titulo.innerText = `Detalle ${nombreCinta}`; tbody.innerHTML = '';
+    let cereal = db.cereales.find(c => c.id === cerealId); let maxEspacio = 0; let siloMaxId = null; let filas = [];
+    Object.keys(db.silos).forEach(num => {
+        let d = db.silos[num]; if(d.tipo !== 'SILO' && d.tipo !== 'ENTRESILO') return; if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return; if(calFiltro !== 'TODAS' && d.calidad !== calFiltro) return;
+        let n = parseInt(num); let cintaSil = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4')); if(cintaSil !== cinta) return;
+        let espacio = 0; let manual = false; let tipo = esSiloTipo(n);
+        if(SILOS_MANUALES.includes(n)) { manual = true; espacio = d.relleno_manual || 0; }
+        else { let topeMetros = obtenerTopeMetros(n); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros); let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE); let actual = parseFloat(d.tonelaje) || 0; espacio = capMaxTonTope - actual; }
+        if(espacio > 0 || manual) { if(espacio > maxEspacio) { maxEspacio = espacio; siloMaxId = n; } filas.push({ n, espacio, manual, fumigacion: d.fumigacion_fecha, cereal: d.cereal, calidad: d.calidad || 'S/C', fecha_carga: d.fecha_primera_carga ? d.fecha_primera_carga.split('-').reverse().join('/') : '-', origen: d.origen || '-', tonelaje: d.tonelaje }); }
+    });
+    filas.sort((a, b) => b.espacio - a.espacio);
+    filas.forEach(f => {
+        let fumStr = f.fumigacion ? '🧪 Fumigado' : '⚠️ Sin Fumigar';
+        let inputEspacio = f.manual ? `<input type="number" value="${db.silos[f.n].relleno_manual||''}" placeholder="Manual" style="width:70px; padding:6px; font-size:1rem;" inputmode="decimal" onchange="guardarRellenoManual(${f.n}, this.value, '${cinta}')"> t` : `<b style="color:#16a34a; font-size:1.05rem;">~${f.espacio} t</b>`;
+        let highlight = (f.n === siloMaxId && !f.manual) ? 'silo-sugerido' : '';
+        tbody.innerHTML += `<tr class="${highlight}"><td><b>${f.n}</b> ${f.manual?'⚠️':''} ${highlight?'(Sugerido)':''}</td><td>${f.cereal}</td><td>${f.calidad}</td><td>${f.fecha_carga}</td><td>${f.origen}</td><td><b>${f.tonelaje} t</b></td><td style="font-size:0.8rem;">${fumStr}</td><td>${inputEspacio}</td></tr>`;
+    });
+    detalleCont.style.display = 'block';
+}
+
+function guardarRellenoManual(num, valor, cinta) {
+    let d = getSiloData(num); d.relleno_manual = parseFloat(valor) || 0; d.lastUpdate = Date.now(); guardarDB(); calcularRellenos();
+    setTimeout(() => { toggleDetalleRelleno(cinta, document.getElementById('sel-cereal-relleno').value, document.getElementById('sel-calidad-relleno').value); }, 100); 
+}
+
+function calcularMedidaRapida() {
+    let silo = parseInt(document.getElementById('calc-silo').value); let cerealId = document.getElementById('calc-cereal').value; let metros = parseFloat(document.getElementById('calc-metros').value);
+    let msj = document.getElementById('calc-msj'); let res = document.getElementById('calc-resultado'); if(!msj || !res) return;
+    if(!silo || silo < 0 || !cerealId || isNaN(metros) || metros < 0) { res.innerText = '0 t'; msj.innerText = ''; return; }
+    if(SILOS_MANUALES.includes(silo)) { msj.innerText = "⚠️ Silo de capacidad reducida. Cálculo de referencia."; msj.style.color = "#d97706"; } else { msj.innerText = ""; }
+    let cereal = db.cereales.find(c => c.id === cerealId); let tipo = esSiloTipo(silo);
+    let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros); let tons = Math.round(phRef * cereal.ph / PH_BASE); res.innerText = `${tons} t`;
+}
+
+function renderHerramientaCerealesChk() {
+    let cont = document.getElementById('herramienta-chk-cereales'); if(!cont) return; cont.innerHTML = '';
+    db.cereales.forEach(c => { let checked = db.herramienta.cereales.includes(c.id) ? 'checked' : ''; cont.innerHTML += `<label class="chk-cereal" style="padding:4px 8px; font-size:0.8rem;"><input type="checkbox" value="${c.id}" ${checked} onchange="toggleHerramientaCereal('${c.id}')" style="width:16px; height:16px;"><span>${c.nombre}</span></label>`; });
+}
+
+function toggleHerramientaCereal(id) { let idx = db.herramienta.cereales.indexOf(id); if(idx > -1) db.herramienta.cereales.splice(idx, 1); else db.herramienta.cereales.push(id); guardarDB(); renderHerramientaCintas(); }
+
+function renderHerramientaCintas() {
+    let cont = document.getElementById('herramienta-contenedor-cintas'); if(!cont) return; cont.innerHTML = '';
+    if(db.herramienta.cereales.length === 0) { cont.innerHTML = '<p style="text-align:center; color:var(--text-light); margin-top:20px;">Seleccioná al menos un cereal arriba.</p>'; return; }
+    let cintas = { C1: [], C2: [], C3: [], C4: [] }; let tanques = []; let pasos = [];
+    Object.keys(db.silos).forEach(num => {
+        let d = db.silos[num]; if(!db.herramienta.cereales.includes(d.cereal)) return; if(d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA') return;
+        if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') { let n = parseInt(num); let c = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4')); cintas[c].push(num); }
+        else if (d.tipo === 'TANQUE') tanques.push(num); else pasos.push(num);
+    });
+    let genCards = (arr) => {
+        let h = ''; arr.sort((a,b) => String(a).localeCompare(String(b))).forEach(num => {
+            let d = db.silos[num]; let hState = db.herramienta.silos[num] || 'CERRADO'; let cObj = db.cereales.find(cr => cr.id === d.cereal); let bgColor = cObj ? cObj.color : '#64748b'; let alertaIcon = tieneAlerta(num) ? '🚨' : '';
+            let warning = ''; if(hState === 'VACIADO' && d.estado === 'CON_CARGA') warning = '⚠️ Falta actualizar Tablero'; if(hState === 'TAPADO' && d.estado === 'CON_CARGA') warning = '⚠️ Falta tapar en Tablero';
+            let nombreVisual = String(num).replace('CANO', 'CAÑO'); let tipoBadge = d.tipo ? d.tipo.substring(0,3) : 'SIL';
+            h += `<div class="tool-card state-${hState}" onclick="ciclarEstadoHerramienta('${num}')"><div class="tool-header"><span class="tool-num" style="font-size:0.85rem;">${nombreVisual} <span style="font-size:0.6rem; color:var(--text-light);">${tipoBadge}</span></span><span class="tool-state-badge">${hState}</span></div><div class="tool-body"><div style="display:flex; justify-content:space-between;"><span style="font-weight:bold; color:${bgColor};">${d.cereal} ${alertaIcon}</span><span>${d.calidad || '-'}</span></div><div style="font-weight:bold; margin-top:2px;">${d.tonelaje} t</div>${warning ? `<div class="tool-warning">${warning}</div>` : ''}</div></div>`;
+        }); return h;
+    };
+    let html = ''; let hayDatos = false;
+    ['C1', 'C2', 'C3', 'C4'].forEach(c => { if(cintas[c].length > 0) { hayDatos = true; html += `<div class="floor-header" style="border-bottom-color: #3b82f6; color:#3b82f6;">${CINTAS[c].nombre}</div><div class="grid-tarjetas" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:8px; margin-bottom:20px; padding:5px;">${genCards(cintas[c])}</div>`; } });
+    if(tanques.length > 0) { hayDatos = true; html += `<div class="floor-header" style="border-bottom-color: #f97316; color:#f97316;">Tanques</div><div class="grid-tarjetas" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:8px; margin-bottom:20px; padding:5px;">${genCards(tanques)}</div>`; }
+    if(pasos.length > 0) { hayDatos = true; html += `<div class="floor-header" style="border-bottom-color: #8b5cf6; color:#8b5cf6;">Caños / Tolvas / Balanzas / CER</div><div class="grid-tarjetas" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:8px; margin-bottom:20px; padding:5px;">${genCards(pasos)}</div>`; }
+    if(!hayDatos) html = '<p style="text-align:center; color:var(--text-light); margin-top:20px;">No hay unidades con carga de los cereales seleccionados.</p>';
+    cont.innerHTML = html;
+}
+
+function ciclarEstadoHerramienta(num) {
+    let current = db.herramienta.silos[num] || 'CERRADO'; let states = ['CERRADO', 'ABIERTO', 'VACIADO', 'TAPADO']; let nextIdx = (states.indexOf(current) + 1) % states.length;
+    db.herramienta.silos[num] = states[nextIdx]; guardarDB(); renderHerramientaCintas();
+}
+
+function limpiarAnotador() { showConfirm("Reiniciar Anotador", "Todas las unidades volverán a 'CERRADO'. ¿Continuar?", (ok) => { if(!ok) return; db.herramienta.silos = {}; guardarDB(); renderHerramientaCintas(); }); }
+
+function cerrarJornada() {
+    showConfirm("Guardar Cierre", "Se guardará una foto del estado actual en el historial. ¿Continuar?", (ok) => {
+        if(!ok) return; let fechaHoy = getFechaLocal(); let snapshot = JSON.parse(JSON.stringify(db.silos));
+        db.cierres = db.cierres.filter(c => c.fecha !== fechaHoy); db.cierres.unshift({ fecha: fechaHoy, data: snapshot }); if(db.cierres.length > 10) db.cierres = db.cierres.slice(0, 10);
+        guardarDB(); dibujarCierres(); showToast("✅ Cierre guardado exitosamente.", "success");
+    });
+}
+
+function dibujarCierres() {
+    let cont = document.getElementById('lista-cierres'); if(!cont) return;
+    if(!db.cierres || db.cierres.length === 0) { cont.innerHTML = '<p style="font-size:0.85rem; color:var(--text-light);">No hay cierres guardados.</p>'; return; }
+    cont.innerHTML = db.cierres.map((c, idx) => `<div class="cierre-historial-item"><span>📅 ${c.fecha.split('-').reverse().join('/')}</span><button onclick="imprimirCierreHistorial(${idx})" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem;">Ver PDF</button></div>`).join('');
+}
+
+function imprimirCierreHistorial(idx) { let cierre = db.cierres[idx]; if(!cierre) return; generarReporteHTML(cierre.data, `Cierre del ${cierre.fecha.split('-').reverse().join('/')}`); }
+function imprimirCierreActual() { generarReporteHTML(db.silos, `Estado Actual - ${getFechaLocal().split('-').reverse().join('/')}`); }
+
+function generarReporteHTML(silosData, titulo) {
+    let printArea = document.getElementById('print-area'); let totalGeneral = 0;
+    let html = `<div style="font-family: sans-serif; padding: 20px; color: black; background: white;"><h1 style="text-align:center; margin-bottom:5px;">Reporte Ejecutivo - Unidad 7</h1><h2 style="text-align:center; color:#555; margin-top:0;">${titulo}</h2><hr style="border: 1px solid #000; margin-bottom: 20px;">`;
+    html += `<h3 style="border-bottom: 2px solid #000; padding-bottom:5px; margin-bottom:10px;">Stock por Cereal</h3><table style="width:100%; border-collapse:collapse; font-size:14px; margin-bottom: 30px;"><thead><tr style="background:#eee;"><th style="border:1px solid #000; padding:8px; text-align:left;">Cereal</th><th style="border:1px solid #000; padding:8px; text-align:right;">Silos/Entresilos (t)</th><th style="border:1px solid #000; padding:8px; text-align:right;">Tanques (t)</th><th style="border:1px solid #000; padding:8px; text-align:right;">Paso/Emerg (t)</th><th style="border:1px solid #000; padding:8px; text-align:right;">TOTAL (t)</th></tr></thead><tbody>`;
+    db.cereales.forEach(cereal => {
+        let totalSilos = 0, totalTanques = 0, totalPaso = 0, totalCereal = 0;
+        Object.keys(silosData).forEach(num => { let d = silosData[num]; if(d.cereal === cereal.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) { let t = parseFloat(d.tonelaje) || 0; totalCereal += t; if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') totalSilos += t; else if (d.tipo === 'TANQUE') totalTanques += t; else totalPaso += t; } });
+        if(totalCereal > 0) { totalGeneral += totalCereal; html += `<tr><td style="border:1px solid #000; padding:8px;"><b>${cereal.nombre}</b></td><td style="border:1px solid #000; padding:8px; text-align:right;">${totalSilos > 0 ? totalSilos + ' t' : '-'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${totalTanques > 0 ? totalTanques + ' t' : '-'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${totalPaso > 0 ? totalPaso + ' t' : '-'}</td><td style="border:1px solid #000; padding:8px; text-align:right;"><b>${totalCereal} t</b></td></tr>`; }
+    });
+    html += `</tbody></table>`;
+    let vacios = 0, tapados = 0, fueraServicio = 0;
+    Object.keys(silosData).forEach(num => { let d = silosData[num]; if(d.estado === 'VACIO') vacios++; else if(d.estado === 'TAPADA') tapados++; else if(d.estado === 'FUERA_SERVICIO') fueraServicio++; });
+    html += `<h3 style="border-bottom: 2px solid #000; padding-bottom:5px; margin-bottom:10px;">Resumen de Estado de Unidades</h3><table style="width:60%; border-collapse:collapse; font-size:14px; margin-bottom: 30px;"><tr><td style="border:1px solid #000; padding:8px;">Unidades Vacías</td><td style="border:1px solid #000; padding:8px; text-align:center;"><b>${vacios}</b></td></tr><tr><td style="border:1px solid #000; padding:8px;">Unidades Tapadas</td><td style="border:1px solid #000; padding:8px; text-align:center;"><b>${tapados}</b></td></tr><tr><td style="border:1px solid #000; padding:8px;">Unidades Fuera de Servicio</td><td style="border:1px solid #000; padding:8px; text-align:center;"><b>${fueraServicio}</b></td></tr></table>`;
+    html += `<h2 style="text-align:right; margin-top:20px;">TOTAL GENERAL ALMACENADO: ${totalGeneral} t</h2></div>`;
+    printArea.innerHTML = html; printArea.classList.remove('no-print'); window.print(); printArea.classList.add('no-print');
+}
+
+function archivarHistorial() {
+    showConfirm("Archivar Historial", "Se eliminarán los movimientos de más de 6 meses para liberar memoria.\n\nAsegurate de descargar un backup antes.\n¿Continuar?", (ok) => {
+        if(!ok) return; let limite = new Date(); limite.setMonth(limite.getMonth() - 6); let archivados = 0;
+        Object.keys(db.silos).forEach(num => { let d = db.silos[num]; let histNuevo = []; d.historial.forEach(h => { let fDate = parseFechaLocal(h.fecha); if(fDate < limite) archivados++; else histNuevo.push(h); }); d.historial = histNuevo; });
+        guardarDB(); showToast(`Se archivaron ${archivados} movimientos antiguos.`, "success");
+    });
+}
+
+function exportarExcel() {
+    let tableHtml = `<table border="1"><thead><tr style="background:#eee;"><th>Unidad</th><th>Tipo</th><th>Estado</th><th>Cereal</th><th>Calidad</th><th>Tonelaje</th><th>F. Carga</th><th>Fumigacion</th><th>Tipo Fumigacion</th><th>Origen</th></tr></thead><tbody>`;
+    Object.keys(db.silos).sort((a,b) => String(a).localeCompare(String(b))).forEach(num => {
+        let d = db.silos[num]; if(d.estado === 'VACIO') return; let cObj = db.cereales.find(c => c.id === d.cereal); let cName = cObj ? cObj.nombre : d.cereal; let numVisual = String(num).replace('CANO', 'CAÑO');
+        tableHtml += `<tr><td>${numVisual}</td><td>${d.tipo || 'SILO'}</td><td>${d.estado}</td><td>${cName}</td><td>${d.calidad || '-'}</td><td>${d.tonelaje || 0}</td><td>${d.fecha_primera_carga || '-'}</td><td>${d.fumigacion_fecha || '-'}</td><td>${d.fumigacion_tipo || '-'}</td><td>${d.origen || '-'}</td></tr>`;
+    });
+    tableHtml += `</tbody></table>`;
+    let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Stock Silos</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>${tableHtml}</body></html>`;
+    let blob = new Blob([html], {type: 'application/vnd.ms-excel'}); let url = URL.createObjectURL(blob); let link = document.createElement("a"); link.href = url; link.download = `stock_silos_${getFechaLocal()}.xls`; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+}
+
+function cerrarModal(id) { let el = document.getElementById(id); if(el) el.classList.remove('active'); }
+
+function actualizarSelects() {
+    let opt = '<option value="">-- Seleccionar --</option>'; let optTodos = '<option value="TODOS">Todos los Cereales</option>';
+    db.cereales.forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
+    let elTablero = document.getElementById('filtro-tablero'); let elStock = document.getElementById('sel-cereal-stock'); let elRelleno = document.getElementById('sel-cereal-relleno'); let elCalc = document.getElementById('calc-cereal');
+    let prevTablero = elTablero ? elTablero.value : ''; let prevRelleno = elRelleno ? elRelleno.value : ''; let prevCalc = elCalc ? elCalc.value : '';
+    if(elTablero) elTablero.innerHTML = optTodos; if(elStock) elStock.innerHTML = opt; if(elRelleno) elRelleno.innerHTML = opt; if(elCalc) elCalc.innerHTML = opt;
+    if(prevTablero && elTablero) elTablero.value = prevTablero; if(prevRelleno && elRelleno) elRelleno.value = prevRelleno; if(prevCalc && elCalc) elCalc.value = prevCalc;
+    document.querySelectorAll('.m-cereal').forEach(sel => { let currentVal = sel.value; sel.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join(''); if(currentVal) sel.value = currentVal; });
+}
+
+function toggleSiloBot() {
+    let modal = document.getElementById('silobot-modal'); if(!modal) return;
+    if (modal.classList.contains('active')) { modal.classList.remove('active'); showBotButton(); }
+    else { modal.classList.add('active'); setTimeout(() => { let inp = document.getElementById('chat-input'); if(inp) inp.focus(); }, 100); }
+}
+function hideBotButton() { document.getElementById('btn-silobot').classList.add('hidden'); }
+function showBotButton() { document.getElementById('btn-silobot').classList.remove('hidden'); }
+function handleChatEnter(e) { if(e.key === 'Enter') sendChatMsg(); }
+function sendChatMsg() { let input = document.getElementById('chat-input'); if(!input) return; let text = input.value.trim(); if(!text) return; input.value = ''; addChatMessage(text, 'user'); setTimeout(() => processBotQuery(text), 300); }
+function sendChip(text) { addChatMessage(text, 'user'); setTimeout(() => processBotQuery(text), 300); }
+function addChatMessage(text, sender) { let body = document.getElementById('chat-body'); if(!body) return; let div = document.createElement('div'); div.className = `chat-msg ${sender}`; div.innerHTML = text; body.appendChild(div); body.scrollTop = body.scrollHeight; }
+
+function handleGlobalSearch(val) {
+    if(!val || val.length < 2) { if(document.getElementById('tablero').classList.contains('active')) { document.getElementById('filtro-tablero').value = 'TODOS'; dibujarTablero(); } return; }
+    let q = val.toLowerCase().trim(); let cerealEncontrado = db.cereales.find(c => c.nombre.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
+    let matchSilo = q.match(/^\d{3}$/);
+    if(matchSilo) { let num = parseInt(matchSilo[0]); if(esUnidadValida(num) || db.silos[num]) { verHistorial(num); document.getElementById('global-search').value = ''; return; } }
+    if(cerealEncontrado) { cambiarTab('tablero', document.querySelectorAll('.nav-btn')[0]); document.getElementById('filtro-tablero').value = cerealEncontrado.id; dibujarTablero(); }
+    else { cambiarTab('tablero', document.querySelectorAll('.nav-btn')[0]); let contenedor = document.getElementById('contenedor-tablero'); if(contenedor) { let tarjetas = contenedor.querySelectorAll('.tarjeta'); tarjetas.forEach(t => { if(t.innerText.toLowerCase().includes(q)) { t.style.border = "3px solid #38bdf8"; t.style.transform = "scale(1.1)"; } else { t.style.border = ""; t.style.transform = "scale(1)"; } }); } }
+}
+
+function findCereal(text) {
+    text = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    let exact = db.cereales.find(c => text.includes(c.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || text.includes(c.id.toLowerCase()));
+    if (exact) return exact;
+    let bestMatch = null; let minDistance = 3;
+    db.cereales.forEach(c => {
+        let cName = c.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (text.length >= 3 && cName.startsWith(text.substring(0,3))) { bestMatch = c; minDistance = 0; }
+        else { let words = text.split(' '); words.forEach(w => { let dist = levenshtein(w, cName); if (dist < minDistance && w.length >= 3) { minDistance = dist; bestMatch = c; } }); }
+    });
+    return bestMatch;
+}
+
+function levenshtein(a, b) {
+    if(a.length === 0) return b.length; if(b.length === 0) return a.length; let matrix = [];
+    for(let i = 0; i <= b.length; i++){ matrix[i] = [i]; } for(let j = 0; j <= a.length; j++){ matrix[0][j] = j; }
+    for(let i = 1; i <= b.length; i++){ for(let j = 1; j <= a.length; j++){ if(b.charAt(i-1) == a.charAt(j-1)){ matrix[i][j] = matrix[i-1][j-1]; } else { matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1)); } } }
+    return matrix[b.length][a.length];
+}
+
+async function processBotQuery(query) {
+    try {
+        let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        q = q.replace(/\b(batea|bateas|chupador|chupadores|pulmon|pulmones|plataforma 9|plataforma 10)\b/g, "tolva").replace(/\b(tanqe|tanque|tanque|tanqes)\b/g, "tanque").replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas").replace(/\b(silo|silos)\b/g, "silo");
+
+        let matchAnotar = q.match(/(?:anota|anotar|prepara|preparar|carga|cargar)\s+(\d+)\s*(?:t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)\s+en\s+(?:el\s+)?(?:silo\s+)?([a-z0-9\-]+)/i);
+        if (matchAnotar) {
+            let tons = matchAnotar[1]; let cerealName = matchAnotar[2].trim(); let siloId = matchAnotar[3].trim().toUpperCase(); let cerealObj = findCereal(cerealName);
+            if (cerealObj) {
+                let filas = document.querySelectorAll('#lista-movimientos .row-inputs'); let targetRow = null;
+                for (let row of filas) { let inp = row.querySelector('.m-silo'); if (inp && inp.value === '') { targetRow = row; break; } }
+                if (!targetRow) { agregarFilaMovimiento(); filas = document.querySelectorAll('#lista-movimientos .row-inputs'); targetRow = filas[filas.length - 1]; }
+                targetRow.querySelector('.m-tipo-accion').value = 'INGRESO'; cambiarTipoAccion(targetRow.querySelector('.m-tipo-accion'));
+                targetRow.querySelector('.m-silo').value = siloId; autocompletarSilo(targetRow.querySelector('.m-silo'));
+                let inputTons = targetRow.querySelector('.m-tons'); if(inputTons) { inputTons.value = tons; } else { inputTons = targetRow.querySelector('.m-tons-manual'); if(inputTons) inputTons.value = tons; }
+                let inputCereal = targetRow.querySelector('.m-cereal'); if(inputCereal) inputCereal.value = cerealObj.id;
+                targetRow.querySelector('.m-fecha').value = getFechaLocal();
+                cambiarTab('movimientos', document.querySelectorAll('.nav-btn')[1]); showToast("✅ Movimiento preparado. Revisalo y guardá.", "success");
+                addChatMessage(`✅ Listo. Dejé preparado el ingreso de <b>${tons}t de ${cerealObj.nombre}</b> en el silo <b>${siloId}</b>.<br>Andá a la pestaña <b>Movs</b> para revisarlo y tocá "Guardar Todos".`, 'bot'); return;
+            } else { addChatMessage("No reconocí el cereal. ¿Podés repetirlo?", 'bot'); return; }
+        }
+
+        let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
+        if (matchDondePongo) {
+            let tonsReq = parseFloat(matchDondePongo[2]); let cerealQ = matchDondePongo[4].trim(); let cerealTarget = findCereal(cerealQ); let calidadBuscada = null;
+            let matchCalidad = q.match(/\b(g1|g2|g3|m61|s\/c|conforme|fuera de base)\b/i); if (matchCalidad) { calidadBuscada = matchCalidad[1].toUpperCase(); }
+            if (cerealTarget) {
+                let opciones = [];
+                Object.keys(db.silos).forEach(num => { let d = db.silos[num]; if(d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) { if (calidadBuscada && d.calidad !== calidadBuscada) return; let esp = getEspacioDisp(num); if(esp >= tonsReq) opciones.push({ num, esp, cal: d.calidad, alerta: tieneAlerta(num) }); } });
+                if(opciones.length > 0) {
+                    opciones.sort((a,b) => a.alerta - b.alerta || a.esp - b.esp); let mejor = opciones[0]; let msg = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealTarget.nombre}${calidadBuscada ? ' '+calidadBuscada : ''}:</b><br>`;
+                    msg += `Silo <b>${mejor.num}</b> (${mejor.cal}) tiene <b>${mejor.esp}t</b>. ${mejor.alerta ? '⚠️ OJO: Tiene alerta.' : '✅ Sin alertas.'}<br><br>`;
+                    if(opciones.length > 1) { msg += `<b>Otras opciones:</b><br>`; opciones.slice(1, 4).forEach(o => { msg += `- Silo ${o.num} (${o.cal}): ${o.esp}t ${o.alerta?'⚠️':''}<br>`; }); }
+                    addChatMessage(msg, 'bot');
+                } else { addChatMessage(`❌ No hay silos de ${cerealTarget.nombre}${calidadBuscada ? ' '+calidadBuscada : ''} con espacio para ${tonsReq}t de una sola vez.`, 'bot'); }
+                return;
+            }
+        }
+
+        let matchSimularVacio = q.match(/que pasa si vacio el (silo )?(\d+)/i);
+        if (matchSimularVacio) {
+            let num = matchSimularVacio[2]; let d = getSiloData(num);
+            if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
+                let cereal = db.cereales.find(c => c.id === d.cereal); let totalCerealGlobal = 0;
+                Object.keys(db.silos).forEach(k => { if (db.silos[k].cereal === d.cereal && (db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA')) { totalCerealGlobal += (parseFloat(db.silos[k].tonelaje) || 0); } });
+                let nuevoTotal = totalCerealGlobal - d.tonelaje;
+                addChatMessage(`🧪 <b>Simulación:</b> Si vacías el silo ${num}...<br><br>• El stock de ${cereal ? cereal.nombre : d.cereal} bajaría de <b>${totalCerealGlobal}t</b> a <b>${nuevoTotal}t</b>.<br>• Liberarías <b>${d.tonelaje}t</b> de mercadería.<br>• El silo pasaría a estar VACÍO y listo para nueva carga.`, 'bot');
+            } else { addChatMessage(`El silo ${num} ya está vacío.`, 'bot'); }
+            return;
+        }
+
+        let fechaInicio = new Date(); let fechaFin = new Date(); let tituloFecha = "Hoy";
+        if (q.includes('esta semana')) { fechaInicio.setDate(fechaInicio.getDate() - fechaInicio.getDay()); tituloFecha = "Esta Semana"; }
+        else if (q.includes('mes pasado')) { fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1); fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0); tituloFecha = "Mes Pasado"; }
+        else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) { fechaInicio.setDate(1); tituloFecha = "Este Mes"; }
+        else if (q.includes('ayer')) { fechaInicio.setDate(fechaInicio.getDate() - 1); fechaFin.setDate(fechaFin.getDate() - 1); tituloFecha = "Ayer"; }
+        else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias')) { fechaInicio.setDate(fechaInicio.getDate() - 30); tituloFecha = "Últimos 30 días"; }
+        let fIniStr = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
+        let fFinStr = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
+        if (procesarLogistica(q, fIniStr, fFinStr, tituloFecha)) return;
+
+        if (q.includes('estandar') || q.includes('norma') || q.includes('calidad')) {
+            let cerealMatch = findCereal(q);
+            if (cerealMatch) { let est = ESTANDARES_CALIDAD[cerealMatch.id]; if (est) { addChatMessage(`📜 <b>${est.nombre}</b><br><br>${est.detalle}`, 'bot'); } else { addChatMessage(`No tengo el estándar detallado para ${cerealMatch.nombre} en este momento.`, 'bot'); } }
+            else { addChatMessage("📜 <b>Estándares de Calidad (Res. 1075/94 y mod.)</b><br><br>Decime de qué cereal querés saber: <i>estándar de maíz</i>, <i>norma de trigo</i>, <i>calidad de soja</i>, <i>estándar de girasol</i>, <i>norma de sorgo</i>, <i>arveja</i>, <i>garbanzo</i>, <i>pellets</i>.", 'bot'); }
+            return;
+        }
+
+        if (q.includes('que significa g1') || q.includes('que significa g2') || q.includes('que significa g3') || q.includes('conforme') || q.includes('fuera de base')) {
+            addChatMessage("📜 <b>Sistemas de Calidad:</b><br><br>• <b>Grados (G1, G2, G3):</b> Usado en Maíz, Trigo, Sorgo, Arveja. G1 bonifica, G2 es base, G3 rebaja.<br>• <b>Conforme / Fuera de Base:</b> Usado en Soja, Girasol, Garbanzo, Lenteja, Poroto, Pellets. Si la mercadería está dentro de las tolerancias de recibo, es <b>Conforme</b>. Si las excede, es <b>Fuera de Base</b> (con rebajas).<br><br>Preguntame por el 'estándar de [cereal]' para ver los detalles técnicos.", 'bot');
+            return;
+        }
+
+        if (q.includes('clima') || q.includes('tiempo') || q.includes('pronostico')) {
+            if (!navigator.onLine) { addChatMessage("🌐 Para ver el clima necesito conexión a internet. ¡Pero podés seguir usando el resto de la app sin problemas!", 'bot'); return; }
+            let locationMatch = q.match(/en\s+([a-z\s]+)/i); let loc = locationMatch ? locationMatch[1].trim() : ''; addChatMessage("Consultando el clima...", 'bot');
+            try {
+                let url = loc ? `https://wttr.in/${encodeURIComponent(loc)}?format=j1` : `https://wttr.in/?format=j1`; let res = await fetch(url); let data = await res.json();
+                let current = data.current_condition[0]; let area = data.nearest_area[0].areaName[0].value; let temp = current.temp_C; let desc = current.lang_es ? current.lang_es[0].value : current.weatherDesc[0].value;
+                let forecastHtml = '';
+                for(let i=1; i<=3; i++) { if(data.weather && data.weather[i]) { let day = data.weather[i]; let date = day.date; let max = day.maxtempC; let min = day.mintempC; let descD = day.hourly[4].lang_es ? day.hourly[4].lang_es[0].value : day.hourly[4].weatherDesc[0].value; forecastHtml += `<br>📅 ${date}: ${descD}. Max ${max}°C / Min ${min}°C`; } }
+                addChatMessage(`☀️ <b>Clima en ${area}</b><br>Actual: ${desc}, ${temp}°C<br><br><b>Próximos días:</b>${forecastHtml}`, 'bot');
+            } catch(e) { addChatMessage("No pude obtener el clima en este momento. Revisá tu conexión.", 'bot'); }
+            return;
+        }
+
+        if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal')) {
+            let alertasCount = 0; Object.keys(db.silos).forEach(k => { if(tieneAlerta(k)) alertasCount++; });
+            let totalStock = 0; Object.keys(db.silos).forEach(k => { if(db.silos[k].estado === 'CON_CARGA' || db.silos[k].estado === 'TAPADA') totalStock += (parseFloat(db.silos[k].tonelaje) || 0); });
+            addChatMessage(`👋 ¡Buen día! Aquí tienes el resumen de la planta:<br><br>📦 Stock Total: <b>${totalStock}t</b><br>🚨 Alertas Críticas: <b>${alertasCount}</b><br><br>¿En qué te puedo ayudar hoy?`, 'bot'); return;
+        }
+
+        if (q.includes('alerta') || q.includes('problema') || q.includes('alerta activa')) {
+            let arr = []; Object.keys(db.silos).forEach(num => { if(tieneAlerta(num)) arr.push(num); });
+            let response = arr.length > 0 ? `🚨 <b>Alertas Activas (${arr.length}):</b><br>` + arr.join(', ') : "✅ No hay alertas.";
+            addChatMessage(response, 'bot'); return;
+        }
+
+        if (q === 'ayuda' || q === '?') {
+            if (botContext.justAskedHelp) { addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando.", 'bot'); }
+            else {
+                addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Estándar de maíz</i><br>- <i>Estándar de garbanzo</i><br>- <i>Norma de pellets</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
+                botContext.justAskedHelp = true; setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
+            }
+            return;
+        }
+
+        if (q === 'cereales' || q === 'stock') {
+            addChatMessage("🌾 <b>Módulo de Cereales</b><br>Puedo darte el stock total, los espacios de relleno, o buscar un silo específico. Ejemplos:<br>- <i>Maíz</i><br>- <i>Relleno de Soja G2</i><br>- <i>Donde pongo 30t de Trigo</i><br>- <i>Maíz por línea</i>", 'bot'); return;
+        }
+
+        let cerealEncontrado = findCereal(q);
+        if (!cerealEncontrado && (q.includes('espacio') || q.includes('stock') || q.includes('cuanto hay') || q.includes('tanque')) && botContext.lastCereal) { cerealEncontrado = db.cereales.find(c => c.id === botContext.lastCereal); }
+        if (cerealEncontrado) botContext.lastCereal = cerealEncontrado.id;
+
+        let matchRange = q.match(/(?:del|desde el?)?\s*\b(\d{3})\s*(?:al|a|-)\s*(\d{3})\b/i);
+        if (matchRange) {
+            let start = parseInt(matchRange[1]); let end = parseInt(matchRange[2]);
+            if (cerealEncontrado) {
+                let total = 0; let detalles = [];
+                for(let i=start; i<=end; i++) { let d = getSiloData(i); if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) { total += (parseFloat(d.tonelaje) || 0); detalles.push(`Silo ${i}: ${d.tonelaje}t (${d.calidad})`); } }
+                addChatMessage(`📊 <b>${cerealEncontrado.nombre} entre ${start} y ${end}:</b><br>Total: <b>${total}t</b><br><br>${detalles.length > 0 ? detalles.join('<br>') : 'No hay carga en ese rango.'}`, 'bot'); return;
+            }
+        }
+
+        if (q.includes('por linea') || q.includes('por fila') || q.includes('por cinta')) {
+            if (cerealEncontrado) {
+                let lineas = { '100':0, '200':0, '300':0, '400':0, '500':0, '600':0, '700':0 };
+                Object.keys(db.silos).forEach(num => { let d = db.silos[num]; if(d.cereal === cerealEncontrado.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) { let n = parseInt(num); let centena = Math.floor(n / 100) * 100; if(lineas[centena] !== undefined) lineas[centena] += (parseFloat(d.tonelaje) || 0); } });
+                let resp = `📊 <b>${cerealEncontrado.nombre} por Línea:</b><br><br>`; for(let l in lineas) { if(lineas[l] > 0) resp += `Línea ${l}s: <b>${lineas[l]}t</b><br>`; }
+                addChatMessage(resp, 'bot'); return;
+            }
+        }
+
+        if (q === 'tanques' || q === 'tanque') {
+            let total = 0; TANQUES_FINALES.forEach(t => { let d = getSiloData(t.id); if(d.estado === 'CON_CARGA' || d.estado === 'TAPADA') total += (parseFloat(d.tonelaje) || 0); });
+            addChatMessage(`🛢️ Hay un total de <b>${total}t</b> almacenadas en los Tanques.<br><br>Para ver el detalle exacto, podés preguntarme por un tanque específico (ej: <i>Tanque CTM</i>).`, 'bot'); return;
+        }
+
+        if (cerealEncontrado) {
+            let cId = cerealEncontrado.id; let stocks = { total: 0, calidades: {}, silos: 0, tanques: 0, paso: 0 }; let totEspacio = 0; let alertas = 0;
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if(d.cereal === cId && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                    let tons = parseFloat(d.tonelaje) || 0; stocks.total += tons; let cal = d.calidad || 'S/C'; if(!stocks.calidades[cal]) stocks.calidades[cal] = 0; stocks.calidades[cal] += tons;
+                    if(d.tipo === 'SILO' || d.tipo === 'ENTRESILO') { stocks.silos += tons; totEspacio += getEspacioDisp(num); } else if(d.tipo === 'TANQUE') stocks.tanques += tons; else stocks.paso += tons;
+                    if(tieneAlerta(num)) alertas++;
+                }
+            });
+            let msg = `🌾 <b>Resumen de ${cerealEncontrado.nombre}:</b><br><br>📦 <b>Stock Total:</b> ${stocks.total}t<br>  - Silos: ${stocks.silos}t<br>  - Tanques: ${stocks.tanques}t<br>  - Paso: ${stocks.paso}t<br><br>`;
+            for(let cal in stocks.calidades) msg += `Calidad <b>${cal}</b>: ${stocks.calidades[cal]}t<br>`;
+            msg += `<br>⛽ <b>Espacio Disp. (Silos):</b> ~${totEspacio}t<br><br>🚨 <b>Alertas:</b> ${alertas > 0 ? alertas + ' unidades' : 'Ninguna'}`;
+            addChatMessage(msg, 'bot'); return;
+        }
+
+        addChatMessage("🤔 No entendí. Escribí <b>'Ayuda'</b> o tocá los botones abajo.", 'bot');
+    } catch (e) { console.error("Error en Bot:", e); addChatMessage("Ups, tuve un pequeño problema procesando eso. Error: " + e.message, 'bot'); }
+}
+
+function procesarLogistica(q, fIniStr, fFinStr, tituloFecha) {
+    let palabrasLog = ['camion', 'vagon', 'transile', 'transferencia', 'embarque', 'recarga', 'limpieza'];
+    let esLogistica = palabrasLog.some(p => q.includes(p)) || q.includes('logistica') || q.includes('historial');
+    let esSiloQuery = q.match(/\b(10[1-9]|11[0-8]|20[1-9]|21[0-7]|30[1-9]|31[0-8]|40[1-9]|41[0-7]|50[1-9]|51[0-8]|60[1-9]|61[0-7]|70[1-9]|71[0-8])\b/);
+    let esTanqueQuery = TANQUES_CONFIG.find(t => q.toUpperCase().includes(t.id));
+    if (!esLogistica || esSiloQuery || esTanqueQuery) return false;
+    let resIngresos = {}; let resEgresos = {}; let detalles = [];
+    TODOS_LOS_SILOS.forEach(num => {
+        let d = db.silos[num]; if(!d || !d.historial) return;
+        d.historial.forEach(h => {
+            if(h.fecha >= fIniStr && h.fecha <= fFinStr) {
+                let esIngreso = h.tipo === 'INGRESO'; let esEgreso = h.tipo === 'EGRESO'; let palabraEncontrada = palabrasLog.find(p => q.includes(p));
+                if (palabraEncontrada || q.includes('todo') || q.includes('historial')) {
+                    let coincide = true; if (palabraEncontrada) { coincide = h.detalle.toLowerCase().includes(palabraEncontrada); if (palabraEncontrada === 'transferencia' && h.detalle.toLowerCase().includes('transferencia')) coincide = true; }
+                    if (coincide) { let key = palabraEncontrada ? palabraEncontrada.toUpperCase() : 'MOVIMIENTOS'; if (esIngreso) { if(!resIngresos[key]) resIngresos[key] = 0; resIngresos[key] += (h.tons || 0); } else if (esEgreso) { if(!resEgresos[key]) resEgresos[key] = 0; resEgresos[key] += (h.tons || 0); } if (detalles.length < 10) detalles.push(`Silo ${num} (${h.fecha.split('-').reverse().join('/')}): ${esIngreso?'Ingresó':'Egresó'} ${h.tons}t`); }
+                }
+            }
+        });
+    });
+    let response = `<b>🚚 Logística (${tituloFecha}):</b><br><br>`; let hayDatos = false;
+    if(Object.keys(resIngresos).length > 0) { hayDatos = true; response += `<b>📥 Ingresos Totales:</b><br>`; for(let k in resIngresos) response += `- ${k}: ${resIngresos[k]}t<br>`; response += `<br>`; }
+    if(Object.keys(resEgresos).length > 0) { hayDatos = true; response += `<b>📤 Egresos Totales:</b><br>`; for(let k in resEgresos) response += `- ${k}: ${resEgresos[k]}t<br>`; response += `<br>`; }
+    if(!hayDatos) { response += `No se registraron movimientos en este período.`; } else if (detalles.length > 0) { response += `<b>Últimos Movimientos:</b><br>`; detalles.slice(0, 5).forEach(det => { response += `- ${det}<br>`; }); if (detalles.length > 5) response += `...y más.<br>`; }
+    addChatMessage(response, 'bot'); return true;
+}
+
+window.onload = function() {
+    if(sessionStorage.getItem('loggedIn') === 'true'){
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+        init();
+    }
+};

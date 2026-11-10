@@ -1147,7 +1147,7 @@ function procesarLogistica(q, fIniStr, fFinStr, tituloFecha) {
 window.onload = function() {
     if(sessionStorage.getItem('loggedIn') === 'true'){
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-content').style.display = 'block';
+        document.getElementById('app-content').style.display = 'flex';
         init();
     }
 };

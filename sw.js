@@ -1,4 +1,4 @@
-const CACHE_NAME = 'silos-u7-v62'; 
+const CACHE_NAME = 'silos-u7-v65'; 
 const urlsToCache = [ './', './index.html', './manifest.json' ];
 
 self.addEventListener('install', event => {

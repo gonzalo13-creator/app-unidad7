@@ -606,9 +606,9 @@
                         
                         <div style="border-top:1px dashed var(--border); padding-top:15px;">
                             <h4 style="margin:0 0 10px 0; font-size:0.9rem;">Agregar Nuevo Cereal</h4>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                <input type="text" id="new-cereal-name" placeholder="Nombre (Ej: Girasol)" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:4px;">
-                                <input type="number" step="0.1" id="new-cereal-ph" placeholder="PH Base (Ej: 42)" style="width:100px; padding:8px; border:1px solid var(--border); border-radius:4px;">
+                            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items: center;">
+                                <select id="new-cereal-select" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text);"></select>
+                                <input type="number" step="0.1" id="new-cereal-ph" placeholder="PH Base" style="width:100px; padding:8px; border:1px solid var(--border); border-radius:4px;">
                                 <input type="color" id="new-cereal-color" value="#64748b" style="width:50px; padding:2px; border:1px solid var(--border); border-radius:4px; height: 36px;">
                                 <button onclick="crearCereal()" style="background:#3b82f6; color:white; border:none; border-radius:4px; padding:8px 15px; cursor:pointer; font-weight:bold;">Agregar</button>
                             </div>
@@ -726,6 +726,7 @@
         let historialSiloActivo = null;
         let botContext = { lastCereal: null, lastSilo: null, lastUnit: null, justAskedHelp: false };
 
+        // Diccionario completo para el bot (no para la base operativa)
         const ESTANDARES_CALIDAD = {
             'MAIZ': { nombre: 'MAÍZ (Norma XII)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 75 kg/hl. Dañados < 3%. Quebrados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 3%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 69 kg/hl. Dañados < 8%. Quebrados < 5%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
             'TRIGO': { nombre: 'TRIGO PAN (Norma XX)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 79 kg/hl. Dañados < 1.5%. Mat. extrañas < 0.5%.<br>• <b>Grado 2:</b> P.H. > 76 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 3:</b> P.H. > 73 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
@@ -794,9 +795,14 @@
                 else { db = JSON.parse(saved); }
             } catch(e) { db = { __version: DB_VERSION, cereales: [], silos: {}, herramienta: { cereales: [], silos: {} }, cierres: [] }; }
 
+            // INICIALIZACIÓN CORRECTA: Solo los 5 cereales base
             if (!db.cereales || db.cereales.length === 0) {
                 db.cereales = [
-                    {id:'MAIZ', nombre:'MAÍZ', ph:76, color:'#f97316'}, {id:'SORGO', nombre:'SORGO', ph:72, color:'#3b82f6'}, {id:'SOJA', nombre:'SOJA', ph:71, color:'#eab308'}, {id:'TRIGO', nombre:'TRIGO', ph:78, color:'#16a34a'}, {id:'GIRASOL', nombre:'GIRASOL', ph:42, color:'#64748b'}, {id:'CEBADA', nombre:'CEBADA', ph:66, color:'#b45309'}, {id:'ARVEJA', nombre:'ARVEJA', ph:78, color:'#84cc16'}, {id:'GARBANZO', nombre:'GARBANZO', ph:75, color:'#eab308'}, {id:'LENTEJA', nombre:'LENTEJA', ph:75, color:'#f43f5e'}, {id:'POROTO', nombre:'POROTO', ph:75, color:'#8b5cf6'}, {id:'PELLETS', nombre:'PELLETS', ph:60, color:'#a16207'}, {id:'AVENA', nombre:'AVENA', ph:50, color:'#94a3b8'}, {id:'CENTENO', nombre:'CENTENO', ph:70, color:'#475569'}, {id:'COLZA', nombre:'COLZA', ph:65, color:'#fbbf24'}, {id:'LINO', nombre:'LINO', ph:65, color:'#d97706'}, {id:'MANI', nombre:'MANÍ', ph:50, color:'#b45309'}, {id:'MIJO', nombre:'MIJO', ph:75, color:'#ca8a04'}, {id:'ALPISTE', nombre:'ALPISTE', ph:70, color:'#65a30d'}, {id:'CARTAMO', nombre:'CÁRTAMO', ph:60, color:'#ea580c'}, {id:'MEZCLA', nombre:'MEZCLA', ph:75, color:'#ec4899'}
+                    {id:'MAIZ', nombre:'MAÍZ', ph:76, color:'#f97316'},
+                    {id:'SORGO', nombre:'SORGO', ph:72, color:'#3b82f6'},
+                    {id:'SOJA', nombre:'SOJA', ph:71, color:'#eab308'},
+                    {id:'TRIGO', nombre:'TRIGO', ph:78, color:'#16a34a'},
+                    {id:'MEZCLA', nombre:'MEZCLA', ph:75, color:'#ec4899'}
                 ];
             }
             if (!db.silos) db.silos = {};
@@ -827,7 +833,7 @@
             actualizarSelects(); dibujarTablero(); dibujarTanques(); dibujarCierres();
             document.getElementById('lista-movimientos').innerHTML = ''; agregarFilaMovimiento();
             renderHerramientaCerealesChk(); actualizarExistencias(); updateOnlineStatus();
-            renderAdminCereales(); // <--- Nueva función
+            renderAdminCereales(); 
         }
 
         function updateOnlineStatus() {
@@ -850,7 +856,7 @@
             if(id === 'rellenos') { actualizarOpcionesRelleno(); }
             if(id === 'tablero') { dibujarTablero(); }
             if(id === 'herramienta') renderHerramientaCintas();
-            if(id === 'admin') renderAdminCereales(); // <--- Actualizar lista al entrar a admin
+            if(id === 'admin') renderAdminCereales();
         }
 
         function cambiarSubTab(id, btn) { document.querySelectorAll('#rellenos > div[id^="sub-"]').forEach(d => d.style.display = 'none'); document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).style.display = 'block'; btn.classList.add('active'); }
@@ -902,6 +908,15 @@
 
         function limpiarFila(btn) { let row = btn.closest('.row-inputs'); row.remove(); agregarFilaMovimiento(); }
 
+        function obtenerCerealesEnStock() {
+            let idsEnStock = new Set();
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if (d.cereal && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) idsEnStock.add(d.cereal);
+            });
+            return db.cereales.filter(c => idsEnStock.has(c.id)).sort((a,b) => a.nombre.localeCompare(b.nombre));
+        }
+
         function cambiarTipoUnidad(select) {
             let row = select.closest('.row-inputs'); let tipo = select.value; let inputSilo = row.querySelector('.m-silo'); let selSilo = row.querySelector('.m-silo-select');
             if (tipo === 'SILO') { inputSilo.style.display = 'block'; selSilo.style.display = 'none'; inputSilo.value = ''; inputSilo.classList.remove('ignore'); }
@@ -919,7 +934,7 @@
             let inputSilo = row.querySelector('.m-silo'); if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); };
             let esSilo = (tipoUnidad === 'SILO'); let esFumigable = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE');
             
-            // Toma los cereales directamente de la base de datos (los que están configurados en Admin)
+            // Solo muestra los cereales que el usuario tiene activos en Admin
             let cerealesSelect = db.cereales.sort((a,b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
             if(tipoAccion === 'INGRESO') {
@@ -1399,7 +1414,7 @@
 
         function renderHerramientaCerealesChk() {
             let cont = document.getElementById('herramienta-chk-cereales'); if(!cont) return; cont.innerHTML = '';
-            let cerealesStock = db.cereales; // Mostrar todos los configurados
+            let cerealesStock = db.cereales; 
             if (cerealesStock.length === 0) {
                 cont.innerHTML = '<p style="font-size:0.85rem; color:var(--text-light);">No hay cereales configurados.</p>';
                 return;
@@ -1906,11 +1921,21 @@
                             <label style="font-size:0.8rem; margin-right:5px;">PH:</label>
                             <input type="number" step="0.1" id="ph-input-${c.id}" value="${c.ph}" style="width: 70px; padding: 4px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text);">
                             <button onclick="guardarPH('${c.id}')" style="background:#10b981; color:white; border:none; border-radius:4px; padding:4px 10px; cursor:pointer; font-size:0.75rem;">Guardar</button>
+                            <button onclick="eliminarCereal('${c.id}')" style="background:#ef4444; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:0.75rem;" title="Eliminar">X</button>
                         </div>
                     </div>
                 `;
             });
             cont.innerHTML = html;
+
+            // Poblar el select de agregar cereal con los que NO están en db.cereales
+            let select = document.getElementById('new-cereal-select');
+            if(select) {
+                let disponibles = Object.keys(ESTANDARES_CALIDAD).filter(id => !db.cereales.find(c => c.id === id));
+                select.innerHTML = disponibles.length > 0 
+                    ? disponibles.map(id => `<option value="${id}">${ESTANDARES_CALIDAD[id].nombre}</option>`).join('')
+                    : '<option value="">No hay más cereales para agregar</option>';
+            }
         }
 
         function guardarPH(id) {
@@ -1931,21 +1956,37 @@
             });
         }
 
+        function eliminarCereal(id) {
+            let cereal = db.cereales.find(c => c.id === id);
+            if(!cereal) return;
+            showConfirm("Eliminar Cereal", "¿Estás seguro de eliminar " + cereal.nombre + " de la lista de cereales operativos?\n\nLos silos que ya tengan este cereal cargado NO se borrarán, pero no podrás cargar nuevos movimientos con él.", (ok) => {
+                if(ok) {
+                    db.cereales = db.cereales.filter(c => c.id !== id);
+                    guardarDB();
+                    showToast("Cereal eliminado.", "success");
+                    renderAdminCereales();
+                    actualizarSelects();
+                }
+            });
+        }
+
         function crearCereal() {
-            let nombre = document.getElementById('new-cereal-name').value.trim();
+            let select = document.getElementById('new-cereal-select');
+            if(!select || !select.value) { showToast("Seleccioná un cereal válido.", "error"); return; }
+            
+            let id = select.value;
             let ph = parseFloat(document.getElementById('new-cereal-ph').value);
             let color = document.getElementById('new-cereal-color').value;
             
-            if(!nombre || isNaN(ph) || ph <= 0) { showToast("Completá todos los campos correctamente.", "error"); return; }
+            if(isNaN(ph) || ph <= 0) { showToast("Ingresá un PH válido.", "error"); return; }
             
-            let id = nombre.toUpperCase().replace(/\s+/g, '_');
-            if(db.cereales.find(c => c.id === id)) { showToast("Ese cereal ya existe.", "error"); return; }
+            let est = ESTANDARES_CALIDAD[id];
+            if(!est) { showToast("Error: Cereal no reconocido por el bot.", "error"); return; }
             
-            db.cereales.push({ id: id, nombre: nombre.toUpperCase(), ph: ph, color: color });
+            db.cereales.push({ id: id, nombre: est.nombre.split('(')[0].trim(), ph: ph, color: color });
             guardarDB();
             showToast("Cereal agregado correctamente.", "success");
             
-            document.getElementById('new-cereal-name').value = '';
             document.getElementById('new-cereal-ph').value = '';
             
             renderAdminCereales();

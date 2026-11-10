@@ -642,11 +642,11 @@
         // --- CONTROL DE LA PANTALLA MÓVIL ---
         function checkMobileView() {
             if (window.innerWidth <= 768) {
-                document.getElementById('mobile-dashboard').classList.add('active');
                 document.getElementById('btn-mobile-menu').style.display = 'block';
+                // NO abrimos el dashboard aquí para evitar que el teclado lo dispare
             } else {
-                document.getElementById('mobile-dashboard').classList.remove('active');
                 document.getElementById('btn-mobile-menu').style.display = 'none';
+                document.getElementById('mobile-dashboard').classList.remove('active');
             }
         }
         window.addEventListener('resize', checkMobileView);
@@ -778,6 +778,10 @@
         function showUpdateToast() { const toast = showToast("🚀 Nueva versión disponible. Tocá aquí para actualizar.", "update", 15000); toast.onclick = () => { toast.innerHTML = "Actualizando..."; if (navigator.serviceWorker.controller) navigator.serviceWorker.postMessage({ action: 'skipWaiting' }); }; }
 
         function init() {
+            // Abrimos el dashboard solo al iniciar si estamos en móvil
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobile-dashboard').classList.add('active');
+            }
             checkMobileView();
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             try {

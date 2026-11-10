@@ -653,8 +653,8 @@
             return false;
         };
 
-        const DB_VERSION = 39;
-        const DB_KEY = 'unidad7_db_v39';
+        const DB_VERSION = 40;
+        const DB_KEY = 'unidad7_db_v40';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -782,6 +782,76 @@
                 nombre: 'SORGO GRANÍFERO (Norma XVIII - Mod. 2025)',
                 sistema: 'grados',
                 detalle: '• <b>Grado 1:</b> P.H. > 74 kg/hl. Dañados < 3%. Quebrados < 1%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 2%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 70 kg/hl. Dañados < 8%. Quebrados < 3%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>'
+            },
+            'ARVEJA': {
+                nombre: 'ARVEJA (Norma XXVII)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 78 kg/hl. Dañados < 1.5%. Mat. extrañas < 0.5%.<br>• <b>Grado 2:</b> P.H. > 75 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 3:</b> P.H. > 72 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br><br><i>Base: Humedad 14%, Grado 2.</i>'
+            },
+            'GARBANZO': {
+                nombre: 'GARBANZO (Norma XXX - Res. 48/2025)',
+                sistema: 'base',
+                detalle: '• <b>Garbanzo Natural (XXX-A):</b> Materias extrañas máx. 2.0%. Defectos y daños leves máx. 7.0%. Defectos y daños intensos máx. 3.0%. Granos quebrados máx. 4.0%.<br>• <b>Garbanzo Seleccionado (XXX-B):</b> Calibres de 7, 8, 9 y 10 mm.<br><br><i>Base: Humedad 14%.</i>'
+            },
+            'LENTEJA': {
+                nombre: 'LENTEJA (Norma XXIX)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Granos quebrados 2.0%.<br><br><i>Base: Humedad 14%.</i>'
+            },
+            'POROTO': {
+                nombre: 'POROTO (Norma XVI)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Humedad 15% máx. Libres de insectos vivos. Porotos contrastantes máx. 2%. Porotos de otras clases máx. 5%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.'
+            },
+            'PELLETS': {
+                nombre: 'PELLETS DE AFRECHILLO (Norma XV)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Humedad 14% máx. Desmenuzado 6% máx. Cenizas 10% máx. Almidón 28% (s/ sustancia tal cual). Aglutinantes 1.5% máx.<br>• <b>Ventas según muestra:</b> Los pellets que excedan tolerancias o presenten olores objetables se someten a arbitraje.'
+            },
+            'CEBADA': {
+                nombre: 'CEBADA (Norma VI)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 64 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 62 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 60 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>'
+            },
+            'AVENA': {
+                nombre: 'AVENA (Norma III)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 52 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 50 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 48 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>'
+            },
+            'CENTENO': {
+                nombre: 'CENTENO (Norma VII)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 71 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 69 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 67 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>'
+            },
+            'COLZA': {
+                nombre: 'COLZA (Norma VIII)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.'
+            },
+            'LINO': {
+                nombre: 'LINO (Norma X)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.'
+            },
+            'MANI': {
+                nombre: 'MANÍ (Norma XIII)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 50 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 48 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 46 kg/hl. Dañados < 8%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 9%, Grado 2.</i>'
+            },
+            'MIJO': {
+                nombre: 'MIJO (Norma XIV)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 72 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 70 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 68 kg/hl. Dañados < 8%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>'
+            },
+            'ALPISTE': {
+                nombre: 'ALPISTE (Norma I)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 68 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 66 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 64 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>'
+            },
+            'CARTAMO': {
+                nombre: 'CÁRTAMO (Norma IV)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Materias extrañas 2.0%, Granos dañados 5.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.'
             }
         };
 
@@ -871,7 +941,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v38') || localStorage.getItem('unidad7_db_v37');
+                    let old = localStorage.getItem('unidad7_db_v39') || localStorage.getItem('unidad7_db_v38');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -3475,13 +3545,13 @@
                             addChatMessage(`No tengo el estándar detallado para ${cerealMatch.nombre} en este momento.`, 'bot');
                         }
                     } else {
-                        addChatMessage("📜 <b>Estándares de Calidad (Res. 1075/94 y mod.)</b><br><br>Decime de qué cereal querés saber: <i>estándar de maíz</i>, <i>norma de trigo</i>, <i>calidad de soja</i>, <i>estándar de girasol</i>, <i>norma de sorgo</i>.", 'bot');
+                        addChatMessage("📜 <b>Estándares de Calidad (Res. 1075/94 y mod.)</b><br><br>Decime de qué cereal querés saber: <i>estándar de maíz</i>, <i>norma de trigo</i>, <i>calidad de soja</i>, <i>estándar de girasol</i>, <i>norma de sorgo</i>, <i>arveja</i>, <i>garbanzo</i>, <i>pellets</i>.", 'bot');
                     }
                     return;
                 }
 
                 if (q.includes('que significa g1') || q.includes('que significa g2') || q.includes('que significa g3') || q.includes('conforme') || q.includes('fuera de base')) {
-                    addChatMessage("📜 <b>Sistemas de Calidad:</b><br><br>• <b>Grados (G1, G2, G3):</b> Usado en Maíz, Trigo y Sorgo. G1 bonifica, G2 es base, G3 rebaja.<br>• <b>Conforme / Fuera de Base:</b> Usado en Soja y Girasol. Si la mercadería está dentro de las tolerancias de recibo, es <b>Conforme</b>. Si las excede, es <b>Fuera de Base</b> (con rebajas).<br><br>Preguntame por el 'estándar de [cereal]' para ver los detalles técnicos.", 'bot');
+                    addChatMessage("📜 <b>Sistemas de Calidad:</b><br><br>• <b>Grados (G1, G2, G3):</b> Usado en Maíz, Trigo, Sorgo, Arveja. G1 bonifica, G2 es base, G3 rebaja.<br>• <b>Conforme / Fuera de Base:</b> Usado en Soja, Girasol, Garbanzo, Lenteja, Poroto, Pellets. Si la mercadería está dentro de las tolerancias de recibo, es <b>Conforme</b>. Si las excede, es <b>Fuera de Base</b> (con rebajas).<br><br>Preguntame por el 'estándar de [cereal]' para ver los detalles técnicos.", 'bot');
                     return;
                 }
 
@@ -3548,7 +3618,7 @@
                     if (botContext.justAskedHelp) {
                         addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando.", 'bot');
                     } else {
-                        addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Estándar de maíz</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
+                        addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Estándar de maíz</i><br>- <i>Estándar de garbanzo</i><br>- <i>Norma de pellets</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
                         botContext.justAskedHelp = true;
                         setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
                     }

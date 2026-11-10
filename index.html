@@ -391,17 +391,17 @@
                     <button onclick="toggleSiloBot()" type="button">×</button>
                 </div>
                 <div class="chat-body" id="chat-body">
-                    <div class="chat-msg bot">¡Hola! Soy tu Gerente de Planta IA. Puedo analizar cintas, simular stock, recomendarte rellenos, avisarte de alertas o guiarte por la app. Escribí <b>Ayuda</b>.</div>
+                    <div class="chat-msg bot">¡Hola! Soy tu Gerente de Planta IA. Puedo analizar cintas, simular stock y PH, recomendarte rellenos, avisarte de alertas o guiarte por la app. Escribí <b>Ayuda</b>.</div>
                 </div>
                 <div class="chat-chips">
                     <button class="chip" onclick="sendChip('Tutoriales')" type="button">📚 Tutoriales</button>
                     <button class="chip" onclick="sendChip('Balance de maíz')" type="button">⚖️ Balance Maíz</button>
+                    <button class="chip" onclick="sendChip('Simular maíz ph 70')" type="button">🧪 Simular PH</button>
                     <button class="chip" onclick="sendChip('Relleno de maíz G2')" type="button">🎯 Relleno G2</button>
-                    <button class="chip" onclick="sendChip('Simular 30t de maíz')" type="button">🧪 Simular</button>
                     <button class="chip" onclick="sendChip('Ponele alerta al 305 por humedad')" type="button">🚨 Poner Alerta</button>
                 </div>
                 <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="Ej: Balance de soja..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
+                    <input type="text" id="chat-input" placeholder="Ej: Simular maíz ph 70..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
                     <button onclick="sendChatMsg()" type="button">➤</button>
                 </div>
             </div>
@@ -1617,6 +1617,46 @@
                     addChatMessage("📚 <b>Tutoriales Disponibles</b><br>Decime cuál querés ver:<br>- <i>Tutorial de PH</i><br>- <i>Tutorial de Movimientos</i><br>- <i>Tutorial de Stock</i><br>- <i>Tutorial de Tanques</i><br>- <i>Tutorial de Anotador</i><br>- <i>Tutorial de Admin</i>", 'bot'); return;
                 }
 
+                // SIMULACIÓN DE PH
+                let matchSimularPH = q.match(/(?:simular|simula|que pasa si)\s+([a-z0-9\s]+?)\s+(?:con\s+)?ph\s+(\d+)/i);
+                if (matchSimularPH) {
+                    let cerealName = matchSimularPH[1].trim();
+                    let nuevoPH = parseFloat(matchSimularPH[2]);
+                    let cerealTarget = findCereal(cerealName);
+
+                    if (cerealTarget && !isNaN(nuevoPH)) {
+                        let phBase = cerealTarget.ph;
+                        let totalActual = 0;
+                        let totalSimulado = 0;
+
+                        Object.keys(db.silos).forEach(num => {
+                            let d = db.silos[num];
+                            if (d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                                let tonsActual = parseFloat(d.tonelaje) || 0;
+                                totalActual += tonsActual;
+                                let tonsSimulado = tonsActual * (nuevoPH / phBase);
+                                totalSimulado += tonsSimulado;
+                            }
+                        });
+
+                        if (totalActual > 0) {
+                            let diferencia = totalSimulado - totalActual;
+                            let msg = `🧪 <b>Simulación de PH para ${cerealTarget.nombre}:</b><br><br>`;
+                            msg += `• <b>PH Base Actual:</b> ${phBase} kg/hl<br>`;
+                            msg += `• <b>PH Simulado:</b> ${nuevoPH} kg/hl<br><br>`;
+                            msg += `📦 <b>Stock Actual:</b> ${totalActual.toFixed(0)}t<br>`;
+                            msg += `📦 <b>Stock Simulado:</b> ${totalSimulado.toFixed(0)}t<br>`;
+                            msg += `📉 <b>Diferencia:</b> ${diferencia > 0 ? '+' : ''}${diferencia.toFixed(0)}t<br><br>`;
+                            msg += `<i>* Esta es una estimación teórica basada en la variación del peso hectolítrico. El stock real cambia a medida que se carga/descarga mercadería.</i>`;
+                            addChatMessage(msg, 'bot');
+                            return;
+                        } else {
+                            addChatMessage(`No hay stock actual de ${cerealTarget.nombre} para simular.`, 'bot');
+                            return;
+                        }
+                    }
+                }
+
                 // ANALISIS DE CINTAS CON FILTRO DE CEREAL Y CALIDAD
                 if (q.includes('analizar cintas') || q.includes('balance') || q.includes('desbalanceado') || q.includes('cintas')) {
                     let cerealMatch = findCereal(q);
@@ -1627,7 +1667,6 @@
                     
                     let msg = `⚖️ <b>Análisis de Cintas para ${nombreCereal}</b><br><br>`;
                     
-                    // Imprimir totales por cinta
                     ['C1', 'C2', 'C3', 'C4'].forEach(c => {
                         msg += `• ${c}: <b>${cintas[c].total}t</b><br>`;
                     });
@@ -1713,7 +1752,7 @@
                                 if (d.calidad !== calidadTarget) return;
                                 let esp = getEspacioDisp(num);
                                 if (esp > 0) {
-                                    let cinta = num >= 600 ? 'C1' : (num >= 500 || (num>=400 && num%2===0) ? 'C2' : (num >= 300 || (num>=400 && num%2!==0) ? 'C3' : 'C4'));
+                                    let cinta = num >= 600 ? 'C1' : (num >= 500 || (num>=400 && num%2===0) ? 'C2' : (num >= 300 || (num>=400 && n%2!==0) ? 'C3' : 'C4'));
                                     opciones.push({ num, esp, cinta });
                                 }
                             }
@@ -1731,36 +1770,6 @@
                             addChatMessage(msg, 'bot');
                         } else {
                             addChatMessage(`❌ No hay silos de ${cerealTarget.nombre} ${calidadTarget} con espacio para rellenar.`, 'bot');
-                        }
-                        return;
-                    }
-                }
-
-                // SIMULACIÓN
-                let matchSimular = q.match(/(?:simula|simular|que pasa si ingreso|si ingreso)\s+(\d+)\s*(?:t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
-                if (matchSimular) {
-                    let tonsReq = parseFloat(matchSimular[1]); let cerealName = matchSimular[2].trim(); let cerealTarget = findCereal(cerealName);
-                    if (cerealTarget) {
-                        let opciones = [];
-                        Object.keys(db.silos).forEach(num => {
-                            let d = db.silos[num];
-                            if (d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                                let esp = getEspacioDisp(num);
-                                if (esp >= tonsReq) opciones.push({ num, esp, cal: d.calidad });
-                            }
-                        });
-
-                        let totalActual = 0;
-                        Object.keys(db.silos).forEach(num => { let d = db.silos[num]; if(d.cereal === cerealTarget.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) totalActual += (parseFloat(d.tonelaje) || 0); });
-                        let nuevoTotal = totalActual + tonsReq;
-
-                        if (opciones.length > 0) {
-                            opciones.sort((a,b) => a.esp - b.esp);
-                            let mejor = opciones[0];
-                            let msg = `🧪 <b>Simulación de Ingreso:</b><br>Si ingresás <b>${tonsReq}t de ${cerealTarget.nombre}</b>:<br><br>• El stock total pasaría de <b>${totalActual}t</b> a <b>${nuevoTotal}t</b>.<br>• Te recomiendo el <b>Silo ${mejor.num}</b> (${mejor.cal}) que tiene <b>${mejor.esp}t</b> libres.<br>• Ocuparías <b>${tonsReq}t</b> y te quedarían <b>${mejor.esp - tonsReq}t</b> en ese silo.<br><br><i>* El cálculo se hizo usando el PH base del ${cerealTarget.nombre} (${cerealTarget.ph} kg/hl).</i>`;
-                            addChatMessage(msg, 'bot');
-                        } else {
-                            addChatMessage(`❌ No hay un solo silo de ${cerealTarget.nombre} con espacio para ${tonsReq}t.<br>El stock total pasaría a ${nuevoTotal}t.`, 'bot');
                         }
                         return;
                     }

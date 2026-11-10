@@ -395,13 +395,13 @@
                 </div>
                 <div class="chat-chips">
                     <button class="chip" onclick="sendChip('Tutoriales')" type="button">📚 Tutoriales</button>
-                    <button class="chip" onclick="sendChip('Analizar cintas')" type="button">⚖️ Balance Cintas</button>
+                    <button class="chip" onclick="sendChip('Balance de maíz')" type="button">⚖️ Balance Maíz</button>
                     <button class="chip" onclick="sendChip('Relleno de maíz G2')" type="button">🎯 Relleno G2</button>
                     <button class="chip" onclick="sendChip('Simular 30t de maíz')" type="button">🧪 Simular</button>
                     <button class="chip" onclick="sendChip('Ponele alerta al 305 por humedad')" type="button">🚨 Poner Alerta</button>
                 </div>
                 <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="Ej: Balance de cintas..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
+                    <input type="text" id="chat-input" placeholder="Ej: Balance de soja..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
                     <button onclick="sendChatMsg()" type="button">➤</button>
                 </div>
             </div>
@@ -1553,25 +1553,38 @@
             return matrix[b.length][a.length];
         }
 
-        function analizarCintas() {
-            let cintas = { C1: { total: 0, cereales: {}, calidades: {} }, C2: { total: 0, cereales: {}, calidades: {} }, C3: { total: 0, cereales: {}, calidades: {} }, C4: { total: 0, cereales: {}, calidades: {} } };
+        function analizarCintas(cerealId = null) {
+            let cintas = {
+                C1: { total: 0, calidades: {} },
+                C2: { total: 0, calidades: {} },
+                C3: { total: 0, calidades: {} },
+                C4: { total: 0, calidades: {} }
+            };
+            let totalGeneral = 0;
+            let calidadesGlobales = {};
+
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num];
-                if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') {
-                    if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
-                        let n = parseInt(num);
-                        let c = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
-                        let tons = parseFloat(d.tonelaje) || 0;
-                        let cal = d.calidad || 'S/C';
-                        cintas[c].total += tons;
-                        if(!cintas[c].cereales[d.cereal]) cintas[c].cereales[d.cereal] = 0;
-                        cintas[c].cereales[d.cereal] += tons;
-                        if(!cintas[c].calidades[cal]) cintas[c].calidades[cal] = 0;
-                        cintas[c].calidades[cal] += tons;
-                    }
+                if ((d.tipo === 'SILO' || d.tipo === 'ENTRESILO') &&
+                    (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                    
+                    if (cerealId && d.cereal !== cerealId) return;
+
+                    let n = parseInt(num);
+                    let c = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
+                    let tons = parseFloat(d.tonelaje) || 0;
+                    let cal = d.calidad || 'S/C';
+
+                    cintas[c].total += tons;
+                    if(!cintas[c].calidades[cal]) cintas[c].calidades[cal] = 0;
+                    cintas[c].calidades[cal] += tons;
+
+                    totalGeneral += tons;
+                    if(!calidadesGlobales[cal]) calidadesGlobales[cal] = 0;
+                    calidadesGlobales[cal] += tons;
                 }
             });
-            return cintas;
+            return { cintas, totalGeneral, calidadesGlobales };
         }
 
         async function processBotQuery(query) {
@@ -1604,27 +1617,67 @@
                     addChatMessage("📚 <b>Tutoriales Disponibles</b><br>Decime cuál querés ver:<br>- <i>Tutorial de PH</i><br>- <i>Tutorial de Movimientos</i><br>- <i>Tutorial de Stock</i><br>- <i>Tutorial de Tanques</i><br>- <i>Tutorial de Anotador</i><br>- <i>Tutorial de Admin</i>", 'bot'); return;
                 }
 
-                // ANALISIS DE CINTAS
+                // ANALISIS DE CINTAS CON FILTRO DE CEREAL Y CALIDAD
                 if (q.includes('analizar cintas') || q.includes('balance') || q.includes('desbalanceado') || q.includes('cintas')) {
-                    let cintas = analizarCintas();
-                    let totalC1 = cintas.C1.total, totalC2 = cintas.C2.total, totalC3 = cintas.C3.total, totalC4 = cintas.C4.total;
-                    let promedio = (totalC1 + totalC2 + totalC3 + totalC4) / 4;
+                    let cerealMatch = findCereal(q);
+                    let cerealId = cerealMatch ? cerealMatch.id : null;
+                    let nombreCereal = cerealMatch ? cerealMatch.nombre : 'TODOS LOS CEREALES';
                     
-                    let msg = `⚖️ <b>Análisis de Cintas (Silos y Entresilos)</b><br><br>`;
-                    msg += `• C1: <b>${totalC1}t</b><br>• C2: <b>${totalC2}t</b><br>• C3: <b>${totalC3}t</b><br>• C4: <b>${totalC4}t</b><br><br>`;
-                    msg += `📊 <b>Promedio:</b> ${promedio.toFixed(0)}t<br><br>`;
+                    let { cintas, totalGeneral, calidadesGlobales } = analizarCintas(cerealId);
                     
-                    let desbalances = [];
-                    if (Math.abs(totalC1 - promedio) > promedio * 0.2) desbalances.push(`C1 está muy alta/baja (${totalC1}t)`);
-                    if (Math.abs(totalC2 - promedio) > promedio * 0.2) desbalances.push(`C2 está muy alta/baja (${totalC2}t)`);
-                    if (Math.abs(totalC3 - promedio) > promedio * 0.2) desbalances.push(`C3 está muy alta/baja (${totalC3}t)`);
-                    if (Math.abs(totalC4 - promedio) > promedio * 0.2) desbalances.push(`C4 está muy alta/baja (${totalC4}t)`);
+                    let msg = `⚖️ <b>Análisis de Cintas para ${nombreCereal}</b><br><br>`;
                     
-                    if (desbalances.length > 0) {
-                        msg += `⚠️ <b>ALERTA DE BALANCE:</b><br>${desbalances.join('<br>')}`;
+                    // Imprimir totales por cinta
+                    ['C1', 'C2', 'C3', 'C4'].forEach(c => {
+                        msg += `• ${c}: <b>${cintas[c].total}t</b><br>`;
+                    });
+                    msg += `<br>📊 <b>Total General (${nombreCereal}):</b> ${totalGeneral}t<br><br>`;
+
+                    if (totalGeneral > 0) {
+                        // Balance de Tonelaje
+                        let promTon = totalGeneral / 4;
+                        let descTon = [];
+                        ['C1', 'C2', 'C3', 'C4'].forEach(c => {
+                            if (Math.abs(cintas[c].total - promTon) > promTon * 0.2) { // 20% de desvío
+                                descTon.push(`${c} está desbalanceada en tonelaje (${cintas[c].total}t vs prom ${promTon.toFixed(0)}t)`);
+                            }
+                        });
+
+                        if (descTon.length > 0) msg += `⚠️ <b>Alerta de Tonelaje:</b><br>- ${descTon.join('<br>- ')}<br><br>`;
+                        else msg += `✅ Tonelaje balanceado entre cintas.<br><br>`;
+
+                        // Distribución de Calidades
+                        msg += `🏷️ <b>Distribución de Calidades por Cinta:</b><br>`;
+                        ['C1', 'C2', 'C3', 'C4'].forEach(c => {
+                            if (cintas[c].total > 0) {
+                                msg += `<br><b>${c}:</b><br>`;
+                                for (let cal in cintas[c].calidades) {
+                                    let pct = ((cintas[c].calidades[cal] / cintas[c].total) * 100).toFixed(1);
+                                    msg += `  - ${cal}: ${cintas[c].calidades[cal]}t (${pct}%)<br>`;
+                                }
+                            }
+                        });
+
+                        // Análisis de Calidad Desbalanceada
+                        let descCal = [];
+                        Object.keys(calidadesGlobales).forEach(cal => {
+                            let pctGlobal = (calidadesGlobales[cal] / totalGeneral) * 100;
+                            ['C1', 'C2', 'C3', 'C4'].forEach(c => {
+                                if (cintas[c].total > 0) {
+                                    let pctCinta = (cintas[c].calidades[cal] || 0) / cintas[c].total * 100;
+                                    if (Math.abs(pctCinta - pctGlobal) > 15) { // 15% de desvío
+                                        descCal.push(`${c} tiene ${pctCinta.toFixed(0)}% de ${cal} (Promedio: ${pctGlobal.toFixed(0)}%)`);
+                                    }
+                                }
+                            });
+                        });
+
+                        if (descCal.length > 0) msg += `<br>⚠️ <b>Alerta de Calidad:</b><br>- ${descCal.slice(0, 4).join('<br>- ')}${descCal.length > 4 ? '<br>...y más.' : ''}`;
+                        else msg += `<br>✅ Calidades distribuidas uniformemente.`;
                     } else {
-                        msg += `✅ Las cintas están balanceadas en tonelaje.`;
+                        msg += `No hay mercadería de este cereal en las cintas.`;
                     }
+
                     addChatMessage(msg, 'bot'); return;
                 }
 

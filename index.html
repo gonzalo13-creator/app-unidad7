@@ -72,6 +72,7 @@
         .silo-tag { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; border: 1px solid var(--border); text-align: center; min-width: 50px; transition: transform 0.1s; }
         .silo-tag:active { transform: scale(0.95); }
 
+        /* SILOBOT ICON */
         #btn-silobot { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #fbbf24; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; border: 3px solid #f59e0b; transition: transform 0.2s; padding: 0;}
         #btn-silobot svg { width: 35px; height: 35px; fill: white; }
         #btn-silobot:active { transform: scale(0.9); }
@@ -99,10 +100,10 @@
         .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 20px; outline: none; font-size: 16px !important;}
         .chat-input-area button { background: #f59e0b; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;}
 
-        /* FORMULARIO DE MOVIMIENTOS MEJORADO VISUALMENTE */
+        /* FORMULARIO DE MOVIMIENTOS MEJORADO (FLEXBOX) */
         .row-inputs { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
+            display: flex; 
+            flex-wrap: wrap; 
             gap: 15px; 
             margin-bottom: 15px; 
             background: var(--card); 
@@ -111,22 +112,19 @@
             border: 1px solid var(--border); 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             position: relative;
+            align-items: flex-start;
         }
-        .row-inputs .form-group { min-width: 0; }
-        .row-inputs .form-group.full { grid-column: 1 / -1; }
+        .row-inputs .form-group { flex: 1 1 150px; min-width: 120px; }
+        .row-inputs .form-group.full { flex: 1 1 100%; }
         .row-inputs label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 4px; display: block;}
         .row-inputs input, .row-inputs select { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); transition: border 0.2s; height: 48px;}
         .row-inputs input:focus, .row-inputs select:focus { border-color: var(--primary); outline: none; }
         
-        .row-inputs .header-actions { display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
+        .row-inputs .header-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
         .row-inputs .btn-del { background: #fee2e2; color: #ef4444; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s;}
         .row-inputs .btn-del:hover { background: #fca5a5; }
         .row-inputs .btn-dup { background: #e0f2fe; color: #0284c7; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; transition: background 0.2s; margin-right: 5px;}
         .row-inputs .btn-dup:hover { background: #bae6fd; }
-
-        @media (max-width: 900px) {
-            .row-inputs { grid-template-columns: repeat(2, 1fr); }
-        }
 
         @media (max-width: 768px) {
             .global-header { padding: 10px; }
@@ -148,7 +146,8 @@
             .buscador { padding: 6px; font-size: 0.8rem !important; }
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
-            .row-inputs { grid-template-columns: 1fr; padding: 15px; gap: 10px; }
+            .row-inputs { padding: 15px; gap: 10px; flex-direction: column; }
+            .row-inputs .form-group { min-width: 100%; flex-basis: 100%; }
             
             .action-buttons { position: fixed; bottom: 65px; left: 0; width: 100%; background: var(--bg); padding: 10px 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 999; display: flex; flex-direction: column; gap: 8px;}
             .action-buttons .btn-save { margin-top: 0; padding: 14px; font-size: 1rem;}
@@ -349,9 +348,9 @@
         </div>
     </div>
 
-    <!-- ICONO SILOBOT (SILO SVG) -->
+    <!-- ICONO SILOBOT (SILO REAL) -->
     <button id="btn-silobot" onclick="toggleSiloBot()" type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.5,2C11.85,2 14.6,4.53 14.96,7.78L22,12V14L20,12.8V22H18V11.6L15,9.8V22H13V9H4V22H2V8.5A6.5,6.5 0 0,1 8.5,2M8.5,4C6.54,4 4.87,5.25 4.26,7H12.74C12.13,5.25 10.46,4 8.5,4M6,11H11V13H6V11M6,15H11V17H6V15M6,19H11V21H6V19Z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,2C8.13,2 5,5.13 5,9V22H19V9C19,5.13 15.87,2 12,2M12,4C14.76,4 17,6.24 17,9H7C7,6.24 9.24,4 12,4M7,11H17V13H7V11M7,15H17V17H7V15M7,19H17V21H7V19Z" /></svg>
     </button>
 
     <div id="silobot-modal">
@@ -369,7 +368,7 @@
                 <button class="chip" onclick="sendChip('Dónde pongo 30t de Maíz G2')" type="button">🎯 Dónde pongo</button>
                 <button class="chip" onclick="sendChip('Camiones de esta semana')" type="button">🚚 Camiones</button>
                 <button class="chip" onclick="sendChip('Clima')" type="button">☀️ Clima</button>
-                <button class="chip" onclick="sendChip('Estándar de maíz')" type="button">📜 Estándares</button>
+                <button class="chip" onclick="sendChip('Estándar de arveja')" type="button">📜 Estándares</button>
                 <button class="chip" onclick="sendChip('Alertas activas')" type="button">🚨 Alertas</button>
                 <button class="chip" onclick="sendChip('Ayuda')" type="button">❓ Ayuda</button>
             </div>
@@ -653,8 +652,8 @@
             return false;
         };
 
-        const DB_VERSION = 40;
-        const DB_KEY = 'unidad7_db_v40';
+        const DB_VERSION = 41;
+        const DB_KEY = 'unidad7_db_v41';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -941,7 +940,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v39') || localStorage.getItem('unidad7_db_v38');
+                    let old = localStorage.getItem('unidad7_db_v40') || localStorage.getItem('unidad7_db_v39');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -958,9 +957,15 @@
             if (!db.cereales || db.cereales.length === 0) {
                 db.cereales = [
                     {id:'MAIZ', nombre:'MAÍZ', ph:76, color:'#f97316'}, {id:'SORGO', nombre:'SORGO', ph:72, color:'#3b82f6'},
-                    {id:'SOJA', nombre:'SOJA', ph:71, color:'#eab308'}, {id:'CEBADA', nombre:'CEBADA', ph:66, color:'#b45309'},
-                    {id:'GIRASOL', nombre:'GIRASOL', ph:42, color:'#64748b'}, {id:'TRIGO', nombre:'TRIGO', ph:78, color:'#16a34a'},
-                    {id:'MEZCLA', nombre:'MEZCLA', ph:75, color:'#ec4899'}
+                    {id:'SOJA', nombre:'SOJA', ph:71, color:'#eab308'}, {id:'TRIGO', nombre:'TRIGO', ph:78, color:'#16a34a'},
+                    {id:'GIRASOL', nombre:'GIRASOL', ph:42, color:'#64748b'}, {id:'CEBADA', nombre:'CEBADA', ph:66, color:'#b45309'},
+                    {id:'ARVEJA', nombre:'ARVEJA', ph:78, color:'#84cc16'}, {id:'GARBANZO', nombre:'GARBANZO', ph:75, color:'#eab308'},
+                    {id:'LENTEJA', nombre:'LENTEJA', ph:75, color:'#f43f5e'}, {id:'POROTO', nombre:'POROTO', ph:75, color:'#8b5cf6'},
+                    {id:'PELLETS', nombre:'PELLETS', ph:60, color:'#a16207'}, {id:'AVENA', nombre:'AVENA', ph:50, color:'#94a3b8'},
+                    {id:'CENTENO', nombre:'CENTENO', ph:70, color:'#475569'}, {id:'COLZA', nombre:'COLZA', ph:65, color:'#fbbf24'},
+                    {id:'LINO', nombre:'LINO', ph:65, color:'#d97706'}, {id:'MANI', nombre:'MANÍ', ph:50, color:'#b45309'},
+                    {id:'MIJO', nombre:'MIJO', ph:75, color:'#ca8a04'}, {id:'ALPISTE', nombre:'ALPISTE', ph:70, color:'#65a30d'},
+                    {id:'CARTAMO', nombre:'CÁRTAMO', ph:60, color:'#ea580c'}, {id:'MEZCLA', nombre:'MEZCLA', ph:75, color:'#ec4899'}
                 ];
             }
             if (!db.silos) db.silos = {};

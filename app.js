@@ -4,7 +4,7 @@ function checkPassword() {
     // ⚠️ ACÁ PODÉS CAMBIAR LA CONTRASEÑA "silos2026" POR LA QUE QUIERAS
     if (pass === 'silos2026') { 
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-content').style.display = 'block';
+        document.getElementById('app-content').style.display = 'flex';
         sessionStorage.setItem('loggedIn', 'true');
         init(); // Arranca la app
     } else {

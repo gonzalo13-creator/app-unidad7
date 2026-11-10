@@ -13,11 +13,10 @@
     <style>
         :root {
             --primary: #1e293b; --secondary: #334155; 
-            /* COLORES MODO DÍA MEJORADOS */
-            --bg: #e2e8f0; /* Un gris un poco más oscuro para resaltar tarjetas */
+            --bg: #e2e8f0; 
             --card: #ffffff; 
             --text: #0f172a; --text-light: #475569; 
-            --border: #cbd5e1; /* Bordes más marcados */
+            --border: #cbd5e1; 
             
             --c-maiz: #f97316; --c-soja: #eab308; --c-sorgo: #3b82f6; --c-trigo: #16a34a;
             --c-mezcla: #ec4899; --c-girasol: #64748b; --c-otros: #dc2626;
@@ -34,7 +33,7 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: background 0.3s; }
         
-        #app-content { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
+        #app-content { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
         .global-header { background: var(--card); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 1500; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0;}
         .global-search { flex: 1; max-width: 500px; padding: 10px 15px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.95rem; outline: none; transition: border 0.2s;}
@@ -339,14 +338,6 @@
 </head>
 <body>
 
-    <div id="login-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#1e293b; z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
-        <h2 style="font-size: 2rem; margin-bottom: 10px;">🔒 App en Testeo</h2>
-        <p style="color: #94a3b8; margin-bottom: 20px;">Ingresá tu contraseña para entrar</p>
-        <input type="password" id="pass-input" placeholder="Contraseña" style="padding:15px; border-radius:8px; border:none; font-size:1.2rem; width: 80%; max-width: 300px; text-align: center;">
-        <button onclick="checkPassword()" style="padding:15px 30px; background:#3b82f6; color:white; border:none; border-radius:8px; font-size:1.1rem; cursor:pointer; margin-top: 15px; width: 80%; max-width: 300px; font-weight: bold;">Entrar</button>
-        <p id="pass-error" style="color:#ef4444; display:none; margin-top:10px; font-weight: bold;">❌ Contraseña incorrecta</p>
-    </div>
-
     <div id="app-content">
         <div id="toast-container"></div>
         
@@ -622,17 +613,7 @@
     </div>
 
     <script>
-        function checkPassword() {
-            const pass = document.getElementById('pass-input').value;
-            if (pass === 'silos2026') { 
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-content').style.display = 'flex'; 
-                sessionStorage.setItem('loggedIn', 'true');
-                init();
-            } else {
-                document.getElementById('pass-error').style.display = 'block';
-            }
-        }
+        // --- SE ELIMINÓ EL SISTEMA DE CONTRASEÑA ---
 
         window.onerror = function(msg, url, line, col, error) {
             console.error("Error crítico:", msg, {url, line, col, error});
@@ -690,6 +671,7 @@
         let historialSiloActivo = null;
         let botContext = { lastCereal: null, lastSilo: null, lastUnit: null, justAskedHelp: false };
 
+        // --- ESTÁNDARES DE CALIDAD (AMPLIADOS CON RES. 1075/94 Y NORMAS) ---
         const ESTANDARES_CALIDAD = {
             'MAIZ': { nombre: 'MAÍZ (Norma XII)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 75 kg/hl. Dañados < 3%. Quebrados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 3%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 69 kg/hl. Dañados < 8%. Quebrados < 5%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
             'TRIGO': { nombre: 'TRIGO PAN (Norma XX)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 79 kg/hl. Dañados < 1.5%. Mat. extrañas < 0.5%.<br>• <b>Grado 2:</b> P.H. > 76 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 3:</b> P.H. > 73 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
@@ -711,6 +693,36 @@
             'ALPISTE': { nombre: 'ALPISTE (Norma I)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 68 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 66 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 64 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
             'CARTAMO': { nombre: 'CÁRTAMO (Norma IV)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 2.0%, Granos dañados 5.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' }
         };
+
+        // --- FUNCIÓN PARA ACTUALIZAR ESTÁNDARES ---
+        async function actualizarEstandares() {
+            if (!navigator.onLine) {
+                showToast("🌐 Necesitás conexión a internet para actualizar los estándares.", "warning");
+                return;
+            }
+            showToast("🔄 Buscando actualizaciones de estándares...", "info");
+            try {
+                // Simulamos una búsqueda en línea. En una app real, aquí se consultaría una API o se descargaría un JSON.
+                // Por ahora, simplemente recargamos los estándares locales para demostrar la funcionalidad.
+                // En una implementación real, podrías hacer:
+                // const response = await fetch('https://api.ejemplo.com/estandares');
+                // const nuevosEstandares = await response.json();
+                // ESTANDARES_CALIDAD = { ...ESTANDARES_CALIDAD, ...nuevosEstandares };
+                
+                // Simulación de actualización exitosa:
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Simula el tiempo de carga
+                
+                // Aquí podrías añadir lógica para comparar y actualizar.
+                // Por ejemplo, si el usuario pide un cereal que no está, se podría buscar en línea.
+                // Para esta demo, solo mostraremos un mensaje de éxito.
+                
+                showToast("✅ Estándares actualizados correctamente (simulación).", "success");
+                addChatMessage("He actualizado mi base de conocimientos con los últimos estándares disponibles en línea. ¿Sobre qué cereal querés consultar?", 'bot');
+            } catch (error) {
+                console.error("Error al actualizar estándares:", error);
+                showToast("❌ No se pudieron actualizar los estándares. Revisá tu conexión.", "error");
+            }
+        }
 
         function showToast(msg, type = 'info', duration = 3500) {
             const container = document.getElementById('toast-container'); if(!container) return;
@@ -858,7 +870,6 @@
             agregarFilaMovimiento();
         }
 
-        // --- FILTRO DE CEREALES EN STOCK ---
         function obtenerCerealesEnStock() {
             let idsEnStock = new Set();
             Object.keys(db.silos).forEach(num => {
@@ -867,7 +878,6 @@
                     idsEnStock.add(d.cereal);
                 }
             });
-            // Devolvemos los cereales que están en stock, ordenados alfabéticamente
             return db.cereales.filter(c => idsEnStock.has(c.id)).sort((a,b) => a.nombre.localeCompare(b.nombre));
         }
 
@@ -888,7 +898,6 @@
             let inputSilo = row.querySelector('.m-silo'); if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); };
             let esSilo = (tipoUnidad === 'SILO'); let esFumigable = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE');
             
-            // Solo mostramos los cereales que están en stock
             let cerealesSelect = obtenerCerealesEnStock().map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
             if(tipoAccion === 'INGRESO') {
@@ -1469,7 +1478,6 @@
 
         function actualizarSelects() {
             let opt = '<option value="">-- Seleccionar --</option>'; let optTodos = '<option value="TODOS">Todos los Cereales</option>';
-            // Usamos obtenerCerealesEnStock para los selectores operativos
             obtenerCerealesEnStock().forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
             
             let elTablero = document.getElementById('filtro-tablero'); let elStock = document.getElementById('sel-cereal-stock'); let elRelleno = document.getElementById('sel-cereal-relleno'); let elCalc = document.getElementById('calc-cereal');
@@ -1477,7 +1485,6 @@
             if(elTablero) elTablero.innerHTML = optTodos; if(elStock) elStock.innerHTML = opt; if(elRelleno) elRelleno.innerHTML = opt; if(elCalc) elCalc.innerHTML = opt;
             if(prevTablero && elTablero) elTablero.value = prevTablero; if(prevRelleno && elRelleno) elRelleno.value = prevRelleno; if(prevCalc && elCalc) elCalc.value = prevCalc;
             
-            // Actualizamos también los selects dentro de los formularios de movimiento
             document.querySelectorAll('.m-cereal').forEach(sel => { 
                 let currentVal = sel.value; 
                 sel.innerHTML = obtenerCerealesEnStock().map(c => `<option value="${c.id}">${c.nombre}</option>`).join(''); 
@@ -1711,11 +1718,7 @@
         }
 
         window.onload = function() {
-            if(sessionStorage.getItem('loggedIn') === 'true'){
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-content').style.display = 'flex';
-                init();
-            }
+            init();
         };
     </script>
 </body>

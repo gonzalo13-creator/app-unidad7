@@ -72,7 +72,7 @@
         .silo-tag { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; border: 1px solid var(--border); text-align: center; min-width: 50px; transition: transform 0.1s; }
         .silo-tag:active { transform: scale(0.95); }
 
-        #btn-silobot { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #3b82f6; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; border: none; transition: transform 0.2s;}
+        #btn-silobot { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #fbbf24; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; border: 3px solid #f59e0b; transition: transform 0.2s;}
         #btn-silobot:active { transform: scale(0.9); }
         #btn-silobot.hidden { display: none; }
         
@@ -81,7 +81,7 @@
         .chat-window { background: var(--bg); width: 100%; max-width: 420px; height: 85vh; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; margin-left: auto; margin-right: 20px;}
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        .chat-header { background: #3b82f6; color: white; padding: 15px 20px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; font-weight: bold; flex-shrink: 0;}
+        .chat-header { background: #f59e0b; color: white; padding: 15px 20px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; font-weight: bold; flex-shrink: 0;}
         .chat-header button { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;}
         
         .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--bg);}
@@ -96,7 +96,15 @@
         
         .chat-input-area { display: flex; padding: 10px; background: var(--card); border-top: 1px solid var(--border); flex-shrink: 0;}
         .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 20px; outline: none; font-size: 16px !important;}
-        .chat-input-area button { background: #3b82f6; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;}
+        .chat-input-area button { background: #f59e0b; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;}
+
+        /* FORMULARIO RAPIDO DE INGRESO */
+        .quick-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f0fdf4; border: 2px solid #22c55e; border-radius: 8px; padding: 15px; margin-bottom: 20px;}
+        body.dark-mode .quick-form { background: #064e3b; border-color: #16a34a; }
+        .quick-form label { font-size: 0.75rem; font-weight: bold; margin-bottom: 3px; color: #166534; display: block;}
+        body.dark-mode .quick-form label { color: #86efac; }
+        .quick-form input, .quick-form select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #86efac; font-size: 1rem;}
+        body.dark-mode .quick-form input, body.dark-mode .quick-form select { background: #064e3b; color: white; border-color: #166534; }
 
         @media (max-width: 768px) {
             .global-header { padding: 10px; }
@@ -146,7 +154,6 @@
             #herramienta-chk-cereales { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; }
             .chk-cereal { padding: 6px 8px; font-size: 0.75rem; justify-content: center;}
 
-            /* Modales tipo Bottom Sheet en móvil */
             .modal { align-items: flex-end !important; padding: 0 !important; }
             .modal-box { border-radius: 20px 20px 0 0 !important; max-height: 90vh !important; padding: 20px !important; padding-bottom: 30px !important; width: 100% !important; animation: slideUp 0.3s ease !important;}
             
@@ -156,6 +163,7 @@
             #btn-silobot { bottom: 140px; right: 15px; }
             .chat-window { margin: 0; max-width: 100%; border-radius: 20px 20px 0 0; height: 90vh; }
             #toast-container { bottom: 80px; }
+            .quick-form { grid-template-columns: 1fr; }
         }
 
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--text); font-weight: 600; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
@@ -305,7 +313,7 @@
         .cierre-historial-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
         @media print {
-            .global-header, .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #btn-silobot, #silobot-modal, .stat-box.clickable, .alert-accordion-item button, .no-print { display: none !important; }
+            .global-header, .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #btn-silobot, #silobot-modal, .stat-box.clickable, .alert-accordion-item button, .no-print, .quick-form { display: none !important; }
             body { background: white; display: block; height: auto; color: black;}
             .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
             .data-table { min-width: 100%; border: 1px solid #000; display: table !important;}
@@ -329,29 +337,27 @@
         </div>
     </div>
 
-    <button id="btn-silobot" onclick="toggleSiloBot()" type="button">🤖</button>
+    <button id="btn-silobot" onclick="toggleSiloBot()" type="button">🌽</button>
 
     <div id="silobot-modal">
         <div class="chat-window">
             <div class="chat-header">
-                <span>🤖 SiloBot IA</span>
+                <span>🌽 MazorcaBot IA</span>
                 <button onclick="toggleSiloBot()" type="button">×</button>
             </div>
             <div class="chat-body" id="chat-body">
-                <div class="chat-msg bot">¡Hola! Soy el SiloBot. Escribí <b>Ayuda</b> para ver todo lo que sé hacer.</div>
+                <div class="chat-msg bot">¡Hola! Soy el MazorcaBot. Escribí <b>Ayuda</b> para ver todo lo que sé hacer.</div>
             </div>
             <div class="chat-chips">
-                <button class="chip" onclick="sendChip('Cereales')" type="button">🌾 Cereales</button>
-                <button class="chip" onclick="sendChip('Tanques')" type="button">🛢️ Tanques</button>
-                <button class="chip" onclick="sendChip('Caños Tolvas')" type="button">🛠️ Paso/Emerg.</button>
-                <button class="chip" onclick="sendChip('Rellenos')" type="button">⛽ Rellenos</button>
+                <button class="chip" onclick="sendChip('Buen día')" type="button">🌅 Buen día</button>
+                <button class="chip" onclick="sendChip('Maíz por línea')" type="button">🌾 Maíz por línea</button>
+                <button class="chip" onclick="sendChip('Donde pongo 30t de Soja')" type="button">🎯 Dónde pongo</button>
+                <button class="chip" onclick="sendChip('Camiones de esta semana')" type="button">🚚 Camiones</button>
                 <button class="chip" onclick="sendChip('Alertas')" type="button">🚨 Alertas</button>
-                <button class="chip" onclick="sendChip('Pendientes')" type="button">⚠️ Pendientes</button>
-                <button class="chip" onclick="sendChip('Historial')" type="button">🚚 Logística</button>
                 <button class="chip" onclick="sendChip('Ayuda')" type="button">❓ Ayuda</button>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ej: Donde pongo 30t de Maíz..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
+                <input type="text" id="chat-input" placeholder="Ej: Anotá 30t de trigo en el 405..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
                 <button onclick="sendChatMsg()" type="button">➤</button>
             </div>
         </div>
@@ -418,12 +424,36 @@
             <!-- PESTAÑA: MOVIMIENTOS INTELIGENTES -->
             <div id="movimientos" class="tab-content">
                 <h2>Movimientos</h2>
-                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Elegí el tipo de acción para cargar los datos.</p>
+                
+                <!-- FORMULARIO RÁPIDO -->
+                <div class="quick-form">
+                    <div>
+                        <label>N° de Silo / Unidad</label>
+                        <input type="number" id="q-silo" placeholder="Ej: 405" inputmode="numeric">
+                    </div>
+                    <div>
+                        <label>Cereal</label>
+                        <select id="q-cereal"></select>
+                    </div>
+                    <div>
+                        <label>Calidad</label>
+                        <input type="text" id="q-calidad" placeholder="Ej: G2">
+                    </div>
+                    <div>
+                        <label>Toneladas</label>
+                        <input type="number" id="q-tons" placeholder="Ej: 30">
+                    </div>
+                    <div style="grid-column: 1 / -1; margin-top: 5px;">
+                        <button onclick="quickAddIngreso()" style="background:#22c55e; color:white; border:none; padding:12px; border-radius:6px; width:100%; font-weight:bold; font-size:1rem; cursor:pointer;">➕ Agregar Ingreso Rápido</button>
+                    </div>
+                </div>
+
+                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">O usá las acciones avanzadas abajo para egresos, recirculaciones o cambios de estado.</p>
                 
                 <div id="lista-movimientos"></div>
                 
                 <div class="action-buttons">
-                    <button class="btn-save" style="background:var(--secondary); margin:0;" onclick="agregarFilaMovimiento()" type="button">+ Agregar Acción</button>
+                    <button class="btn-save" style="background:var(--secondary); margin:0;" onclick="agregarFilaMovimiento()" type="button">+ Acción Avanzada</button>
                     <button id="btn-guardar-todos" class="btn-save" style="background:#10b981; margin:0;" onclick="procesarMovimientos()" type="button">✅ GUARDAR TODOS</button>
                     <button id="btn-desahacer" class="btn-save" style="background:#ef4444; display:none; margin:0;" onclick="deshacerUltimoCambio()" type="button">↩️ Deshacer</button>
                 </div>
@@ -630,8 +660,8 @@
             return false;
         };
 
-        const DB_VERSION = 32;
-        const DB_KEY = 'unidad7_db_v32';
+        const DB_VERSION = 33;
+        const DB_KEY = 'unidad7_db_v33';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -731,7 +761,7 @@
         let historialSiloActivo = null;
 
         // Memoria del Bot IA
-        let botContext = { lastCereal: null, lastSilo: null, lastUnit: null, justAskedHelp: false, lastTopic: null };
+        let botContext = { lastCereal: null, lastSilo: null, lastUnit: null, justAskedHelp: false };
 
         function showToast(msg, type = 'info', duration = 3500) {
             const container = document.getElementById('toast-container');
@@ -817,7 +847,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v31') || localStorage.getItem('unidad7_db_v30');
+                    let old = localStorage.getItem('unidad7_db_v32') || localStorage.getItem('unidad7_db_v31');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -923,6 +953,11 @@
             if(id === 'rellenos') { actualizarOpcionesRelleno(); }
             if(id === 'tablero') { dibujarTablero(); }
             if(id === 'herramienta') renderHerramientaCintas();
+            if(id === 'movimientos') { 
+                // Actualizar el select del form rápido
+                let sel = document.getElementById('q-cereal');
+                if(sel) sel.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+            }
         }
 
         function cambiarSubTab(id, btn) {
@@ -1027,6 +1062,83 @@
         }
         function limpiarBorrador() {
             localStorage.removeItem('movimientos_borrador');
+        }
+
+        function quickAddIngreso() {
+            let silo = document.getElementById('q-silo').value;
+            let cereal = document.getElementById('q-cereal').value;
+            let calidad = document.getElementById('q-calidad').value.toUpperCase().trim();
+            let tons = document.getElementById('q-tons').value;
+
+            if(!silo || !cereal || !calidad || !tons) {
+                showToast("Completá todos los campos para el ingreso rápido.", "warning");
+                return;
+            }
+
+            // Crear una fila con los datos pre-cargados
+            let div = document.createElement('div');
+            div.className = 'row-inputs';
+            div.style.border = "2px solid #22c55e"; // Resaltar que vino del form rápido
+            div.innerHTML = `
+                <div class="form-group full" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
+                    <label style="color:var(--primary); font-size:0.9rem;">Tipo de Acción</label>
+                    <select class="m-tipo-accion" onchange="cambiarTipoAccion(this); guardarBorrador();" style="font-weight:bold;">
+                        <option value="INGRESO">📥 Ingreso de Mercadería</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tipo de Unidad</label>
+                    <select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this); guardarBorrador();" style="font-weight:bold;">
+                        <option value="SILO">Silo / Entresilo</option>
+                        <option value="TANQUE">Tanque</option>
+                        <option value="PASO">Caño / Tolva / Balanza / CER</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Unidad</label>
+                    <input type="number" value="${silo}" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this); guardarBorrador();">
+                    <select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this); guardarBorrador();"></select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" class="m-fecha" value="${getFechaLocal()}" style="flex:1;" onchange="guardarBorrador();">
+                </div>
+
+                <div class="campos-dinamicos" style="display:flex; gap:8px; flex-wrap:wrap; flex-basis:100%; margin-top:5px;"></div>
+
+                <div class="form-group full" style="margin-top:5px;">
+                    <label>Observaciones (Opcional)</label>
+                    <input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs" oninput="guardarBorrador();">
+                </div>
+
+                <button class="btn-dup" aria-label="Duplicar fila" onclick="duplicarFila(this)" type="button">📋</button>
+                <button class="btn-del" aria-label="Eliminar fila" onclick="this.parentElement.remove(); guardarBorrador();" type="button">X</button>
+            `;
+            
+            document.getElementById('lista-movimientos').appendChild(div);
+            
+            // Llenar datos dinámicos
+            cambiarTipoAccion(div.querySelector('.m-tipo-accion'));
+            cambiarTipoUnidad(div.querySelector('.m-tipo-unidad'));
+            
+            let inputCereal = div.querySelector('.m-cereal');
+            if(inputCereal) inputCereal.value = cereal;
+            
+            let inputCalidad = div.querySelector('.m-calidad');
+            if(inputCalidad) inputCalidad.value = calidad;
+            
+            let inputTons = div.querySelector('.m-tons');
+            if(inputTons) inputTons.value = tons;
+            
+            // Limpiar form rápido
+            document.getElementById('q-silo').value = '';
+            document.getElementById('q-calidad').value = '';
+            document.getElementById('q-tons').value = '';
+            
+            guardarBorrador();
+            showToast("Ingreso agregado a la lista. Tocá GUARDAR TODOS al final.", "success");
         }
 
         function agregarFilaMovimiento() {
@@ -1445,7 +1557,6 @@
                         if(MIN_14.includes(silo) && metros < 14) { errores.push(`Silo ${silo} requiere mín. 14m.`); continue; }
                         if(MIN_10.includes(silo) && metros < 10) { errores.push(`Silo ${silo} requiere mín. 10m.`); continue; }
                         
-                        // VALIDACION DE CAPACIDAD MAXIMA
                         let tipoU = esSiloTipo(silo);
                         let topeMetros = obtenerTopeMetros(silo);
                         let capMaxRefTope = interpolar(tipoU === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
@@ -1516,7 +1627,6 @@
                 else if(tipoAccion === 'ESTADO') {
                     let nuevoEstado = row.querySelector('.m-nuevo-estado').value;
                     
-                    // NUEVA VALIDACIÓN: Evitar Fuera de Servicio con carga
                     if(nuevoEstado === 'FUERA_SERVICIO' && (parseFloat(d.tonelaje) > 0 || d.estado === 'CON_CARGA')) {
                         errores.push(`Unidad ${silo}: No se puede poner Fuera de Servicio porque tiene mercadería (${d.tonelaje}t). Debe vaciarla primero.`);
                         continue;
@@ -3031,7 +3141,6 @@
         }
 
         function exportarExcel() {
-            let csvContent = "data:application/vnd.ms-excel;charset=utf-8,";
             let tableHtml = `<table border="1"><thead><tr style="background:#eee;"><th>Unidad</th><th>Tipo</th><th>Estado</th><th>Cereal</th><th>Calidad</th><th>Tonelaje</th><th>F. Carga</th><th>Fumigacion</th><th>Tipo Fumigacion</th><th>Origen</th></tr></thead><tbody>`;
             
             Object.keys(db.silos).sort((a,b) => String(a).localeCompare(String(b))).forEach(num => {
@@ -3074,6 +3183,7 @@
             let elStock = document.getElementById('sel-cereal-stock');
             let elRelleno = document.getElementById('sel-cereal-relleno');
             let elCalc = document.getElementById('calc-cereal');
+            let elQuickCereal = document.getElementById('q-cereal');
 
             let prevTablero = elTablero ? elTablero.value : '';
             let prevRelleno = elRelleno ? elRelleno.value : '';
@@ -3083,6 +3193,7 @@
             if(elStock) elStock.innerHTML = opt;
             if(elRelleno) elRelleno.innerHTML = opt;
             if(elCalc) elCalc.innerHTML = opt;
+            if(elQuickCereal) elQuickCereal.innerHTML = opt;
             
             if(prevTablero && elTablero) elTablero.value = prevTablero;
             if(prevRelleno && elRelleno) elRelleno.value = prevRelleno;
@@ -3146,7 +3257,6 @@
             body.scrollTop = body.scrollHeight;
         }
 
-        // --- NUEVA FUNCION: BUSCADOR GLOBAL ---
         function handleGlobalSearch(val) {
             if(!val || val.length < 2) {
                 if(document.getElementById('tablero').classList.contains('active')) {
@@ -3159,24 +3269,21 @@
             let q = val.toLowerCase().trim();
             let cerealEncontrado = db.cereales.find(c => c.nombre.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
             
-            // Si es un número de silo exacto, abrir su historial
             let matchSilo = q.match(/^\d{3}$/);
             if(matchSilo) {
                 let num = parseInt(matchSilo[0]);
                 if(esUnidadValida(num) || db.silos[num]) {
                     verHistorial(num);
-                    document.getElementById('global-search').value = ''; // Limpiar buscador
+                    document.getElementById('global-search').value = '';
                     return;
                 }
             }
             
-            // Si es un cereal, filtrar el tablero
             if(cerealEncontrado) {
                 cambiarTab('tablero', document.querySelectorAll('.nav-btn')[0]);
                 document.getElementById('filtro-tablero').value = cerealEncontrado.id;
                 dibujarTablero();
             } else {
-                // Si no es cereal ni número, buscar en tablero por texto libre
                 cambiarTab('tablero', document.querySelectorAll('.nav-btn')[0]);
                 let contenedor = document.getElementById('contenedor-tablero');
                 if(contenedor) {
@@ -3194,7 +3301,6 @@
             }
         }
 
-        // --- SILOBOT IA ACTUALIZADO ---
         function findCereal(text) {
             text = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             
@@ -3248,8 +3354,6 @@
                  .replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas")
                  .replace(/\b(silo|silos)\b/g, "silo");
             
-            // --- NUEVAS HABILIDADES IA ---
-
             // 1. Saludos y Resumen Ejecutivo
             if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal')) {
                 let alertasCount = 0;
@@ -3270,7 +3374,6 @@
                 
                 let cerealObj = findCereal(cerealName);
                 if (cerealObj) {
-                    // Buscar fila vacía en movimientos o crear una nueva
                     let filas = document.querySelectorAll('#lista-movimientos .row-inputs');
                     let targetRow = null;
                     for (let row of filas) {
@@ -3283,7 +3386,6 @@
                         targetRow = filas[filas.length - 1];
                     }
                     
-                    // Llenar datos
                     targetRow.querySelector('.m-tipo-accion').value = 'INGRESO';
                     cambiarTipoAccion(targetRow.querySelector('.m-tipo-accion'));
                     
@@ -3334,13 +3436,7 @@
                 return;
             }
 
-            // 4. Logística / Historial Arreglado
-            if (q === 'historial' || q === 'logistica' || q === 'logística') {
-                addChatMessage("🚚 <b>Módulo de Logística</b><br>¿De qué querés ver el resumen?<br><br>Escribí:<br>- <i>Camiones</i> (hoy)<br>- <i>Vagones</i><br>- <i>Transile</i><br>- <i>Todo el mes</i> (últimos 30 días)", 'bot');
-                return;
-            }
-
-            // 5. Fechas en Lenguaje Natural para Logística
+            // 4. Fechas y Logística (Arreglado)
             let qFecha = q;
             let fechaInicio = new Date();
             let fechaFin = new Date();
@@ -3353,14 +3449,14 @@
                 fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1);
                 fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0);
                 tituloFecha = "Mes Pasado";
-            } else if (q.includes('este mes') || q.includes('todo el mes')) {
+            } else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) {
                 fechaInicio.setDate(1);
                 tituloFecha = "Este Mes";
             } else if (q.includes('ayer')) {
                 fechaInicio.setDate(fechaInicio.getDate() - 1);
                 fechaFin.setDate(fechaFin.getDate() - 1);
                 tituloFecha = "Ayer";
-            } else if (q.includes('historial') || q.includes('historico')) {
+            } else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias')) {
                 fechaInicio.setDate(fechaInicio.getDate() - 30);
                 tituloFecha = "Últimos 30 días";
             }
@@ -3374,7 +3470,7 @@
                 if (botContext.justAskedHelp) {
                     addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando (ej: <i>Anotá 30t de trigo en el 405</i>).", 'bot');
                 } else {
-                    addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i> (crea el borrador)<br>- <i>Qué pasa si vacío el 305</i> (simulación)<br>- <i>Maíz por línea</i><br>- <i>Cuánto maíz hay desde el 101 al 118</i><br>- <i>Donde pongo 30t de Soja</i><br>- <i>Camiones de esta semana</i><br>- <i>Tanques</i>", 'bot');
+                    addChatMessage("🧠 <b>Ayuda de MazorcaBot IA</b><br>Entiendo lenguaje natural, errores de tipeo y recuerdo el contexto.<br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i> (crea el borrador)<br>- <i>Qué pasa si vacío el 305</i> (simulación)<br>- <i>Maíz por línea</i><br>- <i>Cuánto maíz hay desde el 101 al 118</i><br>- <i>Donde pongo 30t de Soja</i><br>- <i>Camiones de esta semana</i><br>- <i>Tanques</i>", 'bot');
                     botContext.justAskedHelp = true;
                     setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
                 }
@@ -3386,14 +3482,13 @@
                 return;
             }
 
-            // Memoria de contexto para cereal
             let cerealEncontrado = findCereal(q);
+            
             if (!cerealEncontrado && (q.includes('espacio') || q.includes('stock') || q.includes('cuanto hay') || q.includes('tanque')) && botContext.lastCereal) {
                 cerealEncontrado = db.cereales.find(c => c.id === botContext.lastCereal);
             }
             if (cerealEncontrado) botContext.lastCereal = cerealEncontrado.id;
 
-            // Consulta por Rango
             let matchRange = q.match(/(?:del|desde el?)?\s*\b(\d{3})\s*(?:al|a|-)\s*(\d{3})\b/i);
             if (matchRange) {
                 let start = parseInt(matchRange[1]);
@@ -3413,7 +3508,6 @@
                 }
             }
 
-            // Consulta "Por Línea"
             if (q.includes('por linea') || q.includes('por fila') || q.includes('por cinta')) {
                 if (cerealEncontrado) {
                     let lineas = { '100':0, '200':0, '300':0, '400':0, '500':0, '600':0, '700':0 };
@@ -3434,7 +3528,6 @@
                 }
             }
 
-            // Modulo de Tanques
             if (q === 'tanques' || q === 'tanque') {
                 let total = 0;
                 TANQUES_FINALES.forEach(t => {
@@ -3445,7 +3538,6 @@
                 return;
             }
 
-            // ¿Dónde pongo?
             let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
             if (matchDondePongo) {
                 let tonsReq = parseFloat(matchDondePongo[2]);
@@ -3463,7 +3555,7 @@
                     });
 
                     if(opciones.length > 0) {
-                        opciones.sort((a,b) => a.alerta - b.alerta || a.esp - b.esp); // Priorizar sin alerta y menos espacio
+                        opciones.sort((a,b) => a.alerta - b.alerta || a.esp - b.esp);
                         let mejor = opciones[0];
                         let msg = `🎯 <b>Mejor opción para ${tonsReq}t de ${cerealTarget.nombre}:</b><br>`;
                         msg += `Silo <b>${mejor.num}</b> (${mejor.cal}) tiene <b>${mejor.esp}t</b>. ${mejor.alerta ? '⚠️ OJO: Tiene alerta.' : '✅ Sin alertas.'}<br><br>`;
@@ -3479,7 +3571,6 @@
                 }
             }
 
-            // Consulta específica de cereal (Fallback general)
             if (cerealEncontrado) {
                 let cId = cerealEncontrado.id;
                 let stocks = { total: 0, calidades: {}, silos: 0, tanques: 0, paso: 0 };

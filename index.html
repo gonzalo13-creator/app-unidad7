@@ -12,8 +12,13 @@
     
     <style>
         :root {
-            --primary: #1e293b; --secondary: #334155; --bg: #f1f5f9; --card: #ffffff;
-            --text: #0f172a; --text-light: #64748b; --border: #e2e8f0;
+            --primary: #1e293b; --secondary: #334155; 
+            /* COLORES MODO DÍA MEJORADOS */
+            --bg: #e2e8f0; /* Un gris un poco más oscuro para resaltar tarjetas */
+            --card: #ffffff; 
+            --text: #0f172a; --text-light: #475569; 
+            --border: #cbd5e1; /* Bordes más marcados */
+            
             --c-maiz: #f97316; --c-soja: #eab308; --c-sorgo: #3b82f6; --c-trigo: #16a34a;
             --c-mezcla: #ec4899; --c-girasol: #64748b; --c-otros: #dc2626;
         }
@@ -109,7 +114,7 @@
             padding: 20px; 
             border-radius: 12px; 
             border: 1px solid var(--border); 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
             position: relative;
             align-items: flex-start;
         }
@@ -120,8 +125,11 @@
         .row-inputs input:focus, .row-inputs select:focus { border-color: var(--primary); outline: none; }
         
         .row-inputs .header-actions { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
-        .row-inputs .btn-save-row { background: #10b981; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; width: 100%;}
+        
+        .row-inputs .btn-save-row { background: #10b981; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s;}
         .row-inputs .btn-save-row:hover { background: #059669; }
+        .row-inputs .btn-clear-row { background: #f59e0b; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; margin-right: 8px;}
+        .row-inputs .btn-clear-row:hover { background: #d97706; }
 
         @media (max-width: 768px) {
             .global-header { padding: 10px; }
@@ -144,6 +152,9 @@
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
             .row-inputs { grid-template-columns: 1fr; padding: 15px; gap: 10px; }
+            .row-inputs .header-actions { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .row-inputs .header-actions > div { width: 100%; display: flex; gap: 10px; }
+            .row-inputs .btn-save-row, .row-inputs .btn-clear-row { flex: 1; }
 
             .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 4px; }
             .tarjeta { min-height: 60px; border-radius: 6px; }
@@ -234,7 +245,7 @@
         .modal.active { display: flex; }
         .modal-box { background: var(--card); width: 100%; max-width: 500px; border-radius: 8px; padding: 24px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
         
-        .card-panel { background: var(--card); padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; }
+        .card-panel { background: var(--card); padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
         .stat-box { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-radius: 6px;}
         .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1; }
         .stat-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;}
@@ -550,7 +561,7 @@
                     <h2>Anotador de Embarque</h2>
                     <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Control de unidades abiertas (No modifica el Tablero real).</p>
                     <div class="card-panel">
-                        <h3 style="margin-top:0; font-size:0.9rem; color:var(--text-light);">1. Elegir Cereales (Múltiple)</h3>
+                        <h3 style="margin-top:0; font-size:0.9rem; color:var(--text-light);">1. Elegir Cereales (Solo con stock)</h3>
                         <div id="herramienta-chk-cereales" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;"></div>
                         <div style="display:flex; flex-direction: column; gap: 10px; border-top:1px solid var(--border); padding-top:15px;">
                             <span style="color:var(--text-light); font-size:0.8rem;">* Tocá las tarjetas para cambiar su estado.</span>
@@ -613,7 +624,6 @@
     <script>
         function checkPassword() {
             const pass = document.getElementById('pass-input').value;
-            // ⚠️ ACÁ PODÉS CAMBIAR LA CONTRASEÑA "silos2026" POR LA QUE QUIERAS
             if (pass === 'silos2026') { 
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-content').style.display = 'flex'; 
@@ -823,9 +833,13 @@
         function agregarFilaMovimiento() {
             let div = document.createElement('div'); div.className = 'row-inputs';
             div.innerHTML = `
-                <div class="header-actions"><span style="font-weight:bold; color:var(--primary); font-size:1.1rem;">Nueva Acción</span><div>
-                    <button class="btn-save-row" onclick="procesarMovimientos(this)" type="button">💾 Guardar Registro</button>
-                </div></div>
+                <div class="header-actions">
+                    <span style="font-weight:bold; color:var(--primary); font-size:1.1rem;">Movimiento</span>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-clear-row" onclick="limpiarFila(this)" type="button">🧹 Limpiar</button>
+                        <button class="btn-save-row" onclick="procesarMovimientos(this)" type="button">💾 Guardar Registro</button>
+                    </div>
+                </div>
                 <div class="form-group full"><label>Tipo de Acción</label><select class="m-tipo-accion" onchange="cambiarTipoAccion(this);" style="font-weight:bold;"><option value="INGRESO">📥 Ingreso de Mercadería</option><option value="EGRESO">📤 Egreso / Baja</option><option value="RECIRCULACION">🔄 Recirculación</option><option value="ESTADO">🚫 Cambio de Estado</option></select></div>
                 <div class="form-group"><label>Tipo de Unidad</label><select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this);"><option value="SILO">Silo / Entresilo</option><option value="TANQUE">Tanque</option><option value="PASO">Caño / Tolva / Balanza / CER</option></select></div>
                 <div class="form-group"><label>Unidad</label><input type="number" placeholder="Ej: 501" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this);"><select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this);"></select></div>
@@ -836,6 +850,25 @@
             div.querySelector('.m-fecha').value = '';
             document.getElementById('lista-movimientos').appendChild(div);
             cambiarTipoAccion(div.querySelector('.m-tipo-accion')); cambiarTipoUnidad(div.querySelector('.m-tipo-unidad'));
+        }
+
+        function limpiarFila(btn) {
+            let row = btn.closest('.row-inputs');
+            row.remove();
+            agregarFilaMovimiento();
+        }
+
+        // --- FILTRO DE CEREALES EN STOCK ---
+        function obtenerCerealesEnStock() {
+            let idsEnStock = new Set();
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if (d.cereal && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                    idsEnStock.add(d.cereal);
+                }
+            });
+            // Devolvemos los cereales que están en stock, ordenados alfabéticamente
+            return db.cereales.filter(c => idsEnStock.has(c.id)).sort((a,b) => a.nombre.localeCompare(b.nombre));
         }
 
         function cambiarTipoUnidad(select) {
@@ -854,9 +887,12 @@
             let container = row.querySelector('.campos-dinamicos'); if(!container) return; container.innerHTML = '';
             let inputSilo = row.querySelector('.m-silo'); if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); };
             let esSilo = (tipoUnidad === 'SILO'); let esFumigable = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE');
+            
+            // Solo mostramos los cereales que están en stock
+            let cerealesSelect = obtenerCerealesEnStock().map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
             if(tipoAccion === 'INGRESO') {
-                let campos = `<div class="form-group"><label>Origen</label><select class="m-origen" onchange="validarOrigen(this);"><option value="CAMIONES">Camiones</option><option value="VAGONES">Vagones</option><option value="TRANSILE">Transile</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="LIMPIEZA">Limpieza</option></select></div><div class="form-group" id="div-unidad-origen" style="display:none;"><label>Unidad Origen</label><input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305"></div><div class="form-group"><label>Cereal</label><select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'));">${db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('')}</select></div><div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2"></div>`;
+                let campos = `<div class="form-group"><label>Origen</label><select class="m-origen" onchange="validarOrigen(this);"><option value="CAMIONES">Camiones</option><option value="VAGONES">Vagones</option><option value="TRANSILE">Transile</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="LIMPIEZA">Limpieza</option></select></div><div class="form-group" id="div-unidad-origen" style="display:none;"><label>Unidad Origen</label><input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305"></div><div class="form-group"><label>Cereal</label><select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'));">${cerealesSelect}</select></div><div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2"></div>`;
                 if (esFumigable) campos += `<div class="form-group"><label>¿Fumigado?</label><select class="m-fumigo"><option value="NO">No se fumigó</option><option value="TOTAL">Fumigación Total</option><option value="LIQUIDO">Solo Líquido</option><option value="PASTILLAS">Solo Pastillas</option></select></div>`;
                 if (esSilo) campos += `<div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this);"></div><div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal"></div>`;
                 else campos += `<div class="form-group full"><label>Tonelaje (Manual)</label><input type="number" class="m-tons-manual" min="0" placeholder="0" inputmode="decimal"></div>`;
@@ -1334,7 +1370,12 @@
 
         function renderHerramientaCerealesChk() {
             let cont = document.getElementById('herramienta-chk-cereales'); if(!cont) return; cont.innerHTML = '';
-            db.cereales.forEach(c => { let checked = db.herramienta.cereales.includes(c.id) ? 'checked' : ''; cont.innerHTML += `<label class="chk-cereal" style="padding:4px 8px; font-size:0.8rem;"><input type="checkbox" value="${c.id}" ${checked} onchange="toggleHerramientaCereal('${c.id}')" style="width:16px; height:16px;"><span>${c.nombre}</span></label>`; });
+            let cerealesStock = obtenerCerealesEnStock();
+            if (cerealesStock.length === 0) {
+                cont.innerHTML = '<p style="font-size:0.85rem; color:var(--text-light);">No hay cereales en stock actualmente.</p>';
+                return;
+            }
+            cerealesStock.forEach(c => { let checked = db.herramienta.cereales.includes(c.id) ? 'checked' : ''; cont.innerHTML += `<label class="chk-cereal" style="padding:4px 8px; font-size:0.8rem;"><input type="checkbox" value="${c.id}" ${checked} onchange="toggleHerramientaCereal('${c.id}')" style="width:16px; height:16px;"><span>${c.nombre}</span></label>`; });
         }
 
         function toggleHerramientaCereal(id) { let idx = db.herramienta.cereales.indexOf(id); if(idx > -1) db.herramienta.cereales.splice(idx, 1); else db.herramienta.cereales.push(id); guardarDB(); renderHerramientaCintas(); }
@@ -1428,12 +1469,20 @@
 
         function actualizarSelects() {
             let opt = '<option value="">-- Seleccionar --</option>'; let optTodos = '<option value="TODOS">Todos los Cereales</option>';
-            db.cereales.forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
+            // Usamos obtenerCerealesEnStock para los selectores operativos
+            obtenerCerealesEnStock().forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
+            
             let elTablero = document.getElementById('filtro-tablero'); let elStock = document.getElementById('sel-cereal-stock'); let elRelleno = document.getElementById('sel-cereal-relleno'); let elCalc = document.getElementById('calc-cereal');
             let prevTablero = elTablero ? elTablero.value : ''; let prevRelleno = elRelleno ? elRelleno.value : ''; let prevCalc = elCalc ? elCalc.value : '';
             if(elTablero) elTablero.innerHTML = optTodos; if(elStock) elStock.innerHTML = opt; if(elRelleno) elRelleno.innerHTML = opt; if(elCalc) elCalc.innerHTML = opt;
             if(prevTablero && elTablero) elTablero.value = prevTablero; if(prevRelleno && elRelleno) elRelleno.value = prevRelleno; if(prevCalc && elCalc) elCalc.value = prevCalc;
-            document.querySelectorAll('.m-cereal').forEach(sel => { let currentVal = sel.value; sel.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join(''); if(currentVal) sel.value = currentVal; });
+            
+            // Actualizamos también los selects dentro de los formularios de movimiento
+            document.querySelectorAll('.m-cereal').forEach(sel => { 
+                let currentVal = sel.value; 
+                sel.innerHTML = obtenerCerealesEnStock().map(c => `<option value="${c.id}">${c.nombre}</option>`).join(''); 
+                if(currentVal && Array.from(sel.options).some(o => o.value === currentVal)) sel.value = currentVal; 
+            });
         }
 
         function toggleSiloBot() {

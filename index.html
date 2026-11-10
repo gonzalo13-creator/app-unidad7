@@ -72,7 +72,8 @@
         .silo-tag { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; border: 1px solid var(--border); text-align: center; min-width: 50px; transition: transform 0.1s; }
         .silo-tag:active { transform: scale(0.95); }
 
-        #btn-silobot { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #fbbf24; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; border: 3px solid #f59e0b; transition: transform 0.2s;}
+        #btn-silobot { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #fbbf24; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; border: 3px solid #f59e0b; transition: transform 0.2s; padding: 0;}
+        #btn-silobot svg { width: 35px; height: 35px; fill: white; }
         #btn-silobot:active { transform: scale(0.9); }
         #btn-silobot.hidden { display: none; }
         
@@ -348,16 +349,19 @@
         </div>
     </div>
 
-    <button id="btn-silobot" onclick="toggleSiloBot()" type="button">🌽</button>
+    <!-- ICONO SILOBOT (SILO SVG) -->
+    <button id="btn-silobot" onclick="toggleSiloBot()" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.5,2C11.85,2 14.6,4.53 14.96,7.78L22,12V14L20,12.8V22H18V11.6L15,9.8V22H13V9H4V22H2V8.5A6.5,6.5 0 0,1 8.5,2M8.5,4C6.54,4 4.87,5.25 4.26,7H12.74C12.13,5.25 10.46,4 8.5,4M6,11H11V13H6V11M6,15H11V17H6V15M6,19H11V21H6V19Z" /></svg>
+    </button>
 
     <div id="silobot-modal">
         <div class="chat-window">
             <div class="chat-header">
-                <span>🌽 MaizBot IA</span>
+                <span>🌾 SiloBot IA</span>
                 <button onclick="toggleSiloBot()" type="button">×</button>
             </div>
             <div class="chat-body" id="chat-body">
-                <div class="chat-msg bot">¡Hola! Soy el MaizBot. Escribí <b>Ayuda</b> para ver todo lo que sé hacer.</div>
+                <div class="chat-msg bot">¡Hola! Soy el SiloBot. Escribí <b>Ayuda</b> para ver todo lo que sé hacer.</div>
             </div>
             <div class="chat-chips">
                 <button class="chip" onclick="sendChip('Buen día')" type="button">🌅 Buen día</button>
@@ -365,7 +369,7 @@
                 <button class="chip" onclick="sendChip('Dónde pongo 30t de Maíz G2')" type="button">🎯 Dónde pongo</button>
                 <button class="chip" onclick="sendChip('Camiones de esta semana')" type="button">🚚 Camiones</button>
                 <button class="chip" onclick="sendChip('Clima')" type="button">☀️ Clima</button>
-                <button class="chip" onclick="sendChip('Estándar de Maíz')" type="button">📜 Estándares</button>
+                <button class="chip" onclick="sendChip('Estándar de maíz')" type="button">📜 Estándares</button>
                 <button class="chip" onclick="sendChip('Alertas activas')" type="button">🚨 Alertas</button>
                 <button class="chip" onclick="sendChip('Ayuda')" type="button">❓ Ayuda</button>
             </div>
@@ -649,8 +653,8 @@
             return false;
         };
 
-        const DB_VERSION = 38;
-        const DB_KEY = 'unidad7_db_v38';
+        const DB_VERSION = 39;
+        const DB_KEY = 'unidad7_db_v39';
         const PH_BASE = 80;
         
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -752,6 +756,37 @@
         // Memoria del Bot IA
         let botContext = { lastCereal: null, lastSilo: null, lastUnit: null, justAskedHelp: false };
 
+        // --- ESTÁNDARES DE CALIDAD (Res. 1075/94 y modificatorias) ---
+        const ESTANDARES_CALIDAD = {
+            'MAIZ': {
+                nombre: 'MAÍZ (Norma XII)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 75 kg/hl. Dañados < 3%. Quebrados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 3%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 69 kg/hl. Dañados < 8%. Quebrados < 5%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>'
+            },
+            'TRIGO': {
+                nombre: 'TRIGO PAN (Norma XX)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 79 kg/hl. Dañados < 1.5%. Mat. extrañas < 0.5%.<br>• <b>Grado 2:</b> P.H. > 76 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 3:</b> P.H. > 73 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>'
+            },
+            'SOJA': {
+                nombre: 'SOJA (Norma XVII)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos quebrados 20.0%, Granos dañados 5.0%.<br>• <b>Conforme:</b> La mercadería que no excede las tolerancias de recibo se considera <b>Conforme</b>.<br>• <b>Fuera de Base:</b> La mercadería que excede las tolerancias de recibo se considera <b>Fuera de Base</b> (o Fuera de Estándar), con rebajas.<br><br><i>Base: Humedad 13.5%. Límite máx. humedad: 14%.</i>'
+            },
+            'GIRASOL': {
+                nombre: 'GIRASOL (Norma IX)',
+                sistema: 'base',
+                detalle: '• <b>Base de Comercialización:</b> Materia grasa 42% (s/ sustancia seca y limpia), Acidez 1.5% (hasta 31/8) o 2% (desde 1/9), Humedad 11%, Chamico libre.<br>• <b>Tolerancias de Recibo:</b> Humedad máx. 14%, Materias extrañas máx. 3%, Chamico máx. 0.25%.<br>• <b>Conforme / Fuera de Base:</b> La mercadería dentro de las tolerancias es <b>Conforme</b>; la que las excede es <b>Fuera de Base</b>.'
+            },
+            'SORGO': {
+                nombre: 'SORGO GRANÍFERO (Norma XVIII - Mod. 2025)',
+                sistema: 'grados',
+                detalle: '• <b>Grado 1:</b> P.H. > 74 kg/hl. Dañados < 3%. Quebrados < 1%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 2%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 70 kg/hl. Dañados < 8%. Quebrados < 3%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>'
+            }
+        };
+
+        // --- FIN ESTÁNDARES DE CALIDAD ---
+
         function showToast(msg, type = 'info', duration = 3500) {
             const container = document.getElementById('toast-container');
             if(!container) return;
@@ -836,7 +871,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) {
-                    let old = localStorage.getItem('unidad7_db_v37') || localStorage.getItem('unidad7_db_v36');
+                    let old = localStorage.getItem('unidad7_db_v38') || localStorage.getItem('unidad7_db_v37');
                     if (old) {
                         db = JSON.parse(old);
                         db.__version = DB_VERSION;
@@ -1022,7 +1057,6 @@
             return 0;
         }
 
-        // --- FUNCIÓN GLOBAL getEspacioDisp (CORREGIDA) ---
         function getEspacioDisp(num) {
             let d = db.silos[num];
             if(!d || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return 0;
@@ -3336,7 +3370,7 @@
                     }
                 }
 
-                // 2. Dónde pongo (Prioridad sobre la explicación de calidad)
+                // 2. Dónde pongo
                 let matchDondePongo = q.match(/(donde pongo|donde mando|donde meto)\s+(\d+)\s*(t|tn|toneladas?)\s+de\s+([a-z0-9\s]+)/i);
                 if (matchDondePongo) {
                     let tonsReq = parseFloat(matchDondePongo[2]);
@@ -3344,7 +3378,7 @@
                     let cerealTarget = findCereal(cerealQ);
                     
                     let calidadBuscada = null;
-                    let matchCalidad = q.match(/\b(g1|g2|g3|m61|s\/c)\b/i);
+                    let matchCalidad = q.match(/\b(g1|g2|g3|m61|s\/c|conforme|fuera de base)\b/i);
                     if (matchCalidad) {
                         calidadBuscada = matchCalidad[1].toUpperCase();
                     }
@@ -3430,31 +3464,24 @@
 
                 // --- PRIORIDAD 2: CONSULTAS DE INFORMACIÓN ---
 
-                // 5. Estándares de Calidad (Si se pide explícitamente)
-                if (q.includes('estandar') || q.includes('norma')) {
+                // 5. Estándares de Calidad
+                if (q.includes('estandar') || q.includes('norma') || q.includes('calidad')) {
                     let cerealMatch = findCereal(q);
                     if (cerealMatch) {
-                        let std = {
-                            'MAIZ': "🌽 <b>Estándar de Calidad: MAÍZ (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> Peso Hectolítrico > 75 kg/hl. Dañados < 3%. Quebrados < 2%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 72 kg/hl. Dañados < 5%. Quebrados < 3%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 69 kg/hl. Dañados < 8%. Quebrados < 5%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 14%, Grado 2. Límite máximo de humedad: 14.5%.</i>",
-                            'TRIGO': "🌾 <b>Estándar de Calidad: TRIGO (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 79 kg/hl. Dañados < 1.5%. Materias extrañas < 0.5%.<br>• <b>Grado 2:</b> PH > 76 kg/hl. Dañados < 3%. Materias extrañas < 1%.<br>• <b>Grado 3:</b> PH > 73 kg/hl. Dañados < 5%. Materias extrañas < 1.5%.<br><br><i>Base de comercialización: Humedad 14%, Grado 2. Límite máximo de humedad: 14.5%.</i>",
-                            'SOJA': "🫘 <b>Estándar de Calidad: SOJA (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 73 kg/hl. Dañados < 2%. Quebrados < 1%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 71 kg/hl. Dañados < 4%. Quebrados < 2%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 68 kg/hl. Dañados < 6%. Quebrados < 3%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 13.5%, Grado 2. Límite máximo de humedad: 14%.</i>",
-                            'GIRASOL': "🌻 <b>Estándar de Calidad: GIRASOL (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 38 kg/hl. Dañados < 3%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 35 kg/hl. Dañados < 5%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 32 kg/hl. Dañados < 8%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 11%, Grado 2. Límite máximo de humedad: 11.5%.</i>",
-                            'SORGO': "🌾 <b>Estándar de Calidad: SORGO (Res. 1075/94)</b><br><br>• <b>Grado 1:</b> PH > 74 kg/hl. Dañados < 3%. Quebrados < 1%. Materias extrañas < 1%.<br>• <b>Grado 2:</b> PH > 72 kg/hl. Dañados < 5%. Quebrados < 2%. Materias extrañas < 1.5%.<br>• <b>Grado 3:</b> PH > 70 kg/hl. Dañados < 8%. Quebrados < 3%. Materias extrañas < 2%.<br><br><i>Base de comercialización: Humedad 14%, Grado 2. Límite máximo de humedad: 14.5%.</i>"
-                        };
-                        let cId = cerealMatch.id;
-                        if (std[cId]) {
-                            addChatMessage(std[cId], 'bot');
+                        let est = ESTANDARES_CALIDAD[cerealMatch.id];
+                        if (est) {
+                            addChatMessage(`📜 <b>${est.nombre}</b><br><br>${est.detalle}`, 'bot');
                         } else {
                             addChatMessage(`No tengo el estándar detallado para ${cerealMatch.nombre} en este momento.`, 'bot');
                         }
                     } else {
-                        addChatMessage("📜 <b>Estándares de Calidad (Res. 1075/94):</b><br><br>Decime de qué cereal querés saber: <i>estándar de maíz</i>, <i>norma de trigo</i>, <i>calidad de soja</i>, etc.", 'bot');
+                        addChatMessage("📜 <b>Estándares de Calidad (Res. 1075/94 y mod.)</b><br><br>Decime de qué cereal querés saber: <i>estándar de maíz</i>, <i>norma de trigo</i>, <i>calidad de soja</i>, <i>estándar de girasol</i>, <i>norma de sorgo</i>.", 'bot');
                     }
                     return;
                 }
 
-                if (q.includes('que significa g1') || q.includes('que significa g2') || q.includes('que significa g3')) {
-                    addChatMessage("📜 <b>Grados de Calidad:</b><br><br>• <b>G1:</b> Calidad superior, máxima bonificación.<br>• <b>G2:</b> Calidad estándar, base de comercialización (sin bonificación ni rebaja).<br>• <b>G3:</b> Calidad inferior, con rebajas.<br><br>Los parámetros varían según el cereal. Preguntame por el 'estándar de [cereal]' para ver los detalles técnicos.", 'bot');
+                if (q.includes('que significa g1') || q.includes('que significa g2') || q.includes('que significa g3') || q.includes('conforme') || q.includes('fuera de base')) {
+                    addChatMessage("📜 <b>Sistemas de Calidad:</b><br><br>• <b>Grados (G1, G2, G3):</b> Usado en Maíz, Trigo y Sorgo. G1 bonifica, G2 es base, G3 rebaja.<br>• <b>Conforme / Fuera de Base:</b> Usado en Soja y Girasol. Si la mercadería está dentro de las tolerancias de recibo, es <b>Conforme</b>. Si las excede, es <b>Fuera de Base</b> (con rebajas).<br><br>Preguntame por el 'estándar de [cereal]' para ver los detalles técnicos.", 'bot');
                     return;
                 }
 
@@ -3521,7 +3548,7 @@
                     if (botContext.justAskedHelp) {
                         addChatMessage("Ya te mostré la ayuda arriba 🙄. Escribí un cereal (ej: <i>Maíz</i>), un silo (ej: <i>Silo 203</i>) o un comando.", 'bot');
                     } else {
-                        addChatMessage("🧠 <b>Ayuda de MaizBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Estándar de maíz</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
+                        addChatMessage("🧠 <b>Ayuda de SiloBot IA</b><br><br>Podés probar:<br>- <i>Buen día</i> (resumen)<br>- <i>Anotá 30t de trigo en el 405</i><br>- <i>Qué pasa si vacío el 305</i><br>- <i>Maíz por línea</i><br>- <i>Dónde pongo 30t de Maíz G2</i><br>- <i>Camiones de esta semana</i><br>- <i>Estándar de maíz</i><br>- <i>Alertas activas</i><br>- <i>Clima</i><br>- <i>Tanques</i>", 'bot');
                         botContext.justAskedHelp = true;
                         setTimeout(() => { botContext.justAskedHelp = false; }, 10000);
                     }

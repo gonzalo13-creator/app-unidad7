@@ -598,20 +598,29 @@
                         <h3 style="margin-top:20px; font-size:0.9rem;">Historial de Cierres Guardados</h3>
                         <div id="lista-cierres" style="max-height:200px; overflow-y:auto;"></div>
                     </div>
+                    
+                    <div class="card-panel">
+                        <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Gestión de Cereales (PH)</h3>
+                        <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:10px;">El PH afecta los cálculos automáticos de tonelaje. Modificalo con cuidado.</p>
+                        <div id="admin-cereales-lista" style="max-height:300px; overflow-y:auto; margin-bottom:15px;"></div>
+                        
+                        <div style="border-top:1px dashed var(--border); padding-top:15px;">
+                            <h4 style="margin:0 0 10px 0; font-size:0.9rem;">Agregar Nuevo Cereal</h4>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <input type="text" id="new-cereal-name" placeholder="Nombre (Ej: Girasol)" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:4px;">
+                                <input type="number" step="0.1" id="new-cereal-ph" placeholder="PH Base (Ej: 42)" style="width:100px; padding:8px; border:1px solid var(--border); border-radius:4px;">
+                                <input type="color" id="new-cereal-color" value="#64748b" style="width:50px; padding:2px; border:1px solid var(--border); border-radius:4px; height: 36px;">
+                                <button onclick="crearCereal()" style="background:#3b82f6; color:white; border:none; border-radius:4px; padding:8px 15px; cursor:pointer; font-weight:bold;">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card-panel">
                         <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Mantenimiento</h3>
                         <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Si la app se pone lenta, archivá movimientos viejos (más de 6 meses) para liberar espacio.</p>
                         <button class="btn-save" style="background:#f59e0b; margin-top:0;" onclick="archivarHistorial()" type="button">🧹 Archivar Historial Antiguo</button>
                     </div>
-                    <div class="card-panel">
-                        <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Exportar Reporte</h3>
-                        <button class="btn-save" style="background:#0284c7; margin-top:0;" onclick="exportarExcel()" type="button">📊 Descargar Excel (.xls)</button>
-                    </div>
-                    <div class="card-panel">
-                        <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Herramientas de Prueba</h3>
-                        <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Carga datos ficticios para probar la app.</p>
-                        <button class="btn-save" style="background:#8b5cf6; margin-top:0;" onclick="cargarDatosPrueba()" type="button">🧪 Cargar Datos de Prueba</button>
-                    </div>
+                    
                     <div class="card-panel" style="margin-top: 20px; border-top: 1px solid var(--border);">
                         <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Compartir y Sincronizar</h3>
                         <button class="btn-share" onclick="compartirDatos()" type="button">Compartir Mis Datos</button>
@@ -643,7 +652,6 @@
         function checkMobileView() {
             if (window.innerWidth <= 768) {
                 document.getElementById('btn-mobile-menu').style.display = 'block';
-                // NO abrimos el dashboard aquí para evitar que el teclado lo dispare
             } else {
                 document.getElementById('btn-mobile-menu').style.display = 'none';
                 document.getElementById('mobile-dashboard').classList.remove('active');
@@ -746,7 +754,7 @@
             'stock': "📊 <b>¿Cómo ver el Stock?</b><br><br>Andá a la pestaña <b>Stock</b>. Ahí vas a ver el total por cereal, separado por calidad y ubicación (Silos, Tanques, Paso).<br>Tocá un cereal para ver el detalle. Si ves un ⚠️, significa que falta cargar la fumigación o la calidad.<br><br>🔗 <button onclick='cambiarTab(\"existencias\", document.querySelectorAll(\".nav-btn\")[3]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Stock</button>",
             'tanques': "🛢️ <b>Tanques y Circuitos</b><br><br>Acá ves los tanques por piso. Tocá uno para ver su flujo (qué tanque alimenta a cuál).<br>Al final están las unidades de paso (Caños, Tolvas, Balanzas, CER).<br><br>🔗 <button onclick='cambiarTab(\"tanques\", document.querySelectorAll(\".nav-btn\")[4]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Tanques</button>",
             'anotador': "🛠️ <b>¿Para qué sirve el Anotador?</b><br><br>Es una herramienta de control diario. Seleccioná los cereales con los que estás trabajando y te mostrará solo esos silos.<br>Tocá las tarjetas para cambiar su estado visualmente (no afecta el inventario real).<br><br>🔗 <button onclick='cambiarTab(\"herramienta\", document.querySelectorAll(\".nav-btn\")[6]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Anotador</button>",
-            'admin': "⚙️ <b>Administración y Cierres</b><br><br>Acá podés guardar una 'foto' del inventario actual (Cierre de Jornada) o descargar un Excel con todo el stock.<br><br>🔗 <button onclick='cambiarTab(\"admin\", document.querySelectorAll(\".nav-btn\")[7]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Admin</button>"
+            'admin': "⚙️ <b>Administración y Cierres</b><br><br>Acá podés guardar una 'foto' del inventario actual (Cierre de Jornada) o gestionar los cereales y su PH.<br><br>🔗 <button onclick='cambiarTab(\"admin\", document.querySelectorAll(\".nav-btn\")[7]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Admin</button>"
         };
 
         function showToast(msg, type = 'info', duration = 3500) {
@@ -778,10 +786,6 @@
         function showUpdateToast() { const toast = showToast("🚀 Nueva versión disponible. Tocá aquí para actualizar.", "update", 15000); toast.onclick = () => { toast.innerHTML = "Actualizando..."; if (navigator.serviceWorker.controller) navigator.serviceWorker.postMessage({ action: 'skipWaiting' }); }; }
 
         function init() {
-            // Abrimos el dashboard solo al iniciar si estamos en móvil
-            if (window.innerWidth <= 768) {
-                document.getElementById('mobile-dashboard').classList.add('active');
-            }
             checkMobileView();
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             try {
@@ -823,6 +827,7 @@
             actualizarSelects(); dibujarTablero(); dibujarTanques(); dibujarCierres();
             document.getElementById('lista-movimientos').innerHTML = ''; agregarFilaMovimiento();
             renderHerramientaCerealesChk(); actualizarExistencias(); updateOnlineStatus();
+            renderAdminCereales(); // <--- Nueva función
         }
 
         function updateOnlineStatus() {
@@ -845,6 +850,7 @@
             if(id === 'rellenos') { actualizarOpcionesRelleno(); }
             if(id === 'tablero') { dibujarTablero(); }
             if(id === 'herramienta') renderHerramientaCintas();
+            if(id === 'admin') renderAdminCereales(); // <--- Actualizar lista al entrar a admin
         }
 
         function cambiarSubTab(id, btn) { document.querySelectorAll('#rellenos > div[id^="sub-"]').forEach(d => d.style.display = 'none'); document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).style.display = 'block'; btn.classList.add('active'); }
@@ -896,15 +902,6 @@
 
         function limpiarFila(btn) { let row = btn.closest('.row-inputs'); row.remove(); agregarFilaMovimiento(); }
 
-        function obtenerCerealesEnStock() {
-            let idsEnStock = new Set();
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if (d.cereal && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) idsEnStock.add(d.cereal);
-            });
-            return db.cereales.filter(c => idsEnStock.has(c.id)).sort((a,b) => a.nombre.localeCompare(b.nombre));
-        }
-
         function cambiarTipoUnidad(select) {
             let row = select.closest('.row-inputs'); let tipo = select.value; let inputSilo = row.querySelector('.m-silo'); let selSilo = row.querySelector('.m-silo-select');
             if (tipo === 'SILO') { inputSilo.style.display = 'block'; selSilo.style.display = 'none'; inputSilo.value = ''; inputSilo.classList.remove('ignore'); }
@@ -922,7 +919,8 @@
             let inputSilo = row.querySelector('.m-silo'); if(inputSilo) inputSilo.oninput = function() { autocompletarSilo(this); };
             let esSilo = (tipoUnidad === 'SILO'); let esFumigable = (tipoUnidad === 'SILO' || tipoUnidad === 'TANQUE');
             
-            let cerealesSelect = obtenerCerealesEnStock().map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+            // Toma los cereales directamente de la base de datos (los que están configurados en Admin)
+            let cerealesSelect = db.cereales.sort((a,b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
             if(tipoAccion === 'INGRESO') {
                 let campos = `<div class="form-group"><label>Origen</label><select class="m-origen" onchange="validarOrigen(this);"><option value="CAMIONES">Camiones</option><option value="VAGONES">Vagones</option><option value="TRANSILE">Transile</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="LIMPIEZA">Limpieza</option></select></div><div class="form-group" id="div-unidad-origen" style="display:none;"><label>Unidad Origen</label><input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305"></div><div class="form-group"><label>Cereal</label><select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'));">${cerealesSelect}</select></div><div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2"></div>`;
@@ -1285,8 +1283,6 @@
             }; reader.readAsText(file);
         }
 
-        function cargarDatosPrueba() { showConfirm("Cargar Datos de Prueba", "Esto sobreescribirá los datos actuales con un inventario ficticio. ¿Continuar?", (ok) => { if(!ok) return; let now = Date.now(); let hoy = new Date(); let fechaPasada = (dias) => { let d = new Date(hoy); d.setDate(d.getDate() - dias); return d.toISOString().split('T')[0]; }; TODOS_LOS_SILOS.forEach((num, idx) => { let d = getSiloData(num); if (idx % 25 === 0) { d.estado = 'VACIO'; d.cereal = ''; d.tonelaje = 0; d.calidad = ''; d.fecha_primera_carga = null; d.fumigacion_fecha = null; d.historial = []; d.alerta_manual = false; } else { let cereales = ['MAIZ', 'SOJA', 'TRIGO', 'GIRASOL', 'SORGO', 'MEZCLA']; let c = cereales[idx % cereales.length]; let cal = (idx % 3 === 0) ? 'G1' : ((idx % 5 === 0) ? 'M61' : 'G2'); let sinFumigar = (idx % 10 === 0); let viejo = (idx % 15 === 0); let tapado = (idx % 20 === 0); let alertaCal = (idx % 30 === 0); let sinCalidad = (idx % 40 === 0); let tipo = esSiloTipo(num); let topeMetros = obtenerTopeMetros(num); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros); let cObj = db.cereales.find(cr => cr.id === c); let ph = cObj ? cObj.ph : 76; let capMaxTon = Math.round(capMaxRefTope * ph / PH_BASE); let tonsReales = Math.floor(capMaxTon * (0.3 + Math.random() * 0.6)); d.cereal = c; d.calidad = sinCalidad ? '' : cal; d.estado = tapado ? 'TAPADA' : 'CON_CARGA'; d.tonelaje = tonsReales; d.fecha_primera_carga = fechaPasada(viejo ? (Math.floor(Math.random() * 50) + 100) : (Math.floor(Math.random() * 50) + 5)); d.fumigacion_fecha = sinFumigar ? null : fechaPasada(Math.floor(Math.random() * 40) + 1); d.fumigacion_tipo = sinFumigar ? null : ((idx % 2 === 0) ? 'TOTAL' : 'PASTILLAS'); d.origen = (idx % 4 === 0) ? 'Transile' : 'Camiones'; d.alerta_manual = alertaCal; d.lastUpdate = now; d.historial = [{ fecha: d.fecha_primera_carga, tipo: 'INGRESO', detalle: `Ingreso: ${d.tonelaje}t - ${c} (${d.calidad||'S/C'}) | Origen: ${d.origen} | No fumigado`, tons: d.tonelaje, cereal: c }]; if (d.tonelaje > 300) { let tonsRestar = Math.floor(d.tonelaje * 0.3); d.historial.push({ fecha: fechaPasada(10), tipo: 'EGRESO', detalle: `Egreso: ${tonsRestar}t por Embarque`, tons: tonsRestar, cereal: c }); d.tonelaje -= tonsRestar; } } }); TANQUES_CONFIG.forEach((t, idx) => { let d = getSiloData(t.id); if (idx % 3 !== 0) { d.estado = 'CON_CARGA'; d.cereal = (idx % 2 === 0) ? 'MAIZ' : 'MEZCLA'; d.calidad = 'G2'; d.tonelaje = Math.floor(t.max * 0.8); d.fecha_primera_carga = fechaPasada(50); d.lastUpdate = now; } }); UNIDADES_PASO_CONFIG.forEach((u, idx) => { if (idx % 2 === 0) { let d = getSiloData(u.id); d.estado = 'CON_CARGA'; d.cereal = 'MAIZ'; d.calidad = 'G1'; d.tonelaje = 30; d.fecha_primera_carga = fechaPasada(20); d.lastUpdate = now; } }); db.cierres = [{ fecha: fechaPasada(1), data: JSON.parse(JSON.stringify(db.silos)) }, { fecha: fechaPasada(2), data: JSON.parse(JSON.stringify(db.silos)) }]; guardarDB(); showToast("Datos de prueba cargados.", "success"); setTimeout(() => location.reload(), 1000); }); }
-
         function actualizarExistencias() {
             let counts = { VACIO:0, CON_CARGA:0, TAPADA:0, FUERA_SERVICIO:0 };
             TODOS_LOS_SILOS.forEach(num => { let d = db.silos[num]; let st = d ? d.estado : 'VACIO'; if(counts[st] !== undefined) counts[st]++; });
@@ -1403,9 +1399,9 @@
 
         function renderHerramientaCerealesChk() {
             let cont = document.getElementById('herramienta-chk-cereales'); if(!cont) return; cont.innerHTML = '';
-            let cerealesStock = obtenerCerealesEnStock();
+            let cerealesStock = db.cereales; // Mostrar todos los configurados
             if (cerealesStock.length === 0) {
-                cont.innerHTML = '<p style="font-size:0.85rem; color:var(--text-light);">No hay cereales en stock actualmente.</p>';
+                cont.innerHTML = '<p style="font-size:0.85rem; color:var(--text-light);">No hay cereales configurados.</p>';
                 return;
             }
             cerealesStock.forEach(c => { let checked = db.herramienta.cereales.includes(c.id) ? 'checked' : ''; cont.innerHTML += `<label class="chk-cereal" style="padding:4px 8px; font-size:0.8rem;"><input type="checkbox" value="${c.id}" ${checked} onchange="toggleHerramientaCereal('${c.id}')" style="width:16px; height:16px;"><span>${c.nombre}</span></label>`; });
@@ -1487,22 +1483,11 @@
             });
         }
 
-        function exportarExcel() {
-            let tableHtml = `<table border="1"><thead><tr style="background:#eee;"><th>Unidad</th><th>Tipo</th><th>Estado</th><th>Cereal</th><th>Calidad</th><th>Tonelaje</th><th>F. Carga</th><th>Fumigacion</th><th>Tipo Fumigacion</th><th>Origen</th></tr></thead><tbody>`;
-            Object.keys(db.silos).sort((a,b) => String(a).localeCompare(String(b))).forEach(num => {
-                let d = db.silos[num]; if(d.estado === 'VACIO') return; let cObj = db.cereales.find(c => c.id === d.cereal); let cName = cObj ? cObj.nombre : d.cereal; let numVisual = String(num).replace('CANO', 'CAÑO');
-                tableHtml += `<tr><td>${numVisual}</td><td>${d.tipo || 'SILO'}</td><td>${d.estado}</td><td>${cName}</td><td>${d.calidad || '-'}</td><td>${d.tonelaje || 0}</td><td>${d.fecha_primera_carga || '-'}</td><td>${d.fumigacion_fecha || '-'}</td><td>${d.fumigacion_tipo || '-'}</td><td>${d.origen || '-'}</td></tr>`;
-            });
-            tableHtml += `</tbody></table>`;
-            let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Stock Silos</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>${tableHtml}</body></html>`;
-            let blob = new Blob([html], {type: 'application/vnd.ms-excel'}); let url = URL.createObjectURL(blob); let link = document.createElement("a"); link.href = url; link.download = `stock_silos_${getFechaLocal()}.xls`; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }
-
         function cerrarModal(id) { let el = document.getElementById(id); if(el) el.classList.remove('active'); }
 
         function actualizarSelects() {
             let opt = '<option value="">-- Seleccionar --</option>'; let optTodos = '<option value="TODOS">Todos los Cereales</option>';
-            obtenerCerealesEnStock().forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
+            db.cereales.forEach(c => { opt += `<option value="${c.id}">${c.nombre}</option>`; optTodos += `<option value="${c.id}">${c.nombre}</option>`; });
             
             let elTablero = document.getElementById('filtro-tablero'); let elStock = document.getElementById('sel-cereal-stock'); let elRelleno = document.getElementById('sel-cereal-relleno'); let elCalc = document.getElementById('calc-cereal');
             let prevTablero = elTablero ? elTablero.value : ''; let prevRelleno = elRelleno ? elRelleno.value : ''; let prevCalc = elCalc ? elCalc.value : '';
@@ -1511,7 +1496,7 @@
             
             document.querySelectorAll('.m-cereal').forEach(sel => { 
                 let currentVal = sel.value; 
-                sel.innerHTML = obtenerCerealesEnStock().map(c => `<option value="${c.id}">${c.nombre}</option>`).join(''); 
+                sel.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join(''); 
                 if(currentVal && Array.from(sel.options).some(o => o.value === currentVal)) sel.value = currentVal; 
             });
         }
@@ -1756,7 +1741,7 @@
                                 if (d.calidad !== calidadTarget) return;
                                 let esp = getEspacioDisp(num);
                                 if (esp > 0) {
-                                    let cinta = num >= 600 ? 'C1' : (num >= 500 || (num>=400 && num%2===0) ? 'C2' : (num >= 300 || (num>=400 && n%2!==0) ? 'C3' : 'C4'));
+                                    let cinta = num >= 600 ? 'C1' : (num >= 500 || (num>=400 && num%2===0) ? 'C2' : (num >= 300 || (num>=400 && num%2!==0) ? 'C3' : 'C4'));
                                     opciones.push({ num, esp, cinta });
                                 }
                             }
@@ -1906,6 +1891,65 @@
             if(Object.keys(resEgresos).length > 0) { hayDatos = true; response += `<b>📤 Egresos Totales:</b><br>`; for(let k in resEgresos) response += `- ${k}: ${resEgresos[k]}t<br>`; response += `<br>`; }
             if(!hayDatos) { response += `No se registraron movimientos en este período.`; } else if (detalles.length > 0) { response += `<b>Últimos Movimientos:</b><br>`; detalles.slice(0, 5).forEach(det => { response += `- ${det}<br>`; }); if (detalles.length > 5) response += `...y más.<br>`; }
             addChatMessage(response, 'bot'); return true;
+        }
+
+        // --- NUEVAS FUNCIONES ADMIN CEREALES ---
+        function renderAdminCereales() {
+            let cont = document.getElementById('admin-cereales-lista');
+            if(!cont) return;
+            let html = '';
+            db.cereales.sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(c => {
+                html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding: 8px 0;">
+                        <span style="font-weight:bold; color:${c.color || 'var(--text)'};">${c.nombre} (${c.id})</span>
+                        <div style="display:flex; gap:5px; align-items:center;">
+                            <label style="font-size:0.8rem; margin-right:5px;">PH:</label>
+                            <input type="number" step="0.1" id="ph-input-${c.id}" value="${c.ph}" style="width: 70px; padding: 4px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text);">
+                            <button onclick="guardarPH('${c.id}')" style="background:#10b981; color:white; border:none; border-radius:4px; padding:4px 10px; cursor:pointer; font-size:0.75rem;">Guardar</button>
+                        </div>
+                    </div>
+                `;
+            });
+            cont.innerHTML = html;
+        }
+
+        function guardarPH(id) {
+            let input = document.getElementById('ph-input-' + id);
+            let nuevoPH = parseFloat(input.value);
+            if(isNaN(nuevoPH) || nuevoPH <= 0) { showToast("PH inválido", "error"); return; }
+            let cereal = db.cereales.find(c => c.id === id);
+            if(!cereal) return;
+            
+            showConfirm("⚠️ Cambiar PH", "Estás por cambiar el PH de " + cereal.nombre + " de " + cereal.ph + " a " + nuevoPH + ".\n\nEsto afectará los cálculos de espacio y futuras conversiones. ¿Continuar?", (ok) => {
+                if(ok) {
+                    cereal.ph = nuevoPH;
+                    guardarDB();
+                    showToast("PH actualizado correctamente.", "success");
+                    renderAdminCereales();
+                    actualizarSelects();
+                }
+            });
+        }
+
+        function crearCereal() {
+            let nombre = document.getElementById('new-cereal-name').value.trim();
+            let ph = parseFloat(document.getElementById('new-cereal-ph').value);
+            let color = document.getElementById('new-cereal-color').value;
+            
+            if(!nombre || isNaN(ph) || ph <= 0) { showToast("Completá todos los campos correctamente.", "error"); return; }
+            
+            let id = nombre.toUpperCase().replace(/\s+/g, '_');
+            if(db.cereales.find(c => c.id === id)) { showToast("Ese cereal ya existe.", "error"); return; }
+            
+            db.cereales.push({ id: id, nombre: nombre.toUpperCase(), ph: ph, color: color });
+            guardarDB();
+            showToast("Cereal agregado correctamente.", "success");
+            
+            document.getElementById('new-cereal-name').value = '';
+            document.getElementById('new-cereal-ph').value = '';
+            
+            renderAdminCereales();
+            actualizarSelects();
         }
 
         window.onload = function() {

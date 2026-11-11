@@ -105,17 +105,9 @@
         .chat-input-area button { background: #f59e0b; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;}
 
         .row-inputs { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 15px; 
-            margin-bottom: 15px; 
-            background: var(--card); 
-            padding: 20px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
-            position: relative;
-            align-items: flex-start;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; 
+            background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1); position: relative; align-items: flex-start;
         }
         .row-inputs .form-group { width: 100%; }
         .row-inputs .form-group.full { grid-column: 1 / -1; }
@@ -123,19 +115,16 @@
         .row-inputs input, .row-inputs select { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); transition: border 0.2s; height: 48px;}
         .row-inputs input:focus, .row-inputs select:focus { border-color: var(--primary); outline: none; }
         
-        .row-inputs .header-actions { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px;}
+        .row-inputs .header-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; width: 100%; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 5px;}
         
-        .row-inputs .btn-save-row { background: #10b981; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s;}
+        .row-inputs .btn-save-row { background: #10b981; color: white; border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s;}
         .row-inputs .btn-save-row:hover { background: #059669; }
-        .row-inputs .btn-clear-row { background: #f59e0b; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; margin-right: 8px;}
+        .row-inputs .btn-clear-row { background: #f59e0b; color: white; border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; margin-right: 10px;}
         .row-inputs .btn-clear-row:hover { background: #d97706; }
+        
+        .row-inputs .header-title { font-weight: bold; color: var(--primary); font-size: 1.1rem; display: none; }
 
-        #mobile-dashboard {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 2500; padding: 20px;
-            flex-direction: column; overflow-y: auto;
-        }
+        #mobile-dashboard { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2500; padding: 20px; flex-direction: column; overflow-y: auto; }
         #mobile-dashboard.active { display: flex; }
         .mobile-dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
         .mobile-dash-title { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
@@ -160,9 +149,9 @@
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
             .row-inputs { grid-template-columns: 1fr; padding: 15px; gap: 10px; }
-            .row-inputs .header-actions { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .row-inputs .header-actions > div { width: 100%; display: flex; gap: 10px; }
-            .row-inputs .btn-save-row, .row-inputs .btn-clear-row { flex: 1; }
+            .row-inputs .header-actions { flex-direction: column; align-items: stretch; }
+            .row-inputs .header-actions > div { display: flex; flex-direction: column; gap: 10px; }
+            .row-inputs .btn-save-row, .row-inputs .btn-clear-row { width: 100%; margin: 0; }
 
             .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 4px; }
             .tarjeta { min-height: 60px; border-radius: 6px; }
@@ -205,13 +194,7 @@
         .fila-cinta { margin-bottom: 10px; }
         .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 4px; }
         
-        .tarjeta { 
-            min-height: 60px; border-radius: 4px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
-            overflow: hidden; padding-bottom: 2px; transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.1); color: #fff;
-        }
+        .tarjeta { min-height: 60px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; padding-bottom: 2px; transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.1); color: #fff; }
         .tarjeta.destacado { animation: pulse 1s; }
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); } 50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
 
@@ -355,7 +338,7 @@
         </div>
         <div class="mobile-grid" id="mobile-dash-grid">
             <button class="mobile-btn" onclick="cambiarTabMobile('tablero')"><i>📋</i>Tablero</button>
-            <button class="mobile-btn" onclick="cambiarTabMobile('movimientos')"><i>📝</i>Movs</button>
+            <button class="mobile-btn" onclick="cambiarTabMobile('movimientos')"><i>📝</i>Planilla</button>
             <button class="mobile-btn" onclick="cambiarTabMobile('alertas')"><i>🚨</i>Alertas</button>
             <button class="mobile-btn" onclick="cambiarTabMobile('existencias')"><i>📊</i>Stock</button>
             <button class="mobile-btn" onclick="cambiarTabMobile('tanques')"><i>🛢️</i>Tanques</button>
@@ -394,17 +377,14 @@
                 </div>
                 <div class="chat-chips">
                     <button class="chip" onclick="sendChip('Ayuda')" type="button">❓ Ayuda</button>
-                    <button class="chip" onclick="sendChip('Stock total')" type="button">📊 Stock Total</button>
-                    <button class="chip" onclick="sendChip('Relleno de maíz G2')" type="button">🎯 Relleno Maíz</button>
-                    <button class="chip" onclick="sendChip('Calculadora silo 305 maíz 15m')" type="button">🧮 Calculadora</button>
-                    <button class="chip" onclick="sendChip('Estándar de maíz')" type="button">📜 Estándar</button>
-                    <button class="chip" onclick="sendChip('Balance de maíz')" type="button">⚖️ Balance</button>
+                    <button class="chip" onclick="sendChip('Relleno')" type="button">⛽ Relleno</button>
+                    <button class="chip" onclick="sendChip('Estándar')" type="button">📜 Estándar</button>
                     <button class="chip" onclick="sendChip('Alertas activas')" type="button">🚨 Alertas</button>
                     <button class="chip" onclick="sendChip('Silos vacíos')" type="button">🟢 Vacíos</button>
-                    <button class="chip" onclick="sendChip('Últimos embarques')" type="button">🚚 Últimos Movs</button>
+                    <button class="chip" onclick="sendChip('Tutoriales')" type="button">📚 Tutoriales</button>
                 </div>
                 <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="Ej: Calculadora silo 305 maíz 15m" onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
+                    <input type="text" id="chat-input" placeholder="Ej: Calculadora, Stock, Tutorial..." onkeypress="handleChatEnter(event)" onfocus="hideBotButton()" onblur="showBotButton()">
                     <button onclick="sendChatMsg()" type="button">➤</button>
                 </div>
             </div>
@@ -423,7 +403,7 @@
         <div class="main-container">
             <div class="sidebar">
                 <button class="nav-btn active" onclick="cambiarTab('tablero', this)" type="button">📋<br>Tablero</button>
-                <button class="nav-btn" onclick="cambiarTab('movimientos', this)" type="button">📝<br>Movs</button>
+                <button class="nav-btn" onclick="cambiarTab('movimientos', this)" type="button">📝<br>Planilla</button>
                 <button class="nav-btn" onclick="cambiarTab('alertas', this)" type="button">🚨<br>Alertas <span id="badge-alertas" class="badge" style="display:none;">0</span></button>
                 <button class="nav-btn" onclick="cambiarTab('existencias', this)" type="button">📊<br>Stock</button>
                 <button class="nav-btn" onclick="cambiarTab('tanques', this)" type="button">🛢️<br>Tanques</button>
@@ -468,8 +448,8 @@
                 </div>
 
                 <div id="movimientos" class="tab-content">
-                    <h2>Registrar Movimiento</h2>
-                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Cargá los datos y presioná "Guardar". El formulario se reiniciará automáticamente.</p>
+                    <h2>Planilla de Movimientos</h2>
+                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Completá los datos y presioná "Guardar" al final del formulario.</p>
                     <div id="lista-movimientos"></div>
                 </div>
 
@@ -527,7 +507,7 @@
                 </div>
 
                 <div id="rellenos" class="tab-content">
-                    <h2>Disponibilidad</h2>
+                    <h2>Disponibilidad y Rellenos</h2>
                     <div class="sub-tabs">
                         <button class="sub-tab-btn active" onclick="cambiarSubTab('sub-relleno-lista', this)" type="button">Tabla de Rellenos</button>
                         <button class="sub-tab-btn" onclick="cambiarSubTab('sub-calculadora', this)" type="button">Calculadora</button>
@@ -562,16 +542,16 @@
                     </div>
                     <div id="sub-calculadora" style="display:none;">
                         <div class="card-panel">
-                            <label style="font-weight:600; font-size:0.85rem;">N° de Silo:</label>
-                            <input type="number" id="calc-silo" class="buscador" placeholder="Ej: 315" min="1" inputmode="numeric" oninput="calcularMedidaRapida()">
-                            <label style="font-weight:600; font-size:0.85rem;">Cereal:</label>
+                            <label style="font-weight:600; font-size:0.85rem;">1. Elegir Cereal (Define el PH)</label>
                             <select id="calc-cereal" class="buscador" onchange="calcularMedidaRapida()"></select>
-                            <label style="font-weight:600; font-size:0.85rem;">Metros de Vacío:</label>
+                            <label style="font-weight:600; font-size:0.85rem; margin-top:10px; display:block;">2. Silo o Entresilo</label>
+                            <input type="number" id="calc-silo" class="buscador" placeholder="Ej: 315 o 405" min="1" inputmode="numeric" oninput="calcularMedidaRapida()">
+                            <label style="font-weight:600; font-size:0.85rem; margin-top:10px; display:block;">3. Metros de Vacío (0 a 37, saltos de 0.5)</label>
                             <input type="number" id="calc-metros" class="buscador" step="0.5" min="0" placeholder="Ej: 15.5" inputmode="decimal" oninput="calcularMedidaRapida()">
                             <div id="calc-msj" style="font-size:0.85rem; font-weight:bold; margin-top:10px;"></div>
                             <div class="stat-box" style="background:var(--primary); color:white; margin-top:15px; text-align:center; border-radius:8px;">
                                 <span class="stat-num" id="calc-resultado" style="color:white; font-size:2.5rem;">0 t</span>
-                                <span class="stat-lbl" style="color:#cbd5e1;">Cálculo Teórico</span>
+                                <span class="stat-lbl" style="color:#cbd5e1;">Cálculo Teórico (Toneladas Enteras)</span>
                             </div>
                         </div>
                     </div>
@@ -686,12 +666,14 @@
             return false;
         };
 
-        const DB_VERSION = 41;
-        const DB_KEY = 'unidad7_db_v41';
+        const DB_VERSION = 42; // Subimos versión por los cambios de lógica
+        const DB_KEY = 'unidad7_db_v42';
         const PH_BASE = 80;
 
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
         const TABLA_ENTRESILOS = [[0,311.5],[0.5,307.25],[1,303],[1.5,298.75],[2,294.5],[2.5,290.25],[3,286],[3.5,281.75],[4,277.5],[4.5,273.25],[5,269],[5.5,264.75],[6,260.5],[6.5,256.25],[7,252],[7.5,247.75],[8,243.5],[8.5,239.25],[9,235],[9.5,230.75],[10,226.5],[10.5,222.25],[11,218],[11.5,213.75],[12,209.5],[12.5,205.25],[13,201],[13.5,196.75],[14,192.5],[14.5,188.25],[15,184],[15.5,179.75],[16,175.5],[16.5,171.25],[17,167],[17.5,162.75],[18,158.5],[18.5,154.25],[19,150],[19.5,145.75],[20,141.5],[20.5,137.25],[21,133],[21.5,128.75],[22,124.5],[22.5,120.25],[23,116],[23.5,111.75],[24,107.5],[24.5,103.25],[25,99],[25.5,94.75],[26,90.5],[26.5,86.25],[27,82],[27.5,77.75],[28,73.5],[28.5,69.25],[29,65],[29.5,60.75],[30,56.5],[30.5,52.25],[31,48],[31.5,43.75],[32,39.5],[32.5,35.25],[33,31],[33.5,26.75],[34,22.5],[34.5,18.25],[35,14],[35.5,9.75],[36,6.5],[36.5,3.75],[37,1.25],[37.5,0.6]];
+        
+        // Silos con restricciones
         const SILOS_MANUALES = [701, 703, 704, 706, 707, 709, 710, 712, 713, 715, 716, 718];
         const MIN_14 = [702, 705, 708, 711, 714, 717];
         const MIN_10 = [502, 505, 508, 511, 514, 517];
@@ -728,36 +710,35 @@
         let historialFiltroActual = 'TODOS';
         let historialSiloActivo = null;
 
-        // Diccionario completo para el bot
         const ESTANDARES_CALIDAD = {
-            'MAIZ': { nombre: 'MAÍZ (Norma XII)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 75 kg/hl. Dañados < 3%. Quebrados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 3%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 69 kg/hl. Dañados < 8%. Quebrados < 5%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
-            'TRIGO': { nombre: 'TRIGO PAN (Norma XX)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 79 kg/hl. Dañados < 1.5%. Mat. extrañas < 0.5%.<br>• <b>Grado 2:</b> P.H. > 76 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 3:</b> P.H. > 73 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
-            'SOJA': { nombre: 'SOJA (Norma XVII)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos quebrados 20.0%, Granos dañados 5.0%.<br>• <b>Conforme:</b> La mercadería que no excede las tolerancias de recibo se considera <b>Conforme</b>.<br>• <b>Fuera de Base:</b> La mercadería que excede las tolerancias de recibo se considera <b>Fuera de Base</b> (o Fuera de Estándar), con rebajas.<br><br><i>Base: Humedad 13.5%. Límite máx. humedad: 14%.</i>' },
-            'GIRASOL': { nombre: 'GIRASOL (Norma IX)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Materia grasa 42% (s/ sustancia seca y limpia), Acidez 1.5% (hasta 31/8) o 2% (desde 1/9), Humedad 11%, Chamico libre.<br>• <b>Tolerancias de Recibo:</b> Humedad máx. 14%, Materias extrañas máx. 3%, Chamico máx. 0.25%.<br>• <b>Conforme / Fuera de Base:</b> La mercadería dentro de las tolerancias es <b>Conforme</b>; la que las excede es <b>Fuera de Base</b>.' },
-            'SORGO': { nombre: 'SORGO GRANÍFERO (Norma XVIII - Mod. 2025)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 74 kg/hl. Dañados < 3%. Quebrados < 1%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 2%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 70 kg/hl. Dañados < 8%. Quebrados < 3%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
-            'ARVEJA': { nombre: 'ARVEJA (Norma XXVII)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Humedad 14% máx. Materias extrañas 1.0% máx. Granos dañados 3.0% máx. Granos quebrados 2.0% máx.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo. La mercadería que excede las tolerancias se considera <b>Fuera de Base</b> (con rebajas).' },
-            'GARBANZO': { nombre: 'GARBANZO (Norma XXX - Res. 48/2025)', sistema: 'base', detalle: '• <b>Garbanzo Natural (XXX-A):</b> Materias extrañas máx. 2.0%. Defectos y daños leves máx. 7.0%. Defectos y daños intensos máx. 3.0%. Granos quebrados máx. 4.0%.<br>• <b>Garbanzo Seleccionado (XXX-B):</b> Calibres de 7, 8, 9 y 10 mm.<br><br><i>Base: Humedad 14%.</i>' },
-            'LENTEJA': { nombre: 'LENTEJA (Norma XXIX)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Granos quebrados 2.0%.<br><br><i>Base: Humedad 14%.</i>' },
-            'POROTO': { nombre: 'POROTO (Norma XVI)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Humedad 15% máx. Libres de insectos vivos. Porotos contrastantes máx. 2%. Porotos de otras clases máx. 5%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' },
-            'PELLETS': { nombre: 'PELLETS DE AFRECHILLO (Norma XV)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Humedad 14% máx. Desmenuzado 6% máx. Cenizas 10% máx. Almidón 28% (s/ sustancia tal cual). Aglutinantes 1.5% máx.<br>• <b>Ventas según muestra:</b> Los pellets que excedan tolerancias o presenten olores objetables se someten a arbitraje.' },
-            'CEBADA': { nombre: 'CEBADA (Norma VI)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 64 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 62 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 60 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
-            'AVENA': { nombre: 'AVENA (Norma III)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 52 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 50 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 48 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
-            'CENTENO': { nombre: 'CENTENO (Norma VII)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 71 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 69 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 67 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
-            'COLZA': { nombre: 'COLZA (Norma VIII)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' },
-            'LINO': { nombre: 'LINO (Norma X)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' },
-            'MANI': { nombre: 'MANÍ (Norma XIII)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 50 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 48 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 46 kg/hl. Dañados < 8%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 9%, Grado 2.</i>' },
-            'MIJO': { nombre: 'MIJO (Norma XIV)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 72 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 70 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 68 kg/hl. Dañados < 8%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
-            'ALPISTE': { nombre: 'ALPISTE (Norma I)', sistema: 'grados', detalle: '• <b>Grado 1:</b> P.H. > 68 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 66 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 64 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
-            'CARTAMO': { nombre: 'CÁRTAMO (Norma IV)', sistema: 'base', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 2.0%, Granos dañados 5.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' }
+            'MAIZ': { nombre: 'MAÍZ (Norma XII)', detalle: '• <b>Grado 1:</b> P.H. > 75 kg/hl. Dañados < 3%. Quebrados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 3%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 69 kg/hl. Dañados < 8%. Quebrados < 5%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
+            'TRIGO': { nombre: 'TRIGO PAN (Norma XX)', detalle: '• <b>Grado 1:</b> P.H. > 79 kg/hl. Dañados < 1.5%. Mat. extrañas < 0.5%.<br>• <b>Grado 2:</b> P.H. > 76 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 3:</b> P.H. > 73 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
+            'SOJA': { nombre: 'SOJA (Norma XVII)', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos quebrados 20.0%, Granos dañados 5.0%.<br>• <b>Conforme:</b> La mercadería que no excede las tolerancias de recibo se considera <b>Conforme</b>.<br>• <b>Fuera de Base:</b> La mercadería que excede las tolerancias de recibo se considera <b>Fuera de Base</b> (o Fuera de Estándar), con rebajas.<br><br><i>Base: Humedad 13.5%. Límite máx. humedad: 14%.</i>' },
+            'GIRASOL': { nombre: 'GIRASOL (Norma IX)', detalle: '• <b>Base de Comercialización:</b> Materia grasa 42% (s/ sustancia seca y limpia), Acidez 1.5% (hasta 31/8) o 2% (desde 1/9), Humedad 11%, Chamico libre.<br>• <b>Tolerancias de Recibo:</b> Humedad máx. 14%, Materias extrañas máx. 3%, Chamico máx. 0.25%.<br>• <b>Conforme / Fuera de Base:</b> La mercadería dentro de las tolerancias es <b>Conforme</b>; la que las excede es <b>Fuera de Base</b>.' },
+            'SORGO': { nombre: 'SORGO GRANÍFERO (Norma XVIII - Mod. 2025)', detalle: '• <b>Grado 1:</b> P.H. > 74 kg/hl. Dañados < 3%. Quebrados < 1%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 72 kg/hl. Dañados < 5%. Quebrados < 2%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 70 kg/hl. Dañados < 8%. Quebrados < 3%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2. Límite máx. humedad: 14.5%.</i>' },
+            'ARVEJA': { nombre: 'ARVEJA (Norma XXVII)', detalle: '• <b>Base de Comercialización:</b> Humedad 14% máx. Materias extrañas 1.0% máx. Granos dañados 3.0% máx. Granos quebrados 2.0% máx.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo. La mercadería que excede las tolerancias se considera <b>Fuera de Base</b> (con rebajas).' },
+            'GARBANZO': { nombre: 'GARBANZO (Norma XXX - Res. 48/2025)', detalle: '• <b>Garbanzo Natural (XXX-A):</b> Materias extrañas máx. 2.0%. Defectos y daños leves máx. 7.0%. Defectos y daños intensos máx. 3.0%. Granos quebrados máx. 4.0%.<br>• <b>Garbanzo Seleccionado (XXX-B):</b> Calibres de 7, 8, 9 y 10 mm.<br><br><i>Base: Humedad 14%.</i>' },
+            'LENTEJA': { nombre: 'LENTEJA (Norma XXIX)', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Granos quebrados 2.0%.<br><br><i>Base: Humedad 14%.</i>' },
+            'POROTO': { nombre: 'POROTO (Norma XVI)', detalle: '• <b>Base de Comercialización:</b> Humedad 15% máx. Libres de insectos vivos. Porotos contrastantes máx. 2%. Porotos de otras clases máx. 5%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' },
+            'PELLETS': { nombre: 'PELLETS DE AFRECHILLO (Norma XV)', detalle: '• <b>Base de Comercialización:</b> Humedad 14% máx. Desmenuzado 6% máx. Cenizas 10% máx. Almidón 28% (s/ sustancia tal cual). Aglutinantes 1.5% máx.<br>• <b>Ventas según muestra:</b> Los pellets que excedan tolerancias o presenten olores objetables se someten a arbitraje.' },
+            'CEBADA': { nombre: 'CEBADA (Norma VI)', detalle: '• <b>Grado 1:</b> P.H. > 64 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 62 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 60 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
+            'AVENA': { nombre: 'AVENA (Norma III)', detalle: '• <b>Grado 1:</b> P.H. > 52 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 50 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 48 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
+            'CENTENO': { nombre: 'CENTENO (Norma VII)', detalle: '• <b>Grado 1:</b> P.H. > 71 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 69 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 67 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
+            'COLZA': { nombre: 'COLZA (Norma VIII)', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' },
+            'LINO': { nombre: 'LINO (Norma X)', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 1.0%, Granos dañados 3.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' },
+            'MANI': { nombre: 'MANÍ (Norma XIII)', detalle: '• <b>Grado 1:</b> P.H. > 50 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 48 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 46 kg/hl. Dañados < 8%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 9%, Grado 2.</i>' },
+            'MIJO': { nombre: 'MIJO (Norma XIV)', detalle: '• <b>Grado 1:</b> P.H. > 72 kg/hl. Dañados < 3%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 70 kg/hl. Dañados < 5%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 68 kg/hl. Dañados < 8%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
+            'ALPISTE': { nombre: 'ALPISTE (Norma I)', detalle: '• <b>Grado 1:</b> P.H. > 68 kg/hl. Dañados < 2%. Mat. extrañas < 1%.<br>• <b>Grado 2:</b> P.H. > 66 kg/hl. Dañados < 4%. Mat. extrañas < 1.5%.<br>• <b>Grado 3:</b> P.H. > 64 kg/hl. Dañados < 6%. Mat. extrañas < 2%.<br><br><i>Base: Humedad 14%, Grado 2.</i>' },
+            'CARTAMO': { nombre: 'CÁRTAMO (Norma IV)', detalle: '• <b>Base de Comercialización:</b> Materias extrañas 2.0%, Granos dañados 5.0%, Humedad 10%.<br>• <b>Conforme / Fuera de Base:</b> Se aplica el criterio de tolerancias de recibo.' }
         };
 
         const TUTORIALES = {
-            'movimientos': "📥 <b>¿Cómo cargar un Movimiento?</b><br><br>1. Andá a la pestaña <b>Movs</b>.<br>2. Elegí el Tipo de Acción (Ingreso, Egreso, etc.).<br>3. Completá la Unidad, Fecha y datos del cereal.<br>4. Tocá <b>💾 Guardar Registro</b>. El formulario se limpia solo.<br><br>🔗 <button onclick='cambiarTab(\"movimientos\", document.querySelectorAll(\".sidebar .nav-btn\")[1]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Movs</button>",
-            'ph': "🧪 <b>¿Cómo funciona el PH (Peso Hectolítrico)?</b><br><br>El PH es el peso por hectolitro. La app usa un <b>PH Base</b> (ej: Maíz=76, Trigo=78) para calcular las toneladas de un silo según los metros vacíos.<br><br>Si cambia el PH de tu cereal, la app se ajustará automáticamente. Para ver el cálculo exacto, andá a la <b>Calculadora</b> en Rellenos.<br><br>🔗 <button onclick='cambiarTab(\"rellenos\", document.querySelectorAll(\".sidebar .nav-btn\")[5]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Calculadora</button>",
-            'stock': "📊 <b>¿Cómo ver el Stock?</b><br><br>Andá a la pestaña <b>Stock</b>. Ahí vas a ver el total por cereal, separado por calidad y ubicación (Silos, Tanques, Paso).<br>Tocá un cereal para ver el detalle. Si ves un ⚠️, significa que falta cargar la fumigación o la calidad.<br><br>🔗 <button onclick='cambiarTab(\"existencias\", document.querySelectorAll(\".sidebar .nav-btn\")[3]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Stock</button>",
-            'tanques': "🛢️ <b>Tanques y Circuitos</b><br><br>Acá ves los tanques por piso. Tocá uno para ver su flujo (qué tanque alimenta a cuál).<br>Al final están las unidades de paso (Caños, Tolvas, Balanzas, CER).<br><br>🔗 <button onclick='cambiarTab(\"tanques\", document.querySelectorAll(\".sidebar .nav-btn\")[4]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Tanques</button>",
-            'anotador': "🛠️ <b>¿Para qué sirve el Anotador?</b><br><br>Es una herramienta de control diario. Seleccioná los cereales con los que estás trabajando y te mostrará solo esos silos.<br>Tocá las tarjetas para cambiar su estado visualmente (no afecta el inventario real).<br><br>🔗 <button onclick='cambiarTab(\"herramienta\", document.querySelectorAll(\".sidebar .nav-btn\")[6]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Anotador</button>",
-            'admin': "⚙️ <b>Administración y Cierres</b><br><br>Acá podés guardar una 'foto' del inventario actual (Cierre de Jornada) o gestionar los cereales y su PH.<br><br>🔗 <button onclick='cambiarTab(\"admin\", document.querySelectorAll(\".sidebar .nav-btn\")[7]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Admin</button>"
+            'planilla': "📝 <b>¿Cómo usar la Planilla?</b><br><br>1. Elegí Tipo de Acción (Ingreso, Egreso, etc).<br>2. Seleccioná la Unidad y Fecha.<br>3. Llená los datos (Cereal, Calidad, Metros de vacío).<br>4. <b>Verificá el cálculo automático</b> (podés corregirlo si el silo tiene medidas irregulares).<br>5. Tocá <b>💾 Guardar</b> al final del formulario.<br><br>🔗 <button onclick='cambiarTab(\"movimientos\", document.querySelectorAll(\".sidebar .nav-btn\")[1]); cerrarModal(\"silobot-modal\");' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Planilla</button>",
+            'ph': "🧪 <b>¿Cómo funciona el PH?</b><br><br>El PH (Peso Hectolítrico) define cuántas toneladas entran según los metros de vacío. La app usa el PH Base del cereal.<br>En los silos 700, el cálculo es automático pero podés modificarlo si la realidad difiere.<br><br>🔗 <button onclick='cambiarTab(\"rellenos\", document.querySelectorAll(\".sidebar .nav-btn\")[5]);' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Calculadora</button>",
+            'stock': "📊 <b>¿Cómo ver el Stock?</b><br><br>Andá a la pestaña <b>Stock</b>. Ahí vas a ver el total por cereal, separado por calidad y ubicación.<br>Tocá un cereal para ver el detalle. Si ves un ⚠️, falta cargar fumigación o calidad.<br><br>🔗 <button onclick='cambiarTab(\"existencias\", document.querySelectorAll(\".sidebar .nav-btn\")[3]);' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Stock</button>",
+            'tanques': "🛢️ <b>Tanques y Circuitos</b><br><br>Acá ves los tanques por piso. Tocá uno para ver su flujo.<br>Al final están las unidades de paso (Caños, Tolvas, Balanzas, CER).<br><br>🔗 <button onclick='cambiarTab(\"tanques\", document.querySelectorAll(\".sidebar .nav-btn\")[4]);' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Tanques</button>",
+            'anotador': "🛠️ <b>¿Para qué sirve el Anotador?</b><br><br>Es una herramienta de control diario. Seleccioná los cereales y te mostrará solo esos silos.<br>Tocá las tarjetas para cambiar su estado visualmente (no afecta el inventario real).<br><br>🔗 <button onclick='cambiarTab(\"herramienta\", document.querySelectorAll(\".sidebar .nav-btn\")[6]);' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Anotador</button>",
+            'admin': "⚙️ <b>Administración y Cierres</b><br><br>Acá podés guardar una 'foto' del inventario actual o gestionar los PH de los cereales.<br><br>🔗 <button onclick='cambiarTab(\"admin\", document.querySelectorAll(\".sidebar .nav-btn\")[7]);' style='background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:5px;'>Ir a Admin</button>"
         };
 
         function showToast(msg, type = 'info', duration = 3500) {
@@ -793,7 +774,10 @@
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             try {
                 let saved = localStorage.getItem(DB_KEY);
-                if (!saved) { let old = localStorage.getItem('unidad7_db_v40') || localStorage.getItem('unidad7_db_v39'); if (old) { db = JSON.parse(old); db.__version = DB_VERSION; if(!db.cierres) db.cierres = []; } }
+                if (!saved) { 
+                    let old = localStorage.getItem('unidad7_db_v41') || localStorage.getItem('unidad7_db_v40'); 
+                    if (old) { db = JSON.parse(old); db.__version = DB_VERSION; if(!db.cierres) db.cierres = []; } 
+                }
                 else { db = JSON.parse(saved); }
             } catch(e) { db = { __version: DB_VERSION, cereales: [], silos: {}, herramienta: { cereales: [], silos: {} }, cierres: [] }; }
 
@@ -861,7 +845,16 @@
         }
 
         function cambiarSubTab(id, btn) { document.querySelectorAll('#rellenos > div[id^="sub-"]').forEach(d => d.style.display = 'none'); document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).style.display = 'block'; btn.classList.add('active'); }
-        function interpolar(tabla, metros) { if(metros <= tabla[0][0]) return tabla[0][1]; if(metros >= tabla[tabla.length-1][0]) return tabla[tabla.length-1][1]; for(let i=0; i<tabla.length-1; i++) { let a = tabla[i], b = tabla[i+1]; if(metros >= a[0] && metros <= b[0]) return a[1] + (b[1]-a[1]) * ((metros - a[0]) / (b[0] - a[0])); } return 0; }
+        
+        function interpolar(tabla, metros) { 
+            if(metros <= tabla[0][0]) return tabla[0][1]; 
+            if(metros >= tabla[tabla.length-1][0]) return tabla[tabla.length-1][1]; 
+            for(let i=0; i<tabla.length-1; i++) { 
+                let a = tabla[i], b = tabla[i+1]; 
+                if(metros >= a[0] && metros <= b[0]) return a[1] + (b[1]-a[1]) * ((metros - a[0]) / (b[0] - a[0])); 
+            } 
+            return 0; 
+        }
 
         function getSiloData(num) {
             if(!db.silos[num]) {
@@ -878,29 +871,62 @@
             }
             return db.silos[num];
         }
+
         function esSiloTipo(num) { return ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO'; }
         function esUnidadValida(u) { if (typeof u === 'number' || !isNaN(u)) { let num = parseInt(u); return (num >= 101 && num <= 118) || (num >= 201 && num <= 217) || (num >= 301 && num <= 318) || (num >= 401 && num <= 417) || (num >= 501 && num <= 518) || (num >= 601 && num <= 617) || (num >= 701 && num <= 718); } return true; }
-        function obtenerTopeMetros(num) { if(MIN_14.includes(num)) return 14; if(MIN_10.includes(num)) return 10; return 0; }
-        function getEspacioDisp(num) { let d = db.silos[num]; if(!d || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return 0; let cereal = db.cereales.find(c => c.id === d.cereal); if(!cereal) return 0; let n = parseInt(num); let tipo = esSiloTipo(n); if(SILOS_MANUALES.includes(n)) return d.relleno_manual || 0; let topeMetros = obtenerTopeMetros(n); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros); let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE); let actual = parseFloat(d.tonelaje) || 0; return capMaxTonTope - actual; }
+        
+        // Lógica del tope para relleno (a qué metro se considera lleno)
+        function obtenerTopeMetros(num) { 
+            if(MIN_14.includes(num)) return 14; 
+            if(MIN_10.includes(num)) return 10; 
+            return 1; // Por defecto se llena hasta 1 metro vacío
+        }
+
+        function obtenerTopeEntresilo() { return 4; } // Entresilos se llenan hasta 4 metros vacíos
+
+        // Calcula las toneladas máximas que puede tener una unidad rellenable
+        function getTonelajeMaxRelleno(num, cerealObj) {
+            let n = parseInt(num);
+            let tipo = esSiloTipo(n);
+            let topeMetros = (tipo === 'ENTRESILO') ? obtenerTopeEntresilo() : obtenerTopeMetros(n);
+            let capMaxRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
+            return Math.round(capMaxRef * cerealObj.ph / PH_BASE);
+        }
+
+        // Calcula el espacio disponible para rellenar (en toneladas)
+        function getEspacioDisp(num) { 
+            let d = db.silos[num]; 
+            if(!d || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return 0; 
+            let cereal = db.cereales.find(c => c.id === d.cereal); 
+            if(!cereal) return 0; 
+            let n = parseInt(num); 
+            
+            // Si es un silo de los 700 que carga menos, usa el valor manual
+            if(SILOS_MANUALES.includes(n)) return d.relleno_manual || 0; 
+            
+            let maxTons = getTonelajeMaxRelleno(num, cereal);
+            let actual = parseFloat(d.tonelaje) || 0; 
+            return Math.max(0, maxTons - actual); 
+        }
 
         let searchTimeout; function filtrarSmartSearchDebounce() { clearTimeout(searchTimeout); searchTimeout = setTimeout(calcularStock, 300); }
 
         function agregarFilaMovimiento() {
             let div = document.createElement('div'); div.className = 'row-inputs';
+            // Se movieron los botones al final del formulario
             div.innerHTML = `
-                <div class="header-actions">
-                    <span style="font-weight:bold; color:var(--primary); font-size:1.1rem;">Movimiento</span>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-clear-row" onclick="limpiarFila(this)" type="button">🧹 Limpiar</button>
-                        <button class="btn-save-row" onclick="procesarMovimientos(this)" type="button">💾 Guardar Registro</button>
-                    </div>
-                </div>
                 <div class="form-group full"><label>Tipo de Acción</label><select class="m-tipo-accion" onchange="cambiarTipoAccion(this);" style="font-weight:bold;"><option value="INGRESO">📥 Ingreso de Mercadería</option><option value="EGRESO">📤 Egreso / Baja</option><option value="RECIRCULACION">🔄 Recirculación</option><option value="ESTADO">🚫 Cambio de Estado</option></select></div>
                 <div class="form-group"><label>Tipo de Unidad</label><select class="m-tipo-unidad" onchange="cambiarTipoUnidad(this);"><option value="SILO">Silo / Entresilo</option><option value="TANQUE">Tanque</option><option value="PASO">Caño / Tolva / Balanza / CER</option></select></div>
                 <div class="form-group"><label>Unidad</label><input type="number" placeholder="Ej: 501" class="m-silo" min="1" inputmode="numeric" oninput="autocompletarSilo(this);"><select class="m-silo-select" style="display:none;" onchange="autocompletarSiloSelect(this);"></select></div>
                 <div class="form-group"><label>Fecha</label><input type="date" class="m-fecha"></div>
                 <div class="campos-dinamicos" style="display:contents;"></div>
                 <div class="form-group full"><label>Observaciones (Opcional)</label><input type="text" placeholder="Ej: Mercadería húmeda..." class="m-obs"></div>
+                <div class="header-actions">
+                    <div>
+                        <button class="btn-clear-row" onclick="limpiarFila(this)" type="button">🧹 Limpiar</button>
+                        <button class="btn-save-row" onclick="procesarMovimientos(this)" type="button">💾 Guardar</button>
+                    </div>
+                </div>
             `;
             div.querySelector('.m-fecha').value = '';
             document.getElementById('lista-movimientos').appendChild(div);
@@ -929,10 +955,16 @@
             let cerealesSelect = db.cereales.slice().sort((a,b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
             if(tipoAccion === 'INGRESO') {
-                let campos = `<div class="form-group"><label>Origen</label><select class="m-origen" onchange="validarOrigen(this);"><option value="CAMIONES">Camiones</option><option value="VAGONES">Vagones</option><option value="TRANSILE">Transile</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="LIMPIEZA">Limpieza</option></select></div><div class="form-group" id="div-unidad-origen" style="display:none;"><label>Unidad Origen</label><input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305"></div><div class="form-group"><label>Cereal</label><select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'));">${cerealesSelect}</select></div><div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2"></div>`;
+                let campos = `<div class="form-group"><label>Origen</label><select class="m-origen" onchange="validarOrigen(this);"><option value="CAMIONES">Camiones</option><option value="VAGONES">Vagones</option><option value="TRANSILE">Transile</option><option value="TRANSFERENCIA">Transferencia (U6)</option><option value="LIMPIEZA">Limpieza</option></select></div><div class="form-group" id="div-unidad-origen" style="display:none;"><label>Unidad Origen</label><input type="text" class="m-unidad-origen" placeholder="Ej: Silo 305"></div><div class="form-group"><label>Cereal</label><select class="m-cereal" onchange="validarMezclaFila(this.closest('.row-inputs'));">${cerealesSelect}</select></div><div class="form-group"><label>Calidad</label><input type="text" class="m-calidad" placeholder="Ej: G2 o Dañado Alto"></div>`;
                 if (esFumigable) campos += `<div class="form-group"><label>¿Fumigado?</label><select class="m-fumigo"><option value="NO">No se fumigó</option><option value="TOTAL">Fumigación Total</option><option value="LIQUIDO">Solo Líquido</option><option value="PASTILLAS">Solo Pastillas</option></select></div>`;
-                if (esSilo) campos += `<div class="form-group"><label>Metros Vacío</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this);"></div><div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal"></div>`;
-                else campos += `<div class="form-group full"><label>Tonelaje (Manual)</label><input type="number" class="m-tons-manual" min="0" placeholder="0" inputmode="decimal"></div>`;
+                
+                if (esSilo) {
+                    let n = inputSilo ? parseInt(inputSilo.value) : null;
+                    let leyenda = (n >= 701 && n <= 718) ? " (700 cargan menos, verificar)" : "";
+                    campos += `<div class="form-group"><label>Metros Vacío${leyenda}</label><input type="number" class="m-metros" step="0.5" min="0" inputmode="decimal" oninput="autoCalcularFila(this);"></div><div class="form-group"><label>Tonelaje</label><input type="number" class="m-tons" min="0" placeholder="0" inputmode="decimal"></div>`;
+                } else {
+                    campos += `<div class="form-group full"><label>Tonelaje (Manual)</label><input type="number" class="m-tons-manual" min="0" placeholder="0" inputmode="decimal"></div>`;
+                }
                 container.innerHTML = campos;
             }
             else if(tipoAccion === 'EGRESO') {
@@ -963,13 +995,17 @@
             let silo = parseInt(inputSilo.value); let cerealId = inputCereal.value; let metros = parseFloat(inputMetros.value);
             if(!silo || silo < 0) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; return; }
             if(!cerealId || isNaN(metros) || metros < 0) { inputTons.value = ''; return; }
-            if(SILOS_MANUALES.includes(silo)) { inputTons.value = ''; inputTons.placeholder = "Manual!"; return; }
-            if(MIN_14.includes(silo) && metros < 14) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; return; }
-            if(MIN_10.includes(silo) && metros < 10) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; return; }
+            
+            if(MIN_14.includes(silo) && metros < 14) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; showToast(`Silo ${silo} corta a los 14m.`, "warning"); return; }
+            if(MIN_10.includes(silo) && metros < 10) { row.style.border = "2px solid #ef4444"; inputTons.value = ''; showToast(`Silo ${silo} corta a los 10m.`, "warning"); return; }
+            
             validarMezclaFila(row);
             let cereal = db.cereales.find(c => c.id === cerealId); let tipo = esSiloTipo(silo);
             let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
-            let tons = Math.round(phRef * cereal.ph / PH_BASE); inputTons.value = tons;
+            let tons = Math.round(phRef * cereal.ph / PH_BASE); 
+            
+            // Permitimos que se modifique manualmente (es un input normal)
+            inputTons.value = tons; 
         }
 
         function calcularEgresoPorMetros(input) {
@@ -978,9 +1014,10 @@
             let silo = parseInt(inputSilo.value); let metros = parseFloat(inputNuevosMetros.value); if(!silo || isNaN(metros) || metros < 0) return;
             let d = getSiloData(silo); if(d.estado === 'VACIO') { inputTonsBaja.value = 0; return; }
             let cereal = db.cereales.find(c => c.id === d.cereal); if(!cereal) return;
-            let tipo = esSiloTipo(silo); let topeMetros = obtenerTopeMetros(silo);
-            let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
-            let capMaxTon = Math.round(capMaxRefTope * cereal.ph / PH_BASE);
+            let tipo = esSiloTipo(silo); 
+            
+            let capMaxTon = getTonelajeMaxRelleno(silo, cereal); // Para egresos, usamos el tope maximo de relleno como referencia superior
+            
             let refNuevosMetros = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
             let capacidadRestante = Math.round(refNuevosMetros * cereal.ph / PH_BASE);
             let nuevoTonelaje = capMaxTon - capacidadRestante; if(nuevoTonelaje < 0) nuevoTonelaje = 0;
@@ -1352,13 +1389,25 @@
             let cont = document.getElementById('rellenos-cintas-container'); let detalleCont = document.getElementById('detalle-relleno-container'); if(!cont || !detalleCont) return;
             cont.innerHTML = ''; detalleCont.style.display = 'none'; cintaRellenoAbierta = null; if(!cerealId) return;
             let cereal = db.cereales.find(c => c.id === cerealId); let totalesCinta = { C1: 0, C2: 0, C3: 0, C4: 0 }; let silosPorCinta = { C1: [], C2: [], C3: [], C4: [] };
+            
             Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num]; if(d.tipo !== 'SILO' && d.tipo !== 'ENTRESILO') return; if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return; if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
-                let espacio = 0; let manual = false; let n = parseInt(num); let tipo = esSiloTipo(n);
+                let d = db.silos[num]; 
+                if(d.tipo !== 'SILO' && d.tipo !== 'ENTRESILO') return; 
+                if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return; 
+                if(calidadFiltro !== 'TODAS' && d.calidad !== calidadFiltro) return;
+                
+                let espacio = 0; let manual = false; let n = parseInt(num);
+                // Usa la nueva función que respeta los topes (1m, 4m, 10m, 14m)
                 if(SILOS_MANUALES.includes(n)) { manual = true; espacio = d.relleno_manual || 0; }
-                else { let topeMetros = obtenerTopeMetros(n); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros); let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE); let actual = parseFloat(d.tonelaje) || 0; espacio = capMaxTonTope - actual; }
-                if(espacio > 0 || manual) { let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4')); totalesCinta[cinta] += espacio; silosPorCinta[cinta].push({ num: n, espacio: espacio, manual: manual, fumigacion: d.fumigacion_fecha }); }
+                else { espacio = getEspacioDisp(num); }
+                
+                if(espacio > 0 || manual) { 
+                    let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4')); 
+                    totalesCinta[cinta] += espacio; 
+                    silosPorCinta[cinta].push({ num: n, espacio: espacio, manual: manual, fumigacion: d.fumigacion_fecha, estado: d.estado }); 
+                }
             });
+
             ['C1','C2','C3','C4'].forEach(c => {
                 let nombre = c==='C1'?'Extracción 1':(c==='C2'?'Extracción 2':(c==='C3'?'Extracción 3':'Extracción 4')); let total = totalesCinta[c];
                 if(total > 0 || silosPorCinta[c].length > 0) { cont.innerHTML += `<div class="cinta-card" id="card-${c}" onclick="toggleDetalleRelleno('${c}', '${cerealId}', '${calidadFiltro}')"><div><div class="cinta-title">${nombre}</div><div style="font-size:0.75rem; color:var(--text-light);">${silosPorCinta[c].length} unidades disponibles</div></div><div class="cinta-total" style="color:${cereal.color};">${total} t</div></div>`; }
@@ -1374,20 +1423,28 @@
             if (cardEl) cardEl.classList.add('active');
             let nombreCinta = cinta==='C1'?'Extracción 1':(cinta==='C2'?'Extracción 2':(cinta==='C3'?'Extracción 3':'Extracción 4')); titulo.innerText = `Detalle ${nombreCinta}`; tbody.innerHTML = '';
             let cereal = db.cereales.find(c => c.id === cerealId); let maxEspacio = 0; let siloMaxId = null; let filas = [];
+            
             Object.keys(db.silos).forEach(num => {
                 let d = db.silos[num]; if(d.tipo !== 'SILO' && d.tipo !== 'ENTRESILO') return; if(d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return; if(calFiltro !== 'TODAS' && d.calidad !== calFiltro) return;
                 let n = parseInt(num); let cintaSil = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4')); if(cintaSil !== cinta) return;
-                let espacio = 0; let manual = false; let tipo = esSiloTipo(n);
+                
+                let espacio = 0; let manual = false; 
                 if(SILOS_MANUALES.includes(n)) { manual = true; espacio = d.relleno_manual || 0; }
-                else { let topeMetros = obtenerTopeMetros(n); let capMaxRefTope = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros); let capMaxTonTope = Math.round(capMaxRefTope * cereal.ph / PH_BASE); let actual = parseFloat(d.tonelaje) || 0; espacio = capMaxTonTope - actual; }
-                if(espacio > 0 || manual) { if(espacio > maxEspacio) { maxEspacio = espacio; siloMaxId = n; } filas.push({ n, espacio, manual, fumigacion: d.fumigacion_fecha, cereal: d.cereal, calidad: d.calidad || 'S/C', fecha_carga: d.fecha_primera_carga ? d.fecha_primera_carga.split('-').reverse().join('/') : '-', origen: d.origen || '-', tonelaje: d.tonelaje }); }
+                else { espacio = getEspacioDisp(num); }
+                
+                if(espacio > 0 || manual) { 
+                    if(espacio > maxEspacio) { maxEspacio = espacio; siloMaxId = n; } 
+                    filas.push({ n, espacio, manual, fumigacion: d.fumigacion_fecha, cereal: d.cereal, calidad: d.calidad || 'S/C', fecha_carga: d.fecha_primera_carga ? d.fecha_primera_carga.split('-').reverse().join('/') : '-', origen: d.origen || '-', tonelaje: d.tonelaje, estado: d.estado }); 
+                }
             });
+            
             filas.sort((a, b) => b.espacio - a.espacio);
             filas.forEach(f => {
                 let fumStr = f.fumigacion ? '🧪 Fumigado' : '⚠️ Sin Fumigar';
                 let inputEspacio = f.manual ? `<input type="number" value="${db.silos[f.n].relleno_manual||''}" placeholder="Manual" style="width:70px; padding:6px; font-size:1rem;" inputmode="decimal" onchange="guardarRellenoManual(${f.n}, this.value, '${cinta}')"> t` : `<b style="color:#16a34a; font-size:1.05rem;">~${f.espacio} t</b>`;
-                let highlight = (f.n === siloMaxId && !f.manual) ? 'silo-sugerido' : '';
-                tbody.innerHTML += `<tr class="${highlight}"><td><b>${f.n}</b> ${f.manual?'⚠️':''} ${highlight?'(Sugerido)':''}</td><td>${f.cereal}</td><td>${f.calidad}</td><td>${f.fecha_carga}</td><td>${f.origen}</td><td><b>${f.tonelaje} t</b></td><td style="font-size:0.8rem;">${fumStr}</td><td>${inputEspacio}</td></tr>`;
+                let highlight = (f.n === siloMaxId && !f.manual && f.estado !== 'TAPADA') ? 'silo-sugerido' : '';
+                let tapadoWarn = f.estado === 'TAPADA' ? '⚠️ TAPADO' : '';
+                tbody.innerHTML += `<tr class="${highlight}"><td><b>${f.n}</b> ${f.manual?'⚠️':''} ${tapadoWarn} ${highlight?'(Sugerido)':''}</td><td>${f.cereal}</td><td>${f.calidad}</td><td>${f.fecha_carga}</td><td>${f.origen}</td><td><b>${f.tonelaje} t</b></td><td style="font-size:0.8rem;">${fumStr}</td><td>${inputEspacio}</td></tr>`;
             });
             detalleCont.style.display = 'block';
         }
@@ -1403,10 +1460,18 @@
         function calcularMedidaRapida() {
             let silo = parseInt(document.getElementById('calc-silo').value); let cerealId = document.getElementById('calc-cereal').value; let metros = parseFloat(document.getElementById('calc-metros').value);
             let msj = document.getElementById('calc-msj'); let res = document.getElementById('calc-resultado'); if(!msj || !res) return;
+            
             if(!silo || silo < 0 || !cerealId || isNaN(metros) || metros < 0) { res.innerText = '0 t'; msj.innerText = ''; return; }
-            if(SILOS_MANUALES.includes(silo)) { msj.innerText = "⚠️ Silo de capacidad reducida. Cálculo de referencia."; msj.style.color = "#d97706"; } else { msj.innerText = ""; }
+            
+            if(SILOS_MANUALES.includes(silo)) { msj.innerText = "⚠️ Silo 700 de carga reducida. Verificar cálculo."; msj.style.color = "#d97706"; } 
+            else if(MIN_14.includes(silo) && metros < 14) { res.innerText = '0 t'; msj.innerText = `❌ Silo ${silo} corta a los 14m.`; msj.style.color = "#ef4444"; return; }
+            else if(MIN_10.includes(silo) && metros < 10) { res.innerText = '0 t'; msj.innerText = `❌ Silo ${silo} corta a los 10m.`; msj.style.color = "#ef4444"; return; }
+            else { msj.innerText = ""; }
+            
             let cereal = db.cereales.find(c => c.id === cerealId); let tipo = esSiloTipo(silo);
-            let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros); let tons = Math.round(phRef * cereal.ph / PH_BASE); res.innerText = `${tons} t`;
+            let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros); 
+            let tons = Math.round(phRef * cereal.ph / PH_BASE); 
+            res.innerText = `${tons} t`;
         }
 
         function renderHerramientaCerealesChk() {
@@ -1578,40 +1643,18 @@
         // ============================================================
         // HELPERS DEL BOT
         // ============================================================
-        function calcularRellenoOptimo(cerealId, calidadFiltro = null) {
-            let opciones = [];
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if (d.cereal !== cerealId || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return;
-                if (calidadFiltro && d.calidad !== calidadFiltro) return;
-                let esp = getEspacioDisp(num);
-                if (esp > 0) {
-                    let n = parseInt(num); if (isNaN(n)) return;
-                    let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
-                    opciones.push({ num, esp, cinta, calidad: d.calidad || 'S/C' });
-                }
-            });
-            return opciones;
-        }
-
-        function irACalculadora() {
-            cambiarTab('rellenos', document.querySelectorAll('.sidebar .nav-btn')[5]);
-            setTimeout(() => { const btns = document.querySelectorAll('.sub-tab-btn'); if (btns[1]) cambiarSubTab('sub-calculadora', btns[1]); }, 100);
-            cerrarModal('silobot-modal');
-        }
-
         function mostrarMenuAyuda() {
-            addChatMessage(`<b>🤖 ¿Qué puedo hacer?</b><br><br>📊 <b>Stock y Estado:</b><br>• "stock total"<br>• "stock de maíz"<br>• "silos vacíos"<br>• "silos con maíz"<br><br>🎯 <b>Rellenos y Calculadora:</b><br>• "relleno de maíz G2"<br>• "donde pongo soja"<br>• "calculadora silo 305 maíz 15m"<br>• "capacidad silo 305"<br><br>📜 <b>Información:</b><br>• "estándar de maíz"<br>• "detalle silo 305"<br>• "clima en córdoba"<br><br>🚚 <b>Logística:</b><br>• "últimos embarques"<br>• "logística de ayer"<br>• "logística de esta semana"<br><br>🧪 <b>Análisis:</b><br>• "simular maíz ph 70"<br>• "balance de maíz"<br>• "analizar cintas maíz"<br><br>🚨 <b>Alertas:</b><br>• "alertas activas"<br>• "poner alerta al 305 por humedad"<br><br>📚 <b>Tutoriales:</b><br>• "tutorial de movimientos"<br>• "tutorial de ph"`, 'bot');
+            addChatMessage(`<b>🤖 ¿Qué puedo hacer por vos?</b><br><br>📦 <b>Stock y Unidades:</b><br>• "Stock total"<br>• "Stock de maíz"<br>• "Silos vacíos"<br>• "Silos con soja" (incluye tanques y pasos)<br><br>⛽ <b>Rellenos y Logística:</b><br>• "Relleno de maíz G2" (te recomienda el mejor silo)<br>• "Balance de cintas" (alerta si hay desbalance >25%)<br>• "Últimos embarques" (resumen de movimientos)<br><br>📜 <b>Información y Análisis:</b><br>• "Estándar de trigo" (normas)<br>• "Simular maíz ph 70" (impacto en stock)<br>• "Clima en Córdoba" (requiere internet)<br><br>🛠️ <b>Herramientas:</b><br>• "Calculadora" (te lleva a la pestaña)<br>• "Tutoriales" (aprende a usar la app)<br><br><i>Nota: Por seguridad, no puedo modificar movimientos ni borrar datos, solo consultar.</i>`, 'bot');
         }
 
         function mostrarTutorial(q) {
-            if (q.includes('ph')) { addChatMessage(TUTORIALES['ph'], 'bot'); return; }
-            if (q.includes('movimiento') || q.includes('ingreso') || q.includes('egreso')) { addChatMessage(TUTORIALES['movimientos'], 'bot'); return; }
+            if (q.includes('ph') || q.includes('calculadora')) { addChatMessage(TUTORIALES['ph'], 'bot'); return; }
+            if (q.includes('planilla') || q.includes('movimiento') || q.includes('ingreso') || q.includes('egreso')) { addChatMessage(TUTORIALES['planilla'], 'bot'); return; }
             if (q.includes('stock') || q.includes('existencia')) { addChatMessage(TUTORIALES['stock'], 'bot'); return; }
             if (q.includes('tanque')) { addChatMessage(TUTORIALES['tanques'], 'bot'); return; }
             if (q.includes('anotador')) { addChatMessage(TUTORIALES['anotador'], 'bot'); return; }
             if (q.includes('admin') || q.includes('cierre') || q.includes('excel')) { addChatMessage(TUTORIALES['admin'], 'bot'); return; }
-            addChatMessage("📚 <b>Tutoriales Disponibles</b><br>Decime cuál querés ver:<br>• <i>Tutorial de PH</i><br>• <i>Tutorial de Movimientos</i><br>• <i>Tutorial de Stock</i><br>• <i>Tutorial de Tanques</i><br>• <i>Tutorial de Anotador</i><br>• <i>Tutorial de Admin</i>", 'bot');
+            addChatMessage("📚 <b>Tutoriales Disponibles</b><br>Decime cuál querés ver:<br>• <i>Tutorial de Planilla</i><br>• <i>Tutorial de PH</i><br>• <i>Tutorial de Stock</i><br>• <i>Tutorial de Tanques</i><br>• <i>Tutorial de Anotador</i><br>• <i>Tutorial de Admin</i>", 'bot');
         }
 
         function simularPH(cerealName, nuevoPH) {
@@ -1630,71 +1673,103 @@
             addChatMessage(`🧪 <b>Simulación de PH para ${cerealTarget.nombre}</b><br><br>• <b>PH Base actual:</b> ${phBase} kg/hl<br>• <b>PH Simulado:</b> ${nuevoPH} kg/hl<br><br>📦 <b>Stock actual:</b> ${totalActual.toFixed(0)}t<br>📦 <b>Stock simulado:</b> ${totalSimulado.toFixed(0)}t<br>📉 <b>Diferencia:</b> ${dif > 0 ? '+' : ''}${dif.toFixed(0)}t<br><br><i>* Estimación teórica.</i>`, 'bot');
         }
 
-        function procesarCalculadoraBot(q) {
-            let siloMatch = q.match(/silo\s+(\d{3})/i);
-            if (!siloMatch) siloMatch = q.match(/\b(\d{3})\b/);
-            if (!siloMatch) { addChatMessage("¿De qué silo querés calcular? Ej: \"calculadora silo 305 maíz 15m\".", 'bot'); return true; }
-            let siloNum = parseInt(siloMatch[1]);
-            if (!esUnidadValida(siloNum)) { addChatMessage(`La unidad ${siloNum} no existe.`, 'bot'); return true; }
-            let cerealObj = findCereal(q);
-            let d = db.silos[siloNum];
-            if (!cerealObj && d && d.cereal) cerealObj = db.cereales.find(c => c.id === d.cereal);
-            if (!cerealObj) cerealObj = db.cereales.find(c => c.id === 'MAIZ') || db.cereales[0];
-            let metersMatch = q.match(/(\d+(?:[.,]\d+)?)\s*m(?:etros?)?/i);
-            let metros = metersMatch ? parseFloat(metersMatch[1].replace(',', '.')) : null;
-
-            if (d && d.estado !== 'VACIO' && d.tonelaje > 0) {
-                let msg = `📦 <b>Silo ${siloNum}</b> (${d.cereal}${d.calidad?' '+d.calidad:''})<br>Carga actual: <b>${d.tonelaje}t</b><br>`;
-                if (d.fumigacion_fecha) msg += `🧪 Fumigado: ${d.fumigacion_fecha.split('-').reverse().join('/')}<br>`;
-                let espDisp = getEspacioDisp(siloNum);
-                if (espDisp > 0) msg += `⛽ Espacio disponible: <b>~${espDisp}t</b><br>`;
-                if (metros !== null) {
-                    let tipo = esSiloTipo(siloNum);
-                    if (SILOS_MANUALES.includes(siloNum)) {
-                        msg += `<br>⚠️ Silo de capacidad reducida. Ingresá capacidad manual en Rellenos.`;
-                    } else {
-                        let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
-                        let tons = Math.round(phRef * cerealObj.ph / PH_BASE);
-                        msg += `<br>🧮 Con ${metros}m vacíos de ${cerealObj.nombre}: <b>${tons}t</b>`;
-                    }
+        function recomendarRellenoBot(q) {
+            let cerealMatch = findCereal(q);
+            if (!cerealMatch) {
+                addChatMessage(`¿De qué cereal querés relleno?<br>Tenés: ${db.cereales.map(c => c.nombre).join(', ')}`, 'bot'); return;
+            }
+            let calidadMatch = q.match(/\b(g\d|[a-z]\d|grado\s+\d|calidad\s+[a-z0-9]+)\b/i);
+            let calidadTarget = null;
+            if (calidadMatch) {
+                if (calidadMatch[0].toLowerCase().includes('grado')) {
+                    let num = calidadMatch[0].match(/\d+/);
+                    calidadTarget = num ? 'G' + num[0] : null;
+                } else {
+                    calidadTarget = calidadMatch[1].toUpperCase().replace('CALIDAD ','');
                 }
-                addChatMessage(msg, 'bot'); return true;
             }
 
-            if (SILOS_MANUALES.includes(siloNum)) { addChatMessage(`⚠️ Silo ${siloNum} tiene capacidad reducida. Cargalo manualmente desde la pestaña Rellenos → Tabla.`, 'bot'); return true; }
-            let tipo = esSiloTipo(siloNum);
-            if (metros !== null) {
-                let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
-                let tons = Math.round(phRef * cerealObj.ph / PH_BASE);
-                addChatMessage(`🧮 <b>Cálculo Silo ${siloNum}</b><br>🌾 ${cerealObj.nombre}<br>📏 ${metros}m vacíos<br>⚖️ <b>${tons}t</b><br><br><i>PH base: ${cerealObj.ph} kg/hl.</i>`, 'bot'); return true;
+            let opciones = [];
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if (d.cereal !== cerealMatch.id || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return;
+                if (calidadTarget && d.calidad !== calidadTarget) return;
+                let esp = getEspacioDisp(num);
+                if (esp > 0) {
+                    let n = parseInt(num); if (isNaN(n)) return;
+                    let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
+                    opciones.push({ num, esp, cinta, calidad: d.calidad || 'S/C' });
+                }
+            });
+
+            if (opciones.length === 0) {
+                if (calidadTarget) {
+                    let opcionesSinCal = [];
+                    Object.keys(db.silos).forEach(num => {
+                        let d = db.silos[num];
+                        if (d.cereal === cerealMatch.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                            let esp = getEspacioDisp(num); if(esp > 0) {
+                                let n = parseInt(num); let cinta = n >= 600 ? 'C1' : (n >= 500 || (n>=400 && n%2===0) ? 'C2' : (n >= 300 || (n>=400 && n%2!==0) ? 'C3' : 'C4'));
+                                opcionesSinCal.push({ num, esp, cinta, calidad: d.calidad || 'S/C' });
+                            }
+                        }
+                    });
+                    if (opcionesSinCal.length > 0) {
+                        opcionesSinCal.sort((a,b) => b.esp - a.esp);
+                        let top = opcionesSinCal[0];
+                        addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} <b>${calidadTarget}</b> con espacio.<br><br>💡 Pero hay opciones con otras calidades:<br>• Silo <b>${top.num}</b> (${top.cinta}) - ${top.calidad}: <b>${top.esp}t</b>`, 'bot');
+                    } else {
+                        addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} con espacio para rellenar.`, 'bot');
+                    }
+                } else {
+                    addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} con espacio disponible.`, 'bot');
+                }
+                return;
             }
-            let topeMetros = obtenerTopeMetros(siloNum);
-            let capMaxRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
-            let capMaxTon = Math.round(capMaxRef * cerealObj.ph / PH_BASE);
-            addChatMessage(`📏 <b>Silo ${siloNum}</b><br>Capacidad con ${cerealObj.nombre}: <b>${capMaxTon}t</b><br><br>💡 Decime "calculadora silo ${siloNum} ${cerealObj.id.toLowerCase()} 15m" para calcular con metros vacíos.`, 'bot'); return true;
+
+            opciones.sort((a, b) => b.esp - a.esp);
+            let top = opciones[0];
+            
+            if (!calidadTarget) {
+                // Agrupar por calidad
+                let porCalidad = {};
+                opciones.forEach(o => {
+                    if (!porCalidad[o.calidad]) porCalidad[o.calidad] = 0;
+                    porCalidad[o.calidad] += o.esp;
+                });
+                let msg = `🌾 <b>Relleno disponible para ${cerealMatch.nombre} por calidad:</b><br><br>`;
+                Object.keys(porCalidad).sort((a,b) => porCalidad[b] - porCalidad[a]).forEach(cal => {
+                    msg += `• Calidad <b>${cal}</b>: ${porCalidad[cal]}t disponibles.<br>`;
+                });
+                msg += `<br>💡 Decime "Relleno de ${cerealMatch.nombre.toLowerCase()} [calidad]" para ver los silos exactos.`;
+                addChatMessage(msg, 'bot');
+            } else {
+                let msg = `🌾 <b>Mejor opción para rellenar ${cerealMatch.nombre} ${calidadTarget}:</b><br><br>`;
+                msg += `Silo <b>${top.num}</b> (Cinta ${top.cinta})<br>Espacio disponible: <b>${top.esp}t</b><br><br>`;
+                if (opciones.length > 1) {
+                    msg += `<b>Otras opciones:</b><br>`;
+                    opciones.slice(1, 5).forEach(o => { msg += `• Silo ${o.num} (${o.cinta}): ${o.esp}t<br>`; });
+                    if (opciones.length > 5) msg += `...y ${opciones.length - 5} más.`;
+                }
+                addChatMessage(msg, 'bot');
+            }
         }
 
-        function mostrarDetalleUnidad(num) {
-            let d = getSiloData(num);
-            if (!d) { addChatMessage(`No encontré la unidad ${num}.`, 'bot'); return; }
-            let nombreVisual = String(num).replace('CANO', 'CAÑO');
-            let msg = `📦 <b>Unidad ${nombreVisual}</b> (${d.tipo || 'SILO'})<br><br>`;
-            msg += `Estado: <b>${d.estado === 'CON_CARGA' ? 'Con Carga' : d.estado.replace('_',' ')}</b><br>`;
-            if (d.cereal) msg += `Cereal: <b>${d.cereal}</b>${d.calidad ? ' ['+d.calidad+']' : ''}<br>`;
-            if (d.tonelaje > 0) msg += `Tonelaje: <b>${d.tonelaje}t</b><br>`;
-            if (d.fumigacion_fecha) msg += `🧪 Fumigado: ${d.fumigacion_fecha.split('-').reverse().join('/')} (${d.fumigacion_tipo || 'TOTAL'})<br>`;
-            if (d.fecha_primera_carga) msg += `📅 Primera carga: ${d.fecha_primera_carga.split('-').reverse().join('/')}<br>`;
-            if (d.origen) msg += `📍 Origen: ${d.origen}<br>`;
-            if (d.alerta_manual) msg += `🚨 <b>Alerta manual activa</b><br>`;
-            if (tieneAlerta(num)) msg += `⚠️ <b>Esta unidad necesita revisión</b> (fumigación o calidad)<br>`;
-            if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') {
-                let espDisp = getEspacioDisp(num);
-                if (espDisp > 0) msg += `⛽ Espacio disponible: <b>~${espDisp}t</b><br>`;
-            }
-            if (d.historial && d.historial.length > 0) {
-                let ult = [...d.historial].sort((a,b) => b.fecha.localeCompare(a.fecha))[0];
-                msg += `<br>📝 <b>Último movimiento:</b><br>${ult.fecha.split('-').reverse().join('/')} - ${ult.detalle}`;
-            }
+        function silosConCerealBot(q) {
+            let cerealMatch = findCereal(q);
+            if (!cerealMatch) { addChatMessage("¿Qué cereal buscás?", 'bot'); return; }
+            let silos = [];
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if (d.cereal === cerealMatch.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
+                    silos.push({ num, tipo: d.tipo, ton: d.tonelaje, cal: d.calidad });
+                }
+            });
+            if (silos.length === 0) { addChatMessage(`No hay unidades con ${cerealMatch.nombre}.`, 'bot'); return; }
+            silos.sort((a,b) => (parseFloat(b.ton)||0) - (parseFloat(a.ton)||0));
+            let msg = `📦 <b>Unidades con ${cerealMatch.nombre} (${silos.length}):</b><br>`;
+            silos.slice(0, 20).forEach(s => { msg += `• ${s.num} (${s.tipo}) - ${s.ton}t${s.cal ? ' ['+s.cal+']' : ''}<br>`; });
+            if (silos.length > 20) msg += `...y ${silos.length - 20} más.`;
             addChatMessage(msg, 'bot');
         }
 
@@ -1708,7 +1783,7 @@
             msg += `<br>📊 <b>Total General:</b> ${totalGeneral}t<br><br>`;
             if (totalGeneral > 0) {
                 let promTon = totalGeneral / 4; let descTon = [];
-                ['C1', 'C2', 'C3', 'C4'].forEach(c => { if (Math.abs(cintas[c].total - promTon) > promTon * 0.2) descTon.push(`${c} desbalanceada (${cintas[c].total}t vs prom ${promTon.toFixed(0)}t)`); });
+                ['C1', 'C2', 'C3', 'C4'].forEach(c => { if (Math.abs(cintas[c].total - promTon) > promTon * 0.25) descTon.push(`${c} desbalanceada (${cintas[c].total}t vs prom ${promTon.toFixed(0)}t)`); }); // Umbral 25%
                 if (descTon.length > 0) msg += `⚠️ <b>Alerta de Tonelaje:</b><br>- ${descTon.join('<br>- ')}<br><br>`;
                 else msg += `✅ Tonelaje balanceado.<br><br>`;
                 msg += `🏷️ <b>Calidades por Cinta:</b><br>`;
@@ -1722,102 +1797,6 @@
             addChatMessage(msg, 'bot');
         }
 
-        function ponerAlertaBot(motivo, num) {
-            if (db.silos[num]) {
-                let d = db.silos[num]; d.alerta_manual = true; d.lastUpdate = Date.now(); guardarDB();
-                dibujarTablero(); dibujarTanques(); actualizarBadgeAlertas();
-                addChatMessage(`✅ Alerta de calidad por <b>${motivo}</b> activada en la unidad <b>${num}</b>.`, 'bot');
-            } else { addChatMessage(`❌ La unidad ${num} no existe.`, 'bot'); }
-        }
-
-        function recomendarRellenoBot(q) {
-            let cerealMatch = findCereal(q);
-            if (!cerealMatch) {
-                addChatMessage(`¿De qué cereal querés relleno?<br>Tenés: ${db.cereales.map(c => c.nombre).join(', ')}`, 'bot'); return;
-            }
-            let calidadMatch = q.match(/\b(g\d|[a-z]\d|grado\s+\d|calidad\s+[a-z0-9]+)\b/i);
-            let calidadTarget = calidadMatch ? calidadMatch[1].toUpperCase().replace('GRADO ','').replace('CALIDAD ','') : null;
-            let opciones = calcularRellenoOptimo(cerealMatch.id, calidadTarget);
-            if (opciones.length === 0) {
-                if (calidadTarget) {
-                    let opcionesSinCal = calcularRellenoOptimo(cerealMatch.id, null);
-                    if (opcionesSinCal.length > 0) {
-                        opcionesSinCal.sort((a,b) => b.esp - a.esp);
-                        let top = opcionesSinCal[0];
-                        addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} <b>${calidadTarget}</b> con espacio.<br><br>💡 Pero hay opciones con otras calidades:<br>• Silo <b>${top.num}</b> (${top.cinta}) - ${top.calidad}: <b>${top.esp}t</b>`, 'bot');
-                    } else {
-                        addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} con espacio para rellenar.`, 'bot');
-                    }
-                } else {
-                    addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} con espacio disponible.`, 'bot');
-                }
-                return;
-            }
-            opciones.sort((a, b) => b.esp - a.esp);
-            let top = opciones[0];
-            let msg = `🌾 <b>Mejor opción para rellenar ${cerealMatch.nombre}${calidadTarget ? ' '+calidadTarget : ''}:</b><br><br>`;
-            msg += `Silo <b>${top.num}</b> (Cinta ${top.cinta})${top.calidad ? ' - '+top.calidad : ''}<br>Espacio disponible: <b>${top.esp}t</b><br><br>`;
-            if (opciones.length > 1) {
-                msg += `<b>Otras opciones:</b><br>`;
-                opciones.slice(1, 5).forEach(o => { msg += `• Silo ${o.num} (${o.cinta})${o.calidad ? ' - '+o.calidad : ''}: ${o.esp}t<br>`; });
-                if (opciones.length > 5) msg += `...y ${opciones.length - 5} más.`;
-            }
-            addChatMessage(msg, 'bot');
-        }
-
-        function silosConCerealBot(q) {
-            let cerealMatch = findCereal(q);
-            if (!cerealMatch) { addChatMessage("¿Qué cereal buscás?", 'bot'); return; }
-            let silos = [];
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if (d.cereal === cerealMatch.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                    silos.push({ num, tipo: d.tipo, ton: d.tonelaje, cal: d.calidad });
-                }
-            });
-            if (silos.length === 0) { addChatMessage(`No hay silos con ${cerealMatch.nombre}.`, 'bot'); return; }
-            silos.sort((a,b) => (parseFloat(b.ton)||0) - (parseFloat(a.ton)||0));
-            let msg = `📦 <b>Silos con ${cerealMatch.nombre} (${silos.length}):</b><br>`;
-            silos.slice(0, 20).forEach(s => { msg += `• ${s.num} (${s.tipo}) - ${s.ton}t${s.cal ? ' ['+s.cal+']' : ''}<br>`; });
-            if (silos.length > 20) msg += `...y ${silos.length - 20} más.`;
-            addChatMessage(msg, 'bot');
-        }
-
-        function tanquesDesglosadosBot() {
-            let res = {};
-            let tipos = ['TANQUE', 'TOLVA', 'BALANZA', 'CAÑO', 'CER'];
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if (tipos.includes(d.tipo) && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
-                    if (!res[d.cereal]) res[d.cereal] = 0;
-                    res[d.cereal] += (parseFloat(d.tonelaje) || 0);
-                }
-            });
-            let msg = `🛢️ <b>Tanques, Tolvas, Balanzas, Caños y CER</b><br><br>`;
-            let keys = Object.keys(res);
-            if (keys.length === 0) msg += "No hay mercadería en estas unidades.";
-            else { keys.sort((a,b) => res[b] - res[a]).forEach(k => { let cObj = db.cereales.find(c => c.id === k); msg += `• ${cObj ? cObj.nombre : k}: <b>${res[k]}t</b><br>`; }); }
-            addChatMessage(msg, 'bot');
-        }
-
-        function stockTotalBot() {
-            let total = 0; let porCereal = {};
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
-                    let tons = parseFloat(d.tonelaje) || 0; total += tons;
-                    if (!porCereal[d.cereal]) porCereal[d.cereal] = 0;
-                    porCereal[d.cereal] += tons;
-                }
-            });
-            let msg = `📊 <b>Stock Total Almacenado: ${total}t</b><br><br>`;
-            Object.keys(porCereal).sort((a,b) => porCereal[b] - porCereal[a]).forEach(id => {
-                let c = db.cereales.find(cr => cr.id === id);
-                msg += `• ${c ? c.nombre : id}: <b>${porCereal[id]}t</b><br>`;
-            });
-            addChatMessage(msg, 'bot');
-        }
-
         function estadoUnidadesBot() {
             let vacios = 0, tapados = 0, fuera = 0, conCarga = 0;
             TODOS_LOS_SILOS.forEach(num => {
@@ -1828,6 +1807,16 @@
                 else if (d.estado === 'CON_CARGA') conCarga++;
             });
             addChatMessage(`📊 <b>Estado de Silo/Entresilo:</b><br>🟢 Vacíos: <b>${vacios}</b><br>🟡 Con carga: <b>${conCarga}</b><br>⚠️ Tapados: <b>${tapados}</b><br>🔴 Fuera de servicio: <b>${fuera}</b><br><br>Total: ${TODOS_LOS_SILOS.length} unidades`, 'bot');
+        }
+
+        function silosVaciosBot() {
+            let vacios = [];
+            TODOS_LOS_SILOS.forEach(num => {
+                let d = db.silos[num];
+                if (!d || d.estado === 'VACIO') vacios.push(num);
+            });
+            if (vacios.length === 0) { addChatMessage("No hay silos ni entresilos vacíos.", 'bot'); return; }
+            addChatMessage(`📦 <b>Silos/Entresilos Vacíos (${vacios.length}):</b><br>${vacios.join(', ')}`, 'bot');
         }
 
         function estandaresBot(q) {
@@ -1868,6 +1857,24 @@
             addChatMessage(response, 'bot');
         }
 
+        function stockTotalBot() {
+            let total = 0; let porCereal = {};
+            Object.keys(db.silos).forEach(num => {
+                let d = db.silos[num];
+                if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
+                    let tons = parseFloat(d.tonelaje) || 0; total += tons;
+                    if (!porCereal[d.cereal]) porCereal[d.cereal] = 0;
+                    porCereal[d.cereal] += tons;
+                }
+            });
+            let msg = `📊 <b>Stock Total Almacenado: ${total}t</b><br><br>`;
+            Object.keys(porCereal).sort((a,b) => porCereal[b] - porCereal[a]).forEach(id => {
+                let c = db.cereales.find(cr => cr.id === id);
+                msg += `• ${c ? c.nombre : id}: <b>${porCereal[id]}t</b><br>`;
+            });
+            addChatMessage(msg, 'bot');
+        }
+
         function stockPorCerealBot(cereal) {
             let cId = cereal.id; let stocks = { total: 0, calidades: {}, silos: 0, tanques: 0, paso: 0 }; let totEspacio = 0; let alertas = 0;
             Object.keys(db.silos).forEach(num => {
@@ -1886,120 +1893,60 @@
             addChatMessage(msg, 'bot');
         }
 
-        // ============================================================
-        // BOT PRINCIPAL
-        // ============================================================
-        async function processBotQuery(query) {
-            try {
-                let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-                q = q.replace(/\b(batea|bateas|chupador|chupadores|pulmon|pulmones|plataforma 9|plataforma 10)\b/g, "tolva").replace(/\b(tanqe|tanqes)\b/g, "tanque").replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas");
-
-                // ===== AYUDA / MENÚ =====
-                if (q === 'ayuda' || q === 'help' || q === 'menu' || q.includes('que podes hacer') || q.includes('que sabes hacer') || q.includes('opciones') || q.includes('comandos')) {
-                    mostrarMenuAyuda(); return;
-                }
-
-                // ===== TUTORIALES =====
-                if (q.includes('tutorial') || q.includes('como hago') || q.includes('como se hace') || q.includes('como puedo')) {
-                    mostrarTutorial(q); return;
-                }
-
-                // ===== NAVEGACIÓN =====
-                let matchNav = q.match(/(?:llevame|ir|abrir|abreme|mostrar|mostrame|anda|vamos)\s+(?:a|al|la|el)?\s*([a-z\s]+)/i);
-                if (matchNav) {
-                    let dest = matchNav[1].trim();
-                    if (dest.includes('calculadora')) { irACalculadora(); return; }
-                    if (dest.includes('tablero')) { showNavConfirm('tablero', 'Tablero'); return; }
-                    if (dest.includes('movimiento') || dest.includes('movs')) { showNavConfirm('movimientos', 'Movimientos'); return; }
-                    if (dest.includes('alerta')) { showNavConfirm('alertas', 'Alertas'); return; }
-                    if (dest.includes('stock') || dest.includes('existencia')) { showNavConfirm('existencias', 'Stock'); return; }
-                    if (dest.includes('tanque')) { showNavConfirm('tanques', 'Tanques'); return; }
-                    if (dest.includes('relleno')) { showNavConfirm('rellenos', 'Rellenos'); return; }
-                    if (dest.includes('anotador') || dest.includes('herramienta')) { showNavConfirm('herramienta', 'Anotador'); return; }
-                    if (dest.includes('admin') || dest.includes('ajuste')) { showNavConfirm('admin', 'Admin'); return; }
-                }
-
-                // ===== SIMULACIÓN PH =====
-                let matchSimularPH = q.match(/(?:simular|simula|que pasa si|si el ph)\s+(?:el\s+|del\s+)?([a-z0-9\s]+?)\s+(?:con\s+)?(?:es|fuera|fuese)?\s*ph\s+(\d+)/i);
-                if (matchSimularPH) { simularPH(matchSimularPH[1].trim(), parseFloat(matchSimularPH[2])); return; }
-
-                // ===== CALCULADORA =====
-                if (/(calculadora?|calcular?|capacidad|cuanto\s+(?:entra|pesa|tiene|hay|le\s+cabe|le\s+entra))/.test(q) || (q.includes('silo') && /\d+\s*m(?:etros?)?/i.test(q))) {
-                    if (procesarCalculadoraBot(q)) return;
-                }
-
-                // ===== SILO SUELTO / DETALLE =====
-                let matchSoloNum = q.match(/^(\d{3})$/);
-                if (matchSoloNum) { let num = parseInt(matchSoloNum[1]); if (esUnidadValida(num)) { mostrarDetalleUnidad(num); return; } }
-                let matchSimpleSilo = q.match(/^silo\s+(\d{3})$/i);
-                if (matchSimpleSilo) { let num = parseInt(matchSimpleSilo[1]); if (esUnidadValida(num)) { mostrarDetalleUnidad(num); return; } }
-                let matchDetalle = q.match(/(?:detalle|estado|info|informacion|que\s+hay\s+en|historial|ver)\s+(?:del?\s+)?(?:silo\s+|tanque\s+)?(\d{3})/i);
-                if (matchDetalle) { let num = parseInt(matchDetalle[1]); if (esUnidadValida(num)) { mostrarDetalleUnidad(num); return; } }
-
-                // ===== ANALISIS CINTAS =====
-                if (q.includes('analizar cintas') || q.includes('balance') || q.includes('desbalanceado') || q.includes('cintas')) { analizarCintasBot(q); return; }
-
-                // ===== ALERTA MANUAL =====
-                let matchAlerta = q.match(/(?:alerta|aviso|marcar)\s+(?:de|por)\s+(dañado|humedad|temperatura|avería|alto|alto contenido|averia)\s+(?:en|para)\s+(?:el\s+)?(?:silo|tanque|entresilo|caño|tolva|balanza)?\s*([a-z0-9\-]+)/i);
-                if (matchAlerta) { ponerAlertaBot(matchAlerta[1].toUpperCase(), matchAlerta[2].trim().toUpperCase()); return; }
-
-                // ===== RELLENOS =====
-                if (q.includes('relleno') || q.includes('donde pongo') || q.includes('donde meto') || q.includes('donde mando') || q.includes('que silo')) { recomendarRellenoBot(q); return; }
-
-                // ===== SILOS CON CEREAL =====
-                if (q.match(/(?:silos?|unidades?)\s+(?:con|de|que\s+tienen?)\s+([a-z]+)/) || q.match(/cuant[oa]s?\s+silos?\s+(?:tienen?|hay|con)\s+([a-z]+)/)) { silosConCerealBot(q); return; }
-
-                // ===== TANQUES =====
-                if (q === 'tanques' || q === 'tanque' || q.includes('que hay en tanques') || q.includes('tanques desglosados')) { tanquesDesglosadosBot(); return; }
-
-                // ===== STOCK TOTAL =====
-                if (q.match(/^(?:stock|total)\s*(?:general|total)?$/) || q.includes('cuanto hay en total') || q.includes('stock total') || q.includes('inventario total')) { stockTotalBot(); return; }
-
-                // ===== ESTADO UNIDADES =====
-                if ((q.includes('vacio') || q.includes('vacios') || q.includes('tapados') || q.includes('fuera de servicio')) && (q.includes('cuanto') || q.includes('cuantos') || q.includes('cantidad') || q.includes('hay') || q.includes('estado') || q.includes('silos'))) { estadoUnidadesBot(); return; }
-
-                // ===== ESTÁNDARES (antes del findCereal genérico) =====
-                if (q.includes('estandar') || q.includes('norma') || q.includes('calidad')) { estandaresBot(q); return; }
-
-                // ===== CLIMA =====
-                if (q.includes('clima') || q.includes('tiempo') || q.includes('pronostico') || q.includes('va a llover')) { await climaBot(q); return; }
-
-                // ===== LOGÍSTICA =====
-                let fechaInicio = new Date(); let fechaFin = new Date(); let tituloFecha = "Hoy";
-                if (q.includes('esta semana')) { fechaInicio.setDate(fechaInicio.getDate() - fechaInicio.getDay()); tituloFecha = "Esta Semana"; }
-                else if (q.includes('mes pasado')) { fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1); fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0); tituloFecha = "Mes Pasado"; }
-                else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) { fechaInicio.setDate(1); tituloFecha = "Este Mes"; }
-                else if (q.includes('ayer')) { fechaInicio.setDate(fechaInicio.getDate() - 1); fechaFin.setDate(fechaFin.getDate() - 1); tituloFecha = "Ayer"; }
-                else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias') || q.includes('ultimos')) { fechaInicio.setDate(fechaInicio.getDate() - 30); tituloFecha = "Últimos 30 días"; }
-                let fIniStr = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
-                let fFinStr = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
-                if (procesarLogistica(q, fIniStr, fFinStr, tituloFecha)) return;
-
-                // ===== SALUDOS =====
-                if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal') || q === 'hey' || q === 'hi') { saludoBot(); return; }
-
-                // ===== ALERTAS GENERALES =====
-                if (q.includes('alerta') || q.includes('problema') || q.includes('revisar')) { alertasGeneralesBot(); return; }
-
-                // ===== STOCK POR CEREAL (BROAD - AL FINAL) =====
-                let cerealEncontrado = findCereal(q);
-                if (cerealEncontrado) { stockPorCerealBot(cerealEncontrado); return; }
-
-                // ===== FALLBACK =====
-                addChatMessage("🤔 No entendí. Probá con:<br>• <b>Ayuda</b> (menú completo)<br>• \"Relleno de maíz\"<br>• \"Calculadora silo 305 maíz 15m\"<br>• \"Estándar de trigo\"<br>• \"Stock total\"", 'bot');
-            } catch (e) {
-                console.error("Error en Bot:", e);
-                addChatMessage("❌ Tuve un problema procesando eso. Probá con 'Ayuda'.", 'bot');
+        function mostrarDetalleUnidad(num) {
+            let d = getSiloData(num);
+            if (!d) { addChatMessage(`No encontré la unidad ${num}.`, 'bot'); return; }
+            let nombreVisual = String(num).replace('CANO', 'CAÑO');
+            let msg = `📦 <b>Unidad ${nombreVisual}</b> (${d.tipo || 'SILO'})<br><br>`;
+            msg += `Estado: <b>${d.estado === 'CON_CARGA' ? 'Con Carga' : d.estado.replace('_',' ')}</b><br>`;
+            if (d.cereal) msg += `Cereal: <b>${d.cereal}</b>${d.calidad ? ' ['+d.calidad+']' : ''}<br>`;
+            if (d.tonelaje > 0) msg += `Tonelaje: <b>${d.tonelaje}t</b><br>`;
+            if (d.fumigacion_fecha) msg += `🧪 Fumigado: ${d.fumigacion_fecha.split('-').reverse().join('/')} (${d.fumigacion_tipo || 'TOTAL'})<br>`;
+            if (d.fecha_primera_carga) msg += `📅 Primera carga: ${d.fecha_primera_carga.split('-').reverse().join('/')}<br>`;
+            if (d.origen) msg += `📍 Origen: ${d.origen}<br>`;
+            if (d.alerta_manual) msg += `🚨 <b>Alerta manual activa</b><br>`;
+            if (tieneAlerta(num)) msg += `⚠️ <b>Esta unidad necesita revisión</b> (fumigación o calidad)<br>`;
+            if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') {
+                let espDisp = getEspacioDisp(num);
+                if (espDisp > 0) msg += `⛽ Espacio disponible: <b>~${espDisp}t</b><br>`;
             }
+            if (d.historial && d.historial.length > 0) {
+                let ult = [...d.historial].sort((a,b) => b.fecha.localeCompare(a.fecha))[0];
+                msg += `<br>📝 <b>Último movimiento:</b><br>${ult.fecha.split('-').reverse().join('/')} - ${ult.detalle}`;
+            }
+            addChatMessage(msg, 'bot');
         }
 
-        function showNavConfirm(tabId, tabName) {
-            let idx = ['tablero', 'movimientos', 'alertas', 'existencias', 'tanques', 'rellenos', 'herramienta', 'admin'].indexOf(tabId);
-            let btnHTML = `<button onclick="cambiarTab('${tabId}', document.querySelectorAll('.sidebar .nav-btn')[${idx}]); cerrarModal('silobot-modal');" style="background:#3b82f6; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-top:8px; font-weight:bold;">Ir a ${tabName}</button>`;
-            addChatMessage(`Entendido. ¿Querés que te lleve a <b>${tabName}</b>? 👇<br><br>${btnHTML}`, 'bot');
+        function calcularMedidaRapida() {
+            let silo = parseInt(document.getElementById('calc-silo').value); let cerealId = document.getElementById('calc-cereal').value; let metros = parseFloat(document.getElementById('calc-metros').value);
+            let msj = document.getElementById('calc-msj'); let res = document.getElementById('calc-resultado'); if(!msj || !res) return;
+            if(!silo || silo < 0 || !cerealId || isNaN(metros) || metros < 0) { res.innerText = '0 t'; msj.innerText = ''; return; }
+            
+            if(SILOS_MANUALES.includes(silo)) { msj.innerText = "⚠️ Silo 700 de carga reducida. Verificar cálculo."; msj.style.color = "#d97706"; } 
+            else if(MIN_14.includes(silo) && metros < 14) { res.innerText = '0 t'; msj.innerText = `❌ Silo ${silo} corta a los 14m.`; msj.style.color = "#ef4444"; return; }
+            else if(MIN_10.includes(silo) && metros < 10) { res.innerText = '0 t'; msj.innerText = `❌ Silo ${silo} corta a los 10m.`; msj.style.color = "#ef4444"; return; }
+            else { msj.innerText = ""; }
+            
+            let cereal = db.cereales.find(c => c.id === cerealId); let tipo = esSiloTipo(silo);
+            let phRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros); 
+            let tons = Math.round(phRef * cereal.ph / PH_BASE); 
+            res.innerText = `${tons} t`;
         }
 
-        function procesarLogistica(q, fIniStr, fFinStr, tituloFecha) {
+        function irACalculadora() {
+            cambiarTab('rellenos', document.querySelectorAll('.sidebar .nav-btn')[5]);
+            setTimeout(() => { const btns = document.querySelectorAll('.sub-tab-btn'); if (btns[1]) cambiarSubTab('sub-calculadora', btns[1]); }, 100);
+            cerrarModal('silobot-modal');
+            addChatMessage("Te llevé a la Calculadora. Recordá poner Cereal -> Silo -> Metros para evitar errores.", 'bot');
+        }
+
+        function procesarCalculadoraBot(q) {
+            // Si el usuario pide calculadora, lo llevamos a la pestaña para que use los selectores
+            irACalculadora();
+            return true;
+        }
+
+        function procesoLogistica(q, fIniStr, fFinStr, tituloFecha) {
             let palabrasLog = ['camion', 'vagon', 'transile', 'transferencia', 'embarque', 'recarga', 'limpieza'];
             let esLogistica = palabrasLog.some(p => q.includes(p)) || q.includes('logistica') || q.includes('historial') || q.includes('embarque') || q.includes('movimiento');
             let esSiloQuery = q.match(/\b(10[1-9]|11[0-8]|20[1-9]|21[0-7]|30[1-9]|31[0-8]|40[1-9]|41[0-7]|50[1-9]|51[0-8]|60[1-9]|61[0-7]|70[1-9]|71[0-8])\b/);
@@ -2024,6 +1971,116 @@
             if(!hayDatos) response += `No se registraron movimientos en este período.`;
             else if (detalles.length > 0) { response += `<b>Detalle:</b><br>`; detalles.slice(0, 5).forEach(det => { response += `• ${det}<br>`; }); if (detalles.length > 5) response += `...y más.<br>`; }
             addChatMessage(response, 'bot'); return true;
+        }
+
+        async function processBotQuery(query) {
+            try {
+                let q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                q = q.replace(/\b(batea|bateas|chupador|chupadores|pulmon|pulmones|plataforma 9|plataforma 10)\b/g, "tolva").replace(/\b(tanqe|tanqes)\b/g, "tanque").replace(/\b(blanzas|balnza|valanzas)\b/g, "balanzas");
+
+                // 1. AYUDA / MENÚ
+                if (q === 'ayuda' || q === 'help' || q === 'menu' || q.includes('que podes hacer') || q.includes('que sabes hacer') || q.includes('opciones') || q.includes('comandos')) {
+                    mostrarMenuAyuda(); return;
+                }
+
+                // 2. TUTORIALES
+                if (q.includes('tutorial') || q.includes('como hago') || q.includes('como se hace') || q.includes('como puedo')) {
+                    mostrarTutorial(q); return;
+                }
+
+                // 3. CALCULADORA (Deriva a la pestaña)
+                if (q.includes('calculadora') || q.includes('calcular')) {
+                    irACalculadora(); return;
+                }
+
+                // 4. NAVEGACIÓN
+                let matchNav = q.match(/(?:llevame|ir|abrir|abreme|mostrar|mostrame|anda|vamos)\s+(?:a|al|la|el)?\s*([a-z\s]+)/i);
+                if (matchNav) {
+                    let dest = matchNav[1].trim();
+                    if (dest.includes('tablero')) { showNavConfirm('tablero', 'Tablero'); return; }
+                    if (dest.includes('planilla') || dest.includes('movimiento')) { showNavConfirm('movimientos', 'Planilla'); return; }
+                    if (dest.includes('alerta')) { showNavConfirm('alertas', 'Alertas'); return; }
+                    if (dest.includes('stock') || dest.includes('existencia')) { showNavConfirm('existencias', 'Stock'); return; }
+                    if (dest.includes('tanque')) { showNavConfirm('tanques', 'Tanques'); return; }
+                    if (dest.includes('relleno')) { showNavConfirm('rellenos', 'Rellenos'); return; }
+                    if (dest.includes('anotador') || dest.includes('herramienta')) { showNavConfirm('herramienta', 'Anotador'); return; }
+                    if (dest.includes('admin') || dest.includes('ajuste')) { showNavConfirm('admin', 'Admin'); return; }
+                }
+
+                // 5. SIMULACIÓN PH
+                let matchSimularPH = q.match(/(?:simular|simula|que pasa si|si el ph)\s+(?:el\s+|del\s+)?([a-z0-9\s]+?)\s+(?:con\s+)?(?:es|fuera|fuese)?\s*ph\s+(\d+)/i);
+                if (matchSimularPH) { simularPH(matchSimularPH[1].trim(), parseFloat(matchSimularPH[2])); return; }
+
+                // 6. RELLENOS
+                if (q.includes('relleno') || q.includes('donde pongo') || q.includes('donde meto') || q.includes('donde mando') || q.includes('que silo')) { recomendarRellenoBot(q); return; }
+
+                // 7. SILO SUELTO / DETALLE
+                let matchSoloNum = q.match(/^(\d{3})$/);
+                if (matchSoloNum) { let num = parseInt(matchSoloNum[1]); if (esUnidadValida(num)) { mostrarDetalleUnidad(num); return; } }
+                let matchSimpleSilo = q.match(/^silo\s+(\d{3})$/i);
+                if (matchSimpleSilo) { let num = parseInt(matchSimpleSilo[1]); if (esUnidadValida(num)) { mostrarDetalleUnidad(num); return; } }
+                let matchDetalle = q.match(/(?:detalle|estado|info|informacion|que\s+hay\s+en|historial|ver)\s+(?:del?\s+)?(?:silo\s+|tanque\s+)?(\d{3})/i);
+                if (matchDetalle) { let num = parseInt(matchDetalle[1]); if (esUnidadValida(num)) { mostrarDetalleUnidad(num); return; } }
+
+                // 8. ANALISIS CINTAS (Umbral 25% en la función analizarCintasBot)
+                if (q.includes('analizar cintas') || q.includes('balance') || q.includes('desbalanceado') || q.includes('cintas')) { analizarCintasBot(q); return; }
+
+                // 9. ALERTA MANUAL
+                let matchAlerta = q.match(/(?:alerta|aviso|marcar)\s+(?:de|por)\s+(dañado|humedad|temperatura|avería|alto|alto contenido|averia)\s+(?:en|para)\s+(?:el\s+)?(?:silo|tanque|entresilo|caño|tolva|balanza)?\s*([a-z0-9\-]+)/i);
+                if (matchAlerta) { ponerAlertaBot(matchAlerta[1].toUpperCase(), matchAlerta[2].trim().toUpperCase()); return; }
+
+                // 10. SILOS CON CEREAL / SILOS VACIOS
+                if (q.match(/(?:silos?|unidades?)\s+(?:con|de|que\s+tienen?)\s+([a-z]+)/) || q.match(/cuant[oa]s?\s+silos?\s+(?:tienen?|hay|con)\s+([a-z]+)/)) { silosConCerealBot(q); return; }
+                if (q.includes('vacio') || q.includes('vacios')) { silosVaciosBot(); return; }
+
+                // 11. TANQUES
+                if (q === 'tanques' || q === 'tanque' || q.includes('que hay en tanques') || q.includes('tanques desglosados')) { tanquesDesglosadosBot(); return; }
+
+                // 12. STOCK TOTAL
+                if (q.match(/^(?:stock|total)\s*(?:general|total)?$/) || q.includes('cuanto hay en total') || q.includes('stock total') || q.includes('inventario total')) { stockTotalBot(); return; }
+
+                // 13. ESTADO UNIDADES
+                if ((q.includes('cuanto') || q.includes('cuantos') || q.includes('cantidad') || q.includes('estado') || q.includes('silos')) && (q.includes('tapados') || q.includes('fuera de servicio') || q.includes('carga'))) { estadoUnidadesBot(); return; }
+
+                // 14. ESTÁNDARES (antes del findCereal genérico)
+                if (q.includes('estandar') || q.includes('norma')) { estandaresBot(q); return; }
+
+                // 15. CLIMA
+                if (q.includes('clima') || q.includes('tiempo') || q.includes('pronostico') || q.includes('va a llover')) { await climaBot(q); return; }
+
+                // 16. LOGÍSTICA
+                let fechaInicio = new Date(); let fechaFin = new Date(); let tituloFecha = "Hoy";
+                if (q.includes('esta semana')) { fechaInicio.setDate(fechaInicio.getDate() - fechaInicio.getDay()); tituloFecha = "Esta Semana"; }
+                else if (q.includes('mes pasado')) { fechaInicio.setMonth(fechaInicio.getMonth() - 1, 1); fechaFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 0); tituloFecha = "Mes Pasado"; }
+                else if (q.includes('este mes') || q.includes('todo el mes') || q.includes('todo e mes') || q.includes('todo mes')) { fechaInicio.setDate(1); tituloFecha = "Este Mes"; }
+                else if (q.includes('ayer')) { fechaInicio.setDate(fechaInicio.getDate() - 1); fechaFin.setDate(fechaFin.getDate() - 1); tituloFecha = "Ayer"; }
+                else if (q.includes('historial') || q.includes('historico') || q.includes('ultimos 30 dias') || q.includes('ultimos')) { fechaInicio.setDate(fechaInicio.getDate() - 30); tituloFecha = "Últimos 30 días"; }
+                let fIniStr = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
+                let fFinStr = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
+                if (procesoLogistica(q, fIniStr, fFinStr, tituloFecha)) return;
+
+                // 17. SALUDOS
+                if (q.includes('buen dia') || q.includes('buenas') || q.includes('hola') || q.includes('que tal') || q === 'hey' || q === 'hi') { saludoBot(); return; }
+
+                // 18. ALERTAS GENERALES
+                if (q.includes('alerta') || q.includes('problema') || q.includes('revisar')) { alertasGeneralesBot(); return; }
+
+                // 19. STOCK POR CEREAL (BROAD - AL FINAL)
+                let cerealEncontrado = findCereal(q);
+                if (cerealEncontrado) { stockPorCerealBot(cerealEncontrado); return; }
+
+                // FALLBACK
+                addChatMessage("🤔 No entendí. Probá con:<br>• <b>Ayuda</b> (menú completo)<br>• \"Relleno de maíz\"<br>• \"Calculadora\"<br>• \"Estándar de trigo\"<br>• \"Stock total\"", 'bot');
+            } catch (e) {
+                console.error("Error en Bot:", e);
+                addChatMessage("❌ Tuve un problema procesando eso. Probá con 'Ayuda'.", 'bot');
+            }
+        }
+
+        function showNavConfirm(tabId, tabName) {
+            let idx = ['tablero', 'movimientos', 'alertas', 'existencias', 'tanques', 'rellenos', 'herramienta', 'admin'].indexOf(tabId);
+            let btnHTML = `<button onclick="cambiarTab('${tabId}', document.querySelectorAll('.sidebar .nav-btn')[${idx}]); cerrarModal('silobot-modal');" style="background:#3b82f6; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-top:8px; font-weight:bold;">Ir a ${tabName}</button>`;
+            addChatMessage(`Entendido. ¿Querés que te lleve a <b>${tabName}</b>? 👇<br><br>${btnHTML}`, 'bot');
         }
 
         function renderAdminCereales() {

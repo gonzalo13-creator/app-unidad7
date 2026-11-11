@@ -38,8 +38,6 @@
         #app-content { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
         .global-header { background: var(--card); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 1500; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0;}
-        .global-search { flex: 1; max-width: 500px; padding: 10px 15px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.95rem; outline: none; transition: border 0.2s;}
-        .global-search:focus { border-color: var(--primary); }
         .global-title { font-weight: bold; font-size: 1.1rem; color: var(--primary); margin-right: 15px; display: none;}
         @media(min-width: 768px) { .global-title { display: block; } }
 
@@ -125,7 +123,6 @@
         .row-inputs .btn-clear-row { background: #f59e0b; color: white; border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; margin-right: 10px;}
         .row-inputs .btn-clear-row:hover { background: #d97706; }
 
-        /* NUEVO DISEÑO PANTALLA DE INICIO MÓVIL */
         #mobile-dashboard { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2500; padding: 20px; flex-direction: column; overflow-y: auto; }
         #mobile-dashboard.active { display: flex; }
         .mobile-dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
@@ -135,6 +132,8 @@
         .mobile-btn:active { transform: scale(0.95); }
         .mobile-btn i { font-size: 2rem; margin-bottom: 10px; }
 
+        .btn-header-bot { background: #f59e0b; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+        
         @media (max-width: 768px) {
             .global-header { padding: 10px; }
             .main-container { flex-direction: column; }
@@ -145,14 +144,12 @@
             
             h2 { font-size: 1.1rem; padding-bottom: 8px; margin-bottom: 12px;}
             
-            /* COMPACTAR TABLERO EN MOVIL */
             .top-controls { flex-direction: row !important; gap: 5px !important; margin-bottom: 10px !important;}
             .top-controls > div { flex: 1; min-width: 0 !important; }
-            .top-controls label { display: none !important; } /* Ocultar labels para ahorrar espacio */
+            .top-controls label { display: none !important; }
             .buscador { padding: 8px !important; font-size: 0.75rem !important; height: 36px;}
             
-            #tablero-resumen { padding: 5px 8px !important; margin-bottom: 10px !important; gap: 5px !important; font-size: 0.75rem !important;}
-            #tablero-resumen span { margin-right: 5px; }
+            #tablero-resumen { padding: 4px 8px !important; margin-bottom: 10px !important; gap: 5px !important; font-size: 0.7rem !important; justify-content: space-around;}
 
             input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
             .row-inputs { grid-template-columns: 1fr; padding: 15px; gap: 10px; }
@@ -324,7 +321,6 @@
         .step-desc { font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px; }
         .cierre-historial-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
-        /* Estilos para Acordeones del Anotador */
         .accordion-group { margin-bottom: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;}
         .accordion-header { padding: 12px 15px; font-weight: bold; cursor: pointer; background: var(--bg); display: flex; justify-content: space-between; align-items: center; user-select: none; color: var(--text);}
         .accordion-header::-webkit-details-marker { display: none; }
@@ -357,6 +353,7 @@
             <button class="mobile-btn" onclick="cambiarTabMobile('rellenos')"><i>⛽</i>Rellenos</button>
             <button class="mobile-btn" onclick="cambiarTabMobile('herramienta')"><i>🛠️</i>Anotador</button>
             <button class="mobile-btn" onclick="cambiarTabMobile('admin')"><i>⚙️</i>Admin</button>
+            <button class="mobile-btn" onclick="toggleSiloBot()" style="background:#f59e0b; color:white; border:none; grid-column: span 2;"><i>🤖</i>SiloBot IA</button>
         </div>
     </div>
 
@@ -405,7 +402,9 @@
         <div class="global-header">
             <div class="global-title">Gestión de Silos</div>
             <button onclick="abrirMobileDashboard()" style="display:none; background:none; border:none; font-size:1.5rem; cursor:pointer;" id="btn-mobile-menu">☰</button>
-            <input type="text" id="global-search" class="global-search" placeholder="Buscar silo (ej: 305), cereal o tanque..." oninput="handleGlobalSearch(this.value)">
+            
+            <button class="btn-header-bot" onclick="toggleSiloBot()">🤖 SiloBot</button>
+            
             <div style="margin-left:10px;">
                 <button onclick="toggleDarkMode()" style="background:transparent; border:none; padding:5px; font-size:1.2rem; cursor:pointer;" type="button">🌙</button>
                 <span id="status-dot" class="online-dot" title="Estado de conexión"></span>
@@ -453,7 +452,7 @@
                             </select>
                         </div>
                     </div>
-                    <div id="tablero-resumen" style="font-size:0.85rem; font-weight:bold; margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap; background:var(--card); padding:8px 12px; border-radius:6px; border:1px solid var(--border);"></div>
+                    <div id="tablero-resumen" style="font-size:0.85rem; font-weight:bold; margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap; background:var(--card); padding:8px 12px; border-radius:6px; border:1px solid var(--border); justify-content:space-around;"></div>
                     <div id="contenedor-tablero"></div>
                 </div>
 
@@ -581,12 +580,14 @@
                 <div id="admin" class="tab-content">
                     <h2>Administración</h2>
                     <div class="step-box">
-                        <div class="step-title">📸 Cierre de Jornada (Snapshot)</div>
-                        <p class="step-desc"><b>Guardar Cierre:</b> Toma una "foto" del inventario actual y la <b>guarda en el historial</b>.<br><b>Generar PDF Actual:</b> Imprime el estado actual <b>sin guardarlo</b> en el historial.</p>
-                        <button class="btn-save" style="background:#3b82f6; margin-top:0;" onclick="cerrarJornada()" type="button">Guardar Cierre del Día</button>
-                        <button class="btn-save" style="background:#475569; margin-top:10px;" onclick="imprimirCierreActual()" type="button">Generar PDF Ejecutivo Actual</button>
-                        <h3 style="margin-top:20px; font-size:0.9rem;">Historial de Cierres Guardados</h3>
-                        <div id="lista-cierres" style="max-height:200px; overflow-y:auto;"></div>
+                        <div class="step-title">📸 Cierre de Jornada</div>
+                        <p class="step-desc">Genera un registro interno del estado actual del inventario (Toneladas por cereal y Unidades Vacías).</p>
+                        <button class="btn-save" style="background:#3b82f6; margin-top:0;" onclick="generarExistencia()" type="button">Generar Existencia Diaria</button>
+                        
+                        <details style="margin-top:20px;">
+                            <summary style="font-weight:bold; cursor:pointer; font-size:0.95rem; color:var(--primary);">Ver Historial de Existencias (Desplegable)</summary>
+                            <div id="lista-cierres" style="max-height:300px; overflow-y:auto; margin-top:10px; border-top:1px solid var(--border); padding-top:10px;"></div>
+                        </details>
                     </div>
                     
                     <div class="card-panel">
@@ -633,8 +634,6 @@
                 <button class="btn-close" onclick="cerrarModal('modal-historial')" type="button">Cerrar</button>
             </div>
         </div>
-
-        <div id="print-area" class="no-print" style="display:none;"></div>
     </div>
 
     <script>
@@ -677,8 +676,8 @@
             return false;
         };
 
-        const DB_VERSION = 44;
-        const DB_KEY = 'unidad7_db_v44';
+        const DB_VERSION = 45;
+        const DB_KEY = 'unidad7_db_v45';
         const PH_BASE = 80;
 
         const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
@@ -792,7 +791,7 @@
             try {
                 let saved = localStorage.getItem(DB_KEY);
                 if (!saved) { 
-                    let old = localStorage.getItem('unidad7_db_v43') || localStorage.getItem('unidad7_db_v42'); 
+                    let old = localStorage.getItem('unidad7_db_v44') || localStorage.getItem('unidad7_db_v43'); 
                     if (old) { db = JSON.parse(old); db.__version = DB_VERSION; if(!db.cierres) db.cierres = []; } 
                 }
                 else { db = JSON.parse(saved); }
@@ -837,7 +836,6 @@
             renderHerramientaCerealesChk(); actualizarExistencias(); updateOnlineStatus();
             renderAdminCereales(); 
 
-            // Forzar inicio en menú principal en móvil
             if (window.innerWidth <= 768) {
                 abrirMobileDashboard();
             }
@@ -943,8 +941,6 @@
             if ((n >= 100 && n <= 118) || (n >= 200 && n <= 217)) return 'CD3';
             return 'CE';
         }
-
-        let searchTimeout; function filtrarSmartSearchDebounce() { clearTimeout(searchTimeout); searchTimeout = setTimeout(calcularStock, 300); }
 
         function agregarFilaMovimiento() {
             let div = document.createElement('div'); div.className = 'row-inputs';
@@ -1207,7 +1203,7 @@
             contenedor.innerHTML = ''; contenedor.appendChild(fragment);
             if(contenedor.innerHTML === '') contenedor.innerHTML = '<p style="text-align:center; color:var(--text-light);">No se encontraron silos.</p>';
             let resumenDiv = document.getElementById('tablero-resumen');
-            if(resumenDiv) { resumenDiv.innerHTML = `<span>📦 Carga: <b>${silosCarga}</b></span> <span>🚫 Vacíos: <b>${silosVacios}</b></span> <span>⚠️ Tapados: <b>${silosTapados}</b></span> <span>🛑 F. Servicio: <b>${silosFuera}</b></span>`; }
+            if(resumenDiv) { resumenDiv.innerHTML = `<span>🚫 Vacíos: <b>${silosVacios}</b></span> <span>⚠️ Tapados: <b>${silosTapados}</b></span> <span>🛑 F. Servicio: <b>${silosFuera}</b></span>`; }
             actualizarBadgeAlertas(); setTimeout(() => { silosModificadosReciente = []; }, 1500);
         }
 
@@ -1250,7 +1246,7 @@
             let desgloseHtml = ''; 
             let keys = Object.keys(porCereal).filter(k => porCereal[k] > 0).sort((a,b) => porCereal[b] - porCereal[a]);
             if (keys.length > 0) { 
-                desgloseHtml = `<div style="width:100%; border-top:1px solid var(--border); padding-top:10px; margin-top:5px; display:flex; flex-wrap:wrap; gap:10px;">`; 
+                desgloseHtml = `<div style="width:100%; border-top:1px solid var(--border); padding-top:10px; margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">`; 
                 keys.forEach(k => { 
                     let cObj = db.cereales.find(c=>c.id===k);
                     let colorTxt = cObj ? cObj.color : 'var(--text)';
@@ -1258,7 +1254,7 @@
                 }); 
                 desgloseHtml += `</div>`; 
             }
-            cont.innerHTML = `<div style="display:flex; justify-content:space-around; text-align:center; flex-wrap:wrap; gap:10px;"><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:#10b981;">${carga}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Con Carga</div></div><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:var(--text-light);">${vacios}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Vacíos</div></div><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${tapados}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">Tapados</div></div><div style="flex:1; min-width:70px;"><div style="font-size:1.4rem; font-weight:bold; color:#ef4444;">${fuera}</div><div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">F. Servicio</div></div></div>${desgloseHtml}`;
+            cont.innerHTML = `<div style="display:flex; justify-content:space-around; text-align:center; flex-wrap:nowrap; gap:5px;"><div style="flex:1;"><div style="font-size:1.2rem; font-weight:bold; color:#10b981;">${carga}</div><div style="font-size:0.65rem; color:var(--text-light); text-transform:uppercase;">Carga</div></div><div style="flex:1;"><div style="font-size:1.2rem; font-weight:bold; color:var(--text-light);">${vacios}</div><div style="font-size:0.65rem; color:var(--text-light); text-transform:uppercase;">Vacíos</div></div><div style="flex:1;"><div style="font-size:1.2rem; font-weight:bold; color:#f59e0b;">${tapados}</div><div style="font-size:0.65rem; color:var(--text-light); text-transform:uppercase;">Tapados</div></div><div style="flex:1;"><div style="font-size:1.2rem; font-weight:bold; color:#ef4444;">${fuera}</div><div style="font-size:0.65rem; color:var(--text-light); text-transform:uppercase;">F. Serv.</div></div></div>${desgloseHtml}`;
         }
 
         function abrirFlujoTanque(id) {
@@ -1541,7 +1537,15 @@
         function toggleHerramientaCereal(id) { let idx = db.herramienta.cereales.indexOf(id); if(idx > -1) db.herramienta.cereales.splice(idx, 1); else db.herramienta.cereales.push(id); guardarDB(); renderHerramientaCintas(); }
 
         function renderHerramientaCintas() {
-            let cont = document.getElementById('herramienta-contenedor-cintas'); if(!cont) return; cont.innerHTML = '';
+            let cont = document.getElementById('herramienta-contenedor-cintas'); if(!cont) return; 
+            
+            // Guardar estados de apertura de las pestañas
+            let openStates = {};
+            document.querySelectorAll('details.accordion-group').forEach((el, index) => {
+                openStates[index] = el.open;
+            });
+
+            cont.innerHTML = '';
             if(db.herramienta.cereales.length === 0) { cont.innerHTML = '<p style="text-align:center; color:var(--text-light); margin-top:20px;">Seleccioná al menos un cereal arriba.</p>'; return; }
             let cintas = { C1: [], C2: [], C3: [], C4: [] }; let tanques = []; let pasos = [];
             Object.keys(db.silos).forEach(num => {
@@ -1557,25 +1561,33 @@
                     h += `<div class="tool-card state-${hState}" onclick="ciclarEstadoHerramienta('${num}')"><div class="tool-header"><span class="tool-num" style="font-size:0.85rem;">${nombreVisual} <span style="font-size:0.6rem; color:var(--text-light);">${tipoBadge}</span></span><span class="tool-state-badge">${hState}</span></div><div class="tool-body"><div style="display:flex; justify-content:space-between;"><span style="font-weight:bold; color:${bgColor};">${d.cereal} ${alertaIcon}</span><span>${d.calidad || '-'}</span></div><div style="font-weight:bold; margin-top:2px;">${d.tonelaje} t</div>${warning ? `<div class="tool-warning">${warning}</div>` : ''}</div></div>`;
                 }); return h;
             };
-            let html = ''; let hayDatos = false;
+            let html = ''; let hayDatos = false; let globalIndex = 0;
             
             ['C1', 'C2', 'C3', 'C4'].forEach(c => { 
                 if(cintas[c].length > 0) { 
                     hayDatos = true; 
                     let nombreCinta = c==='C1'?'Extracción 1':(c==='C2'?'Extracción 2':(c==='C3'?'Extracción 3':'Extracción 4'));
                     html += `<details class="accordion-group"><summary class="accordion-header" style="border-left:4px solid #3b82f6;">${nombreCinta} <span>🔽</span></summary><div class="accordion-content"><div class="grid-tarjetas" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:8px;">${genCards(cintas[c])}</div></div></details>`; 
+                    globalIndex++;
                 } 
             });
             if(tanques.length > 0) { 
                 hayDatos = true; 
                 html += `<details class="accordion-group"><summary class="accordion-header" style="border-left:4px solid #f97316;">Tanques <span>🔽</span></summary><div class="accordion-content"><div class="grid-tarjetas" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:8px;">${genCards(tanques)}</div></div></details>`; 
+                globalIndex++;
             }
             if(pasos.length > 0) { 
                 hayDatos = true; 
                 html += `<details class="accordion-group"><summary class="accordion-header" style="border-left:4px solid #8b5cf6;">Caños / Tolvas / Balanzas / CER <span>🔽</span></summary><div class="accordion-content"><div class="grid-tarjetas" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:8px;">${genCards(pasos)}</div></div></details>`; 
+                globalIndex++;
             }
             if(!hayDatos) html = '<p style="text-align:center; color:var(--text-light); margin-top:20px;">No hay unidades con carga de los cereales seleccionados.</p>';
             cont.innerHTML = html;
+
+            // Restaurar estados de apertura
+            document.querySelectorAll('details.accordion-group').forEach((el, index) => {
+                if (openStates[index]) el.open = true;
+            });
         }
 
         function ciclarEstadoHerramienta(num) {
@@ -1585,38 +1597,69 @@
 
         function limpiarAnotador() { showConfirm("Reiniciar Anotador", "Todas las unidades volverán a 'CERRADO'. ¿Continuar?", (ok) => { if(!ok) return; db.herramienta.silos = {}; guardarDB(); renderHerramientaCintas(); }); }
 
-        function cerrarJornada() {
-            showConfirm("Guardar Cierre", "Se guardará una foto del estado actual en el historial. ¿Continuar?", (ok) => {
-                if(!ok) return; let fechaHoy = getFechaLocal(); let snapshot = JSON.parse(JSON.stringify(db.silos));
-                db.cierres = db.cierres.filter(c => c.fecha !== fechaHoy); db.cierres.unshift({ fecha: fechaHoy, data: snapshot }); if(db.cierres.length > 10) db.cierres = db.cierres.slice(0, 10);
-                guardarDB(); dibujarCierres(); showToast("✅ Cierre guardado exitosamente.", "success");
+        function generarExistencia() {
+            showConfirm("Generar Existencia", "Se guardará un registro interno con el stock actual (Toneladas por cereal y Unidades Vacías). ¿Continuar?", (ok) => {
+                if(!ok) return;
+                let fechaHoy = getFechaLocal();
+                
+                let totalesPorCereal = {};
+                let vacios = { silos: 0, entresilos: 0, tanques: 0 };
+                let totalGeneral = 0;
+                
+                Object.keys(db.silos).forEach(num => {
+                    let d = db.silos[num];
+                    if (d.estado === 'VACIO') {
+                        if (d.tipo === 'SILO') vacios.silos++;
+                        else if (d.tipo === 'ENTRESILO') vacios.entresilos++;
+                        else if (d.tipo === 'TANQUE') vacios.tanques++;
+                    } else if (d.estado === 'CON_CARGA' || d.estado === 'TAPADA') {
+                        let tons = parseFloat(d.tonelaje) || 0;
+                        if (!totalesPorCereal[d.cereal]) totalesPorCereal[d.cereal] = 0;
+                        totalesPorCereal[d.cereal] += tons;
+                        totalGeneral += tons;
+                    }
+                });
+
+                let nuevaExistencia = {
+                    fecha: fechaHoy,
+                    totales: totalesPorCereal,
+                    totalGeneral: totalGeneral,
+                    vacios: vacios
+                };
+
+                db.cierres = db.cierres.filter(c => c.fecha !== fechaHoy);
+                db.cierres.unshift(nuevaExistencia);
+                if(db.cierres.length > 15) db.cierres = db.cierres.slice(0, 15);
+                
+                guardarDB(); 
+                dibujarCierres(); 
+                showToast("✅ Existencia guardada correctamente.", "success");
             });
         }
 
         function dibujarCierres() {
             let cont = document.getElementById('lista-cierres'); if(!cont) return;
-            if(!db.cierres || db.cierres.length === 0) { cont.innerHTML = '<p style="font-size:0.85rem; color:var(--text-light);">No hay cierres guardados.</p>'; return; }
-            cont.innerHTML = db.cierres.map((c, idx) => `<div class="cierre-historial-item"><span>📅 ${c.fecha.split('-').reverse().join('/')}</span><button onclick="imprimirCierreHistorial(${idx})" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem;">Ver PDF</button></div>`).join('');
-        }
-
-        function imprimirCierreHistorial(idx) { let cierre = db.cierres[idx]; if(!cierre) return; generarReporteHTML(cierre.data, `Cierre del ${cierre.fecha.split('-').reverse().join('/')}`); }
-        function imprimirCierreActual() { generarReporteHTML(db.silos, `Estado Actual - ${getFechaLocal().split('-').reverse().join('/')}`); }
-
-        function generarReporteHTML(silosData, titulo) {
-            let printArea = document.getElementById('print-area'); let totalGeneral = 0;
-            let html = `<div style="font-family: sans-serif; padding: 20px; color: black; background: white;"><h1 style="text-align:center; margin-bottom:5px;">Reporte Ejecutivo - Unidad 7</h1><h2 style="text-align:center; color:#555; margin-top:0;">${titulo}</h2><hr style="border: 1px solid #000; margin-bottom: 20px;">`;
-            html += `<h3 style="border-bottom: 2px solid #000; padding-bottom:5px; margin-bottom:10px;">Stock por Cereal</h3><table style="width:100%; border-collapse:collapse; font-size:14px; margin-bottom: 30px;"><thead><tr style="background:#eee;"><th style="border:1px solid #000; padding:8px; text-align:left;">Cereal</th><th style="border:1px solid #000; padding:8px; text-align:right;">Silos/Entresilos (t)</th><th style="border:1px solid #000; padding:8px; text-align:right;">Tanques (t)</th><th style="border:1px solid #000; padding:8px; text-align:right;">Paso/Emerg (t)</th><th style="border:1px solid #000; padding:8px; text-align:right;">TOTAL (t)</th></tr></thead><tbody>`;
-            db.cereales.forEach(cereal => {
-                let totalSilos = 0, totalTanques = 0, totalPaso = 0, totalCereal = 0;
-                Object.keys(silosData).forEach(num => { let d = silosData[num]; if(d.cereal === cereal.id && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) { let t = parseFloat(d.tonelaje) || 0; totalCereal += t; if (d.tipo === 'SILO' || d.tipo === 'ENTRESILO') totalSilos += t; else if (d.tipo === 'TANQUE') totalTanques += t; else totalPaso += t; } });
-                if(totalCereal > 0) { totalGeneral += totalCereal; html += `<tr><td style="border:1px solid #000; padding:8px;"><b>${cereal.nombre}</b></td><td style="border:1px solid #000; padding:8px; text-align:right;">${totalSilos > 0 ? totalSilos + ' t' : '-'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${totalTanques > 0 ? totalTanques + ' t' : '-'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${totalPaso > 0 ? totalPaso + ' t' : '-'}</td><td style="border:1px solid #000; padding:8px; text-align:right;"><b>${totalCereal} t</b></td></tr>`; }
+            if(!db.cierres || db.cierres.length === 0) { cont.innerHTML = '<p style="font-size:0.85rem; color:var(--text-light);">No hay existencias guardadas.</p>'; return; }
+            
+            let html = '';
+            db.cierres.forEach((c, idx) => {
+                let dateStr = c.fecha.split('-').reverse().join('/');
+                let desglose = '';
+                Object.keys(c.totales).sort().forEach(k => {
+                    let cObj = db.cereales.find(cr => cr.id === k);
+                    let colorTxt = cObj ? cObj.color : 'var(--text)';
+                    desglose += `<span style="margin-right:10px; display:inline-block;"><b style="color:${colorTxt};">${k}:</b> ${c.totales[k]}t</span>`;
+                });
+                
+                html += `<div class="cierre-historial-item" style="flex-direction:column; align-items:flex-start; padding:10px; background:var(--bg); border:1px solid var(--border); border-radius:6px; margin-bottom:8px;">
+                    <div style="font-weight:bold; color:var(--primary); margin-bottom:5px;">📅 ${dateStr}</div>
+                    <div style="font-size:0.85rem; margin-bottom:5px;">${desglose}</div>
+                    <div style="font-size:0.85rem; font-weight:bold; width:100%; border-top:1px dashed var(--border); padding-top:5px; margin-top:5px;">
+                        TOTAL: ${c.totalGeneral}t | Vacíos: Silo(${c.vacios.silos}) Entresilo(${c.vacios.entresilos}) Tanque(${c.vacios.tanques})
+                    </div>
+                </div>`;
             });
-            html += `</tbody></table>`;
-            let vacios = 0, tapados = 0, fueraServicio = 0;
-            Object.keys(silosData).forEach(num => { let d = silosData[num]; if(d.estado === 'VACIO') vacios++; else if(d.estado === 'TAPADA') tapados++; else if(d.estado === 'FUERA_SERVICIO') fueraServicio++; });
-            html += `<h3 style="border-bottom: 2px solid #000; padding-bottom:5px; margin-bottom:10px;">Resumen de Estado de Unidades</h3><table style="width:60%; border-collapse:collapse; font-size:14px; margin-bottom: 30px;"><tr><td style="border:1px solid #000; padding:8px;">Unidades Vacías</td><td style="border:1px solid #000; padding:8px; text-align:center;"><b>${vacios}</b></td></tr><tr><td style="border:1px solid #000; padding:8px;">Unidades Tapadas</td><td style="border:1px solid #000; padding:8px; text-align:center;"><b>${tapados}</b></td></tr><tr><td style="border:1px solid #000; padding:8px;">Unidades Fuera de Servicio</td><td style="border:1px solid #000; padding:8px; text-align:center;"><b>${fueraServicio}</b></td></tr></table>`;
-            html += `<h2 style="text-align:right; margin-top:20px;">TOTAL GENERAL ALMACENADO: ${totalGeneral} t</h2></div>`;
-            printArea.innerHTML = html; printArea.classList.remove('no-print'); printArea.style.display = 'block'; window.print(); printArea.classList.add('no-print'); printArea.style.display = 'none';
+            cont.innerHTML = html;
         }
 
         function archivarHistorial() {
@@ -1657,15 +1700,6 @@
         function sendChip(text) { addChatMessage(text, 'user'); setTimeout(() => processBotQuery(text), 300); }
         function addChatMessage(text, sender) { let body = document.getElementById('chat-body'); if(!body) return; let div = document.createElement('div'); div.className = `chat-msg ${sender}`; if(sender === 'user') { div.textContent = text; } else { div.innerHTML = text; } body.appendChild(div); body.scrollTop = body.scrollHeight; }
 
-        function handleGlobalSearch(val) {
-            if(!val || val.length < 2) { if(document.getElementById('tablero').classList.contains('active')) { document.getElementById('filtro-tablero').value = 'TODOS'; dibujarTablero(); } return; }
-            let q = val.toLowerCase().trim(); let cerealEncontrado = db.cereales.find(c => c.nombre.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
-            let matchSilo = q.match(/^\d{3}$/);
-            if(matchSilo) { let num = parseInt(matchSilo[0]); if(esUnidadValida(num) || db.silos[num]) { verHistorial(num); document.getElementById('global-search').value = ''; return; } }
-            if(cerealEncontrado) { cambiarTab('tablero', document.querySelectorAll('.sidebar .nav-btn')[0]); document.getElementById('filtro-tablero').value = cerealEncontrado.id; dibujarTablero(); }
-            else { cambiarTab('tablero', document.querySelectorAll('.sidebar .nav-btn')[0]); let contenedor = document.getElementById('contenedor-tablero'); if(contenedor) { let tarjetas = contenedor.querySelectorAll('.tarjeta'); tarjetas.forEach(t => { if(t.innerText.toLowerCase().includes(q)) { t.style.border = "3px solid #38bdf8"; t.style.transform = "scale(1.1)"; } else { t.style.border = ""; t.style.transform = "scale(1)"; } }); } }
-        }
-
         function findCereal(text) {
             text = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             let exact = db.cereales.find(c => text.includes(c.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || text.includes(c.id.toLowerCase()));
@@ -1694,7 +1728,7 @@
                 if ((d.tipo === 'SILO' || d.tipo === 'ENTRESILO') && (d.estado === 'CON_CARGA' || d.estado === 'TAPADA')) {
                     if (cerealId && d.cereal !== cerealId) return;
                     let n = parseInt(num);
-                    let c = getCintaExtraccion(n); // Usa cinta de EXTRACCION para el balance
+                    let c = getCintaExtraccion(n);
                     let tons = parseFloat(d.tonelaje) || 0; let cal = d.calidad || 'S/C';
                     cintas[c].total += tons;
                     if(!cintas[c].calidades[cal]) cintas[c].calidades[cal] = 0;
@@ -1711,7 +1745,7 @@
         // HELPERS DEL BOT
         // ============================================================
         function mostrarMenuAyuda() {
-            addChatMessage(`<b>🤖 ¿Qué puedo hacer por vos?</b><br><br>📦 <b>Stock y Unidades:</b><br>• "Stock total"<br>• "Stock de maíz"<br>• "Silos vacíos"<br>• "Silos con soja" (incluye tanques y pasos)<br><br>⛽ <b>Rellenos y Logística:</b><br>• "Relleno de maíz G2" (te recomienda el mejor silo)<br>• "Balance por cintas" (te muestra existencias por cinta de extracción)<br>• "Relleno por cintas" (te muestra espacios por cinta de sobresilo)<br>• "Últimos embarques" (resumen de movimientos)<br><br>📜 <b>Información y Análisis:</b><br>• "Estándar de trigo" (normas)<br>• "Simular maíz ph 70" (impacto en stock)<br>• "Clima en Córdoba" (requiere internet)<br><br>🛠️ <b>Herramientas:</b><br>• "Calculadora" (te lleva a la pestaña)<br>• "Tutoriales" (aprende a usar la app)<br><br><i>Nota: Por seguridad, no puedo modificar movimientos ni borrar datos, solo consultar.</i>`, 'bot');
+            addChatMessage(`<b>🤖 ¿Qué puedo hacer por vos?</b><br><br>📦 <b>Stock y Unidades:</b><br>• "Stock total"<br>• "Stock de maíz"<br>• "Silos vacíos"<br>• "Silos con soja" (incluye tanques y pasos)<br><br>⛽ <b>Rellenos y Logística:</b><br>• "Relleno de maíz G2" (te recomienda el mejor silo)<br>• "Balance por cintas" (existencias por extracción)<br>• "Relleno por cintas" (espacios por sobresilo)<br>• "Últimos embarques" (resumen de movimientos)<br><br>📜 <b>Información y Análisis:</b><br>• "Estándar de trigo" (normas)<br>• "Simular maíz ph 70" (impacto en stock)<br>• "Clima en Córdoba" (requiere internet)<br><br>🛠️ <b>Herramientas:</b><br>• "Calculadora" (te lleva a la pestaña)<br>• "Tutoriales" (aprende a usar la app)<br><br><i>Nota: Por seguridad, no puedo modificar movimientos ni borrar datos, solo consultar.</i>`, 'bot');
         }
 
         function mostrarTutorial(q) {
@@ -1764,7 +1798,7 @@
                 let esp = getEspacioDisp(num);
                 if (esp > 0) {
                     let n = parseInt(num); if (isNaN(n)) return;
-                    let cinta = getCintaSobresilo(n); // Usa cinta de SOBRESILO para relleno
+                    let cinta = getCintaSobresilo(n);
                     opciones.push({ num, esp, cinta, calidad: d.calidad || 'S/C' });
                 }
             });
@@ -1784,7 +1818,7 @@
                     if (opcionesSinCal.length > 0) {
                         opcionesSinCal.sort((a,b) => b.esp - a.esp);
                         let top = opcionesSinCal[0];
-                        addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} <b>${calidadTarget}</b> con espacio.<br><br>💡 Pero hay opciones con otras calidades:<br>• Silo <b>${top.num}</b> (${top.cinta}) - ${top.calidad}: <b>${top.esp}t</b>`, 'bot');
+                        addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} <b>${calidadTarget}</b> con espacio.<br><br>💡 Pero hay opciones con otras calidades:<br>• Silo <b>${top.num}</b> (${CINTAS[top.cinta].nombre}) - ${top.calidad}: <b>${top.esp}t</b>`, 'bot');
                     } else {
                         addChatMessage(`❌ No hay silos de ${cerealMatch.nombre} con espacio para rellenar.`, 'bot');
                     }
@@ -1798,7 +1832,6 @@
             let top = opciones[0];
             
             if (!calidadTarget) {
-                // Agrupar por Cinta de Sobresilo
                 let porCinta = {};
                 opciones.forEach(o => {
                     if (!porCinta[o.cinta]) porCinta[o.cinta] = 0;
@@ -1917,13 +1950,23 @@
         }
 
         function estandaresBot(q) {
-            let cerealMatch = findCereal(q);
-            if (cerealMatch) {
-                let est = ESTANDARES_CALIDAD[cerealMatch.id];
-                if (est) addChatMessage(`📜 <b>${est.nombre}</b><br><br>${est.detalle}`, 'bot');
-                else addChatMessage(`No tengo el estándar detallado para ${cerealMatch.nombre}.`, 'bot');
+            let keyFound = null;
+            let qNorm = q.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            for (let key in ESTANDARES_CALIDAD) {
+                let estName = ESTANDARES_CALIDAD[key].nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                let keyLower = key.toLowerCase();
+                if (qNorm.includes(keyLower) || qNorm.includes(estName.split(' ')[0])) {
+                    keyFound = key;
+                    break;
+                }
+            }
+
+            if (keyFound) {
+                let est = ESTANDARES_CALIDAD[keyFound];
+                addChatMessage(`📜 <b>${est.nombre}</b><br><br>${est.detalle}`, 'bot');
             } else {
-                addChatMessage("📜 <b>Estándares de Calidad</b><br>Decime de qué cereal: <i>estándar de maíz</i>, <i>norma de trigo</i>, <i>calidad de soja</i>, <i>girasol</i>, <i>sorgo</i>, etc.", 'bot');
+                addChatMessage("📜 <b>Estándares de Calidad</b><br>Decime de qué cereal o subproducto querés saber: <i>maíz</i>, <i>trigo</i>, <i>soja</i>, <i>girasol</i>, <i>sorgo</i>, <i>garbanzo</i>, <i>pellets</i>, etc.", 'bot');
             }
         }
 

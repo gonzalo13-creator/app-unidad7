@@ -1,29 +1,31 @@
-const CACHE_NAME = 'silos-u7-v75';
+const CACHE_NAME = 'silos-u7-v76';
 const urlsToCache = [ './', './index.html', './manifest.json' ];
 
 self.addEventListener('install', event => {
-    self.skipWaiting(); 
-    event.waitUntil( 
+    self.skipWaiting();
+    event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
             return Promise.all(urlsToCache.map(url => cache.add(url).catch(() => console.log('Falló cache de: ' + url))));
-        }) 
+        })
     );
 });
 
 self.addEventListener('fetch', event => {
-    if (event.request.mode === 'navigate' || (event.request.method === 'GET' && event.request.headers.get('accept').includes('text/html'))) {
+    const accept = event.request.headers.get('accept') || '';
+    const esNavegacion = event.request.mode === 'navigate' || (event.request.method === 'GET' && accept.includes('text/html'));
+    if (esNavegacion) {
         event.respondWith(
             fetch(event.request).then(response => {
                 let responseClone = response.clone();
                 caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
                 return response;
             }).catch(() => {
-                return caches.match(event.request);
+                return caches.match(event.request).then(r => r || caches.match('./index.html'));
             })
         );
     } else {
-        event.respondWith( 
-            caches.match(event.request).then(response => response || fetch(event.request)) 
+        event.respondWith(
+            caches.match(event.request).then(response => response || fetch(event.request))
         );
     }
 });

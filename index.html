@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Control de Silos SPC</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SPC Control de Silos</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -34,6 +34,7 @@
             </div>
 
             <div style="display:flex; gap:10px; align-items:center;">
+                <button onclick="abrirSiloBot()" style="background:#f59e0b; color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">🤖 SiloBot</button>
                 <span id="user-display" style="font-size:0.85rem; font-weight:bold; color:var(--text-light);"></span>
                 <button onclick="toggleDarkMode()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">🌙</button>
                 <button onclick="cerrarSesion()" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold;">Salir</button>
@@ -43,26 +44,28 @@
         <div class="main-content">
             <!-- TABLERO -->
             <div id="tablero" class="tab-content active">
-                <h2>Estado de Silos</h2>
-                <div id="grid-tablero" class="grid-silos"></div>
+                <h2>Estado de Silos y Entresilos</h2>
+                <div id="grid-tablero"></div>
             </div>
 
             <!-- TANQUES -->
             <div id="tanques" class="tab-content">
-                <h2>Tanques</h2>
+                <h2>Tanques por Flujo</h2>
+                <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Hacé clic en un tanque base para ver y editar los tanques superiores conectados.</p>
                 <div id="grid-tanques" class="grid-silos"></div>
             </div>
 
             <!-- CAÑOS -->
             <div id="canos" class="tab-content">
                 <h2>Unidades de Paso / Emergencia</h2>
-                <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Solo CER y Caños de Embarque.</p>
+                <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">CER y Caños de Embarque.</p>
                 <div id="grid-canos" class="grid-silos"></div>
             </div>
 
             <!-- EXISTENCIAS -->
             <div id="existencias" class="tab-content">
                 <h2>Stock por Cereal</h2>
+                <button onclick="compartirWhatsApp()" style="background:#25D366; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; font-size:1rem; cursor:pointer; margin-bottom:15px;">📲 Compartir Stock por WhatsApp</button>
                 <div id="stock-container" style="background:var(--card); padding:20px; border-radius:8px; border:1px solid var(--border);"></div>
             </div>
 
@@ -72,7 +75,7 @@
                 <div class="admin-card">
                     <h3>Crear Nuevo Usuario</h3>
                     <div class="form-group">
-                        <label>Nombre de Usuario (sin espacios)</label>
+                        <label>Nombre de Usuario</label>
                         <input type="text" id="new-user-name" placeholder="Ej: operador1">
                     </div>
                     <div class="form-group">
@@ -124,12 +127,17 @@
                     </div>
                     <div class="form-group">
                         <label>Origen</label>
-                        <select id="edit-origen">
+                        <select id="edit-origen" onchange="toggleTransile()">
                             <option value="CAMIONES">Camiones</option>
                             <option value="VAGONES">Vagones</option>
-                            <option value="TRANSILE">Transile</option>
                             <option value="TRANSFERENCIA">Transferencia (U6)</option>
+                            <option value="LIMPIEZA">Limpieza</option>
+                            <option value="TRANSILE">Transile</option>
                         </select>
+                    </div>
+                    <div class="form-group" id="group-origen-unidad" style="display:none;">
+                        <label>Unidad de Origen (Transile)</label>
+                        <input type="text" id="edit-origen-unidad" placeholder="Ej: Silo 305">
                     </div>
                     <div class="form-group">
                         <label>Fecha de 1° Carga</label>
@@ -140,7 +148,7 @@
                         <input type="number" id="edit-metros" step="0.5" min="0" oninput="calcularTonelaje()">
                     </div>
                     
-                    <!-- SECCIÓN SILOS 700 -->
+                    <!-- SILOS 700 MANUALES -->
                     <div id="seccion-700" style="display:none; background:var(--bg); padding:15px; border-radius:6px; border:1px solid var(--border); margin-bottom:15px;">
                         <p style="margin:0 0 10px 0; font-size:0.85rem; color:var(--primary); font-weight:bold;">Cálculo Manual (Silo 700)</p>
                         <div class="form-group">
@@ -157,11 +165,19 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN AUTOMÁTICA -->
+                    <!-- RESTO DE SILOS -->
                     <div id="seccion-auto" style="display:none;">
                         <div class="form-group">
                             <label>Tonelaje Calculado (Automático)</label>
                             <input type="number" id="edit-tons-auto" min="0" readonly style="background:var(--border);">
+                        </div>
+                    </div>
+
+                    <!-- TANQUES Y CAÑOS -->
+                    <div id="seccion-tanque" style="display:none;">
+                        <div class="form-group">
+                            <label>Tonelaje (Manual)</label>
+                            <input type="number" id="edit-tons-manual" min="0">
                         </div>
                     </div>
 
@@ -183,32 +199,30 @@
                         <input type="text" id="edit-alerta-motivo" placeholder="Motivo de la alerta...">
                     </div>
 
-                    <!-- RECIRCULACIÓN -->
-                    <div style="background:var(--bg); padding:15px; border-radius:6px; border:1px solid var(--border); margin-top:20px; margin-bottom:15px;">
-                        <p style="margin:0 0 10px 0; font-size:0.85rem; color:var(--primary); font-weight:bold;">Recirculación</p>
-                        <div class="form-group">
-                            <label>Motivo</label>
-                            <select id="edit-recir-motivo">
-                                <option value="">-- No recircular --</option>
-                                <option value="FUMIGACION">Fumigación</option>
-                                <option value="MUESTREO">Muestreo / Control</option>
-                                <option value="TEMPERATURA">Bajar Temperatura</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Fecha de Recirculación</label>
-                            <input type="date" id="edit-recir-fecha">
-                        </div>
-                    </div>
-
                     <button onclick="guardarEdicion()" class="btn-save">Guardar Cambios</button>
                 </div>
             </div>
         </div>
+
+        <!-- SILOBOT CHAT -->
+        <div id="silobot-modal" style="display:none; position:fixed; bottom:20px; right:20px; width:350px; height:500px; background:var(--card); border-radius:12px; box-shadow:0 5px 25px rgba(0,0,0,0.3); z-index:2000; flex-direction:column; border:1px solid var(--border);">
+            <div style="background:#f59e0b; color:white; padding:15px; border-radius:12px 12px 0 0; display:flex; justify-content:space-between; align-items:center; font-weight:bold;">
+                <span>🤖 SiloBot IA</span>
+                <button onclick="cerrarSiloBot()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">×</button>
+            </div>
+            <div id="chat-body" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; font-size:0.9rem;">
+                <div style="background:var(--bg); padding:10px; border-radius:8px; border-bottom-left-radius:0;">¡Hola! Soy SiloBot. Escribí "Ayuda" para ver mis comandos.</div>
+            </div>
+            <div style="padding:10px; border-top:1px solid var(--border); display:flex; gap:5px;">
+                <input type="text" id="chat-input" placeholder="Ej: soja por extraccion" onkeypress="handleChatEnter(event)" style="flex:1; padding:10px; border:1px solid var(--border); border-radius:20px; outline:none; background:var(--bg); color:var(--text);">
+                <button onclick="enviarMensajeBot()" style="background:#f59e0b; color:white; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-size:1.2rem;">➤</button>
+            </div>
+        </div>
     </div>
 
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+    <script src="js/config.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

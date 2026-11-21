@@ -2,305 +2,107 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Gestión de Silos</title>
-    <meta name="description" content="Aplicación de gestión de inventario de silos offline.">
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e293b">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzFlMjkzYiIvPjxwYXRoIGQ9Ik0gMTU2IDE1MCBMIDM1NiAxNTAgTCAzNTYgNDAwIEwgMTU2IDQwMCBaIiBmaWxsPSIjY2JkNWUxIi8+PHBhdGggZD0iTSAxNTYgMTUwIEwgMjU2IDgwIEwgMzU2IDE1MCIgZmlsbD0iIzk0YTNiOCIvPjxyZWN0IHg9IjIwNiIgeT0iMjIwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjE4MCIgcj0iMTUiIGZpbGw9IiMzOGJkZjgiLz48L3N2Zz4=">
-    
-    <style>
-        :root {
-            --primary: #1e293b; --secondary: #334155; 
-            --bg: #e2e8f0; 
-            --card: #ffffff; 
-            --text: #0f172a; --text-light: #475569; 
-            --border: #cbd5e1; 
-            
-            --c-maiz: #f97316; --c-soja: #eab308; --c-sorgo: #3b82f6; --c-trigo: #16a34a;
-            --c-mezcla: #ec4899; --c-girasol: #64748b; --c-otros: #dc2626;
-        }
-        body.dark-mode {
-            --primary: #0f172a; --secondary: #1e293b; --bg: #0f172a; --card: #1e293b;
-            --text: #f8fafc; --text-light: #94a3b8; --border: #334155;
-        }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-            background-color: #1e293b !important; color: #f8fafc !important; border-color: #475569 !important;
-        }
-        body.dark-mode option { background-color: #1e293b; color: #f8fafc; }
-        
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: background 0.3s; }
-        
-        #app-content { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        .global-header { background: var(--card); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 1500; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0;}
-        .global-title { font-weight: bold; font-size: 1.1rem; color: var(--primary); margin-right: 15px; display: none;}
-        @media(min-width: 768px) { .global-title { display: block; } }
-
-        .main-container { display: flex; flex: 1; overflow: hidden; min-height: 0; }
-        
-        .sidebar { width: 240px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
-        .nav-btn { padding: 16px 20px; border: none; background: none; color: #cbd5e1; font-size: 0.95rem; text-align: left; cursor: pointer; border-bottom: 1px solid var(--secondary); font-weight: 500; display: flex; align-items: center; gap: 10px; position: relative;}
-        .nav-btn:hover, .nav-btn.active { background: var(--secondary); color: white; border-left: 4px solid #38bdf8; }
-        .badge { background: #ef4444; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; margin-left: auto; }
-
-        .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
-        .tab-content { display: none; flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; min-height: 0;}
-        .tab-content.active { display: block; }
-
-        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none;}
-        .toast { background: #1e293b; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-weight: 500; font-size: 0.95rem; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; max-width: 90vw; text-align: center;}
-        .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto;}
-        .toast.success { border-left: 4px solid #10b981; }
-        .toast.error { border-left: 4px solid #ef4444; }
-        .toast.warning { border-left: 4px solid #f59e0b; }
-        .toast.update { background: #3b82f6; cursor: pointer; }
-
-        #custom-confirm { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 10000; justify-content: center; align-items: center; }
-        #custom-confirm.active { display: flex; }
-        .confirm-box { background: var(--card); padding: 24px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;}
-        .confirm-box h3 { margin-top: 0; color: var(--text); font-size: 1.2rem;}
-        .confirm-box p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 20px; white-space: pre-wrap;}
-        .confirm-btns { display: flex; gap: 10px; }
-        .confirm-btns button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer;}
-        .confirm-btn-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border) !important;}
-        .confirm-btn-ok { background: #ef4444; color: white;}
-
-        .stat-box.clickable { cursor: pointer; transition: all 0.2s; border: 2px solid transparent; background: var(--bg); }
-        .stat-box.clickable:hover { border-color: var(--primary); opacity: 0.9; }
-        .stat-box.clickable.active { border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 2px var(--primary); }
-        #lista-silos-por-estado { background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
-        .silo-tag { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; border: 1px solid var(--border); text-align: center; min-width: 50px; transition: transform 0.1s; }
-        .silo-tag:active { transform: scale(0.95); }
-
-        #silobot-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 3000; justify-content: flex-end; align-items: flex-end;}
-        #silobot-modal.active { display: flex; }
-        .chat-window { background: var(--bg); width: 100%; max-width: 420px; height: 85vh; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; margin-left: auto; margin-right: 20px;}
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
-        .chat-header { background: #f59e0b; color: white; padding: 15px 20px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; font-weight: bold; flex-shrink: 0;}
-        .chat-header button { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;}
-        
-        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--bg);}
-        .chat-msg { max-width: 85%; padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; white-space: pre-wrap;}
-        .chat-msg.bot { background: var(--card); align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid var(--border); color: var(--text);}
-        .chat-msg.user { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 2px;}
-        
-        .chat-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--bg); border-top: 1px solid var(--border); flex-shrink: 0; max-height: 120px; overflow-y: auto;}
-        .chat-chips::-webkit-scrollbar { display: none; }
-        .chip { background: var(--card); border: 1px solid var(--border); padding: 6px 10px; border-radius: 15px; font-size: 0.75rem; white-space: nowrap; cursor: pointer; font-weight: 600; color: var(--primary);}
-        .chip:active { background: #e2e8f0;}
-        body.dark-mode .chip:active { background: #475569;}
-        
-        .chat-input-area { display: flex; padding: 10px; background: var(--card); border-top: 1px solid var(--border); flex-shrink: 0;}
-        .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 20px; outline: none; font-size: 16px !important; background: var(--bg); color: var(--text);}
-        .chat-input-area button { background: #f59e0b; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;}
-
-        #mobile-dashboard { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2500; padding: 20px; flex-direction: column; overflow-y: auto; }
-        #mobile-dashboard.active { display: flex; }
-        .mobile-dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
-        .mobile-dash-title { font-size: 1.5rem; font-weight: bold; color: var(--text); }
-        .mobile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; flex: 1;}
-        .mobile-btn { background: var(--card); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px 10px; font-size: 1rem; font-weight: bold; color: var(--text); box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.1s;}
-        .mobile-btn:active { transform: scale(0.95); }
-        .mobile-btn i { font-size: 2rem; margin-bottom: 10px; }
-        .mobile-btn svg { width: 32px; height: 32px; margin-bottom: 10px; fill: var(--text); }
-
-        .btn-header-bot { background: #f59e0b; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
-        
-        @media (max-width: 768px) {
-            .global-header { padding: 10px; }
-            .main-container { flex-direction: column; }
-            .sidebar { display: none; } 
-            
-            .content { height: 100%; padding-bottom: 0; }
-            .tab-content { padding: 12px; padding-bottom: 100px; } 
-            
-            h2 { font-size: 1.1rem; padding-bottom: 8px; margin-bottom: 12px;}
-            
-            .top-controls { flex-direction: row !important; gap: 5px !important; margin-bottom: 10px !important;}
-            .top-controls > div { flex: 1; min-width: 0 !important; }
-            .top-controls label { display: none !important; }
-            .buscador { padding: 8px !important; font-size: 0.75rem !important; height: 36px;}
-            
-            #tablero-resumen { padding: 4px 8px !important; margin-bottom: 10px !important; gap: 5px !important; font-size: 0.7rem !important; justify-content: space-around;}
-
-            input, select, textarea { font-size: 16px !important; padding: 12px; border-radius: 6px; min-height: 44px;}
-            
-            .grid-tarjetas { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 4px; }
-            .tarjeta { min-height: 60px; border-radius: 6px; }
-            .t-num { font-size: 1.1rem; margin-top: 0;}
-            .t-info { font-size: 0.5rem; }
-            .t-info-3 { font-size: 0.45rem; }
-            .t-info-2 { font-size: 0.5rem; font-weight: bold; color: var(--text); }
-            
-            .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 15px; -webkit-overflow-scrolling: touch;}
-            .data-table { min-width: 650px; font-size: 0.85rem; }
-            .data-table th, .data-table td { padding: 8px; white-space: nowrap;}
-            
-            .tool-card { min-height: 90px; padding: 8px; }
-            .tool-num { font-size: 1.1rem; }
-            .tool-state-badge { font-size: 0.55rem; padding: 2px 4px;}
-            .tool-body { font-size: 0.75rem; }
-
-            .modal { align-items: flex-end !important; padding: 0 !important; }
-            .modal-box { border-radius: 20px 20px 0 0 !important; max-height: 90vh !important; padding: 20px !important; padding-bottom: 30px !important; width: 100% !important; animation: slideUp 0.3s ease !important;}
-            
-            .sub-tabs { display: flex; }
-            .sub-tab-btn { padding: 10px 5px; font-size: 0.75rem; flex: 1;}
-            
-            .chat-window { margin: 0; max-width: 100%; border-radius: 20px 20px 0 0; height: 90vh; }
-            #toast-container { bottom: 20px; }
-        }
-
-        h2 { font-size: 1.3rem; margin-top: 0; color: var(--text); font-weight: 600; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        .top-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;}
-        .buscador { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); outline: none;}
-        
-        .form-group { display: flex; flex-direction: column; flex: 1; min-width: 110px; margin-bottom: 10px;}
-        .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 4px; display: block;}
-        .form-group input, .form-group select { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); transition: border 0.2s; height: 44px;}
-        .form-group input:focus, .form-group select:focus { border-color: var(--primary); outline: none; }
-
-        .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 4px; }
-        
-        .tarjeta { min-height: 60px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; padding-bottom: 2px; transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.1); color: #fff; }
-        .tarjeta.destacado { animation: pulse 1s; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); } 50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
-
-        .t-num { font-size: 1rem; font-weight: 800; line-height: 1; margin-top: 4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);}
-        .t-info { font-size: 0.5rem; font-weight: 800; text-align: center; line-height: 1; margin-top: 2px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-shadow: 1px 1px 1px rgba(0,0,0,0.2);}
-        .t-info-3 { font-size: 0.45rem; font-weight: 600; margin-top: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; text-align: center;}
-        .t-info-2 { font-size: 0.45rem; font-weight: 600; margin-top: 1px;}
-        
-        .fumigacion-badge { position: absolute; bottom: 2px; right: 2px; font-size: 0.45rem; padding: 1px 3px; border-radius: 3px; font-weight: bold; color: white; background: rgba(0,0,0,0.5); }
-        .fumigacion-badge.verde { background: #10b981; }
-        .fumigacion-badge.naranja { background: #f59e0b; }
-        .fumigacion-badge.rojo { background: #ef4444; animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-
-        .bg-MAIZ { background-color: var(--c-maiz); border-color: #c2410c; }
-        .bg-SOJA { background-color: var(--c-soja); border-color: #a16207; color: #422006;}
-        .bg-SORGO { background-color: var(--c-sorgo); border-color: #1d4ed8; }
-        .bg-TRIGO { background-color: var(--c-trigo); border-color: #15803d; }
-        .bg-MEZCLA { background-color: var(--c-mezcla); border-color: #be185d; }
-        .bg-GIRASOL { background-color: var(--c-girasol); border-color: #475569; }
-        .bg-OTROS { background-color: var(--c-otros); border-color: #b91c1c; }
-        .bg-VACIO { background-color: var(--card); border-style: dashed; opacity: 0.6; color: var(--text-light); text-shadow: none;}
-        .bg-VACIO .t-num, .bg-VACIO .t-info, .bg-VACIO .t-info-2, .bg-VACIO .t-info-3 { text-shadow: none; color: var(--text-light); }
-
-        body.dark-mode .bg-MAIZ { background-color: #9a3412; border-color: #ea580c; }
-        body.dark-mode .bg-SOJA { background-color: #854d0e; border-color: #eab308; color: #fef08a;}
-        body.dark-mode .bg-SORGO { background-color: #1e3a8a; border-color: #3b82f6; }
-        body.dark-mode .bg-TRIGO { background-color: #14532d; border-color: #22c55e; }
-        body.dark-mode .bg-MEZCLA { background-color: #831843; border-color: #ec4899; }
-        body.dark-mode .bg-GIRASOL { background-color: #334155; border-color: #64748b; }
-        body.dark-mode .bg-OTROS { background-color: #7f1d1d; border-color: #ef4444; }
-
-        .estado-tapado { border: 3px solid #f59e0b !important; }
-        .estado-fuera { border: 3px solid #ef4444 !important; }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 2000; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-box { background: var(--card); width: 100%; max-width: 500px; border-radius: 8px; padding: 24px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
-        .modal-box h2 { margin-top: 0; border-bottom: none; padding-bottom: 0; margin-bottom: 15px;}
-        
-        .card-panel { background: var(--card); padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
-        .stat-box { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-radius: 6px;}
-        .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1; }
-        .stat-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;}
-
-        .btn-save { background: #10b981; color: white; padding: 16px; width: 100%; border: none; border-radius: 6px; font-size: 1.05rem; font-weight: 600; margin-top: 10px; cursor: pointer; transition: opacity 0.2s;}
-        .btn-save:active { opacity: 0.7; }
-        .btn-share { background: #25D366; color: white; padding: 14px; width: 100%; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;}
-        .btn-close { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 14px; width: 100%; border-radius: 6px; font-size: 1rem; font-weight: 600; margin-top: 10px; cursor: pointer; }
-        
-        .sub-tabs { display: flex; width: 100%; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 15px; background: var(--bg); }
-        .sub-tab-btn { flex: 1; padding: 12px; border: none; background: none; font-size: 0.95rem; font-weight: bold; color: var(--text-light); cursor: pointer; transition: all 0.2s; text-align: center;}
-        .sub-tab-btn.active { background: var(--primary); color: white; }
-
-        .tool-card { background: var(--bg); border: 2px solid var(--border); border-radius: 8px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; position: relative; transition: all 0.2s; min-height: 90px; user-select: none;}
-        .tool-card.state-CERRADO { opacity: 0.7; border-color: var(--border); }
-        .tool-card.state-ABIERTO { border-color: #3b82f6; background: #eff6ff; opacity: 1;}
-        body.dark-mode .tool-card.state-ABIERTO { background: #1e3a8a !important; border-color: #60a5fa; }
-        .tool-card.state-VACIADO { border-color: #f59e0b; background: #fffbeb; opacity: 1;}
-        body.dark-mode .tool-card.state-VACIADO { background: #451a03 !important; border-color: #fbbf24; }
-        .tool-card.state-TAPADO { border-color: #64748b; background: #f1f5f9; opacity: 1;}
-        body.dark-mode .tool-card.state-TAPADO { background: #1e293b !important; border-color: #94a3b8; }
-        
-        .tool-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(150,150,150,0.2); padding-bottom: 5px; margin-bottom: 5px;}
-        .tool-num { font-size: 1.2rem; font-weight: 900; }
-        .tool-state-badge { font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; color: white; text-transform: uppercase;}
-        .state-CERRADO .tool-state-badge { background: #94a3b8; }
-        .state-ABIERTO .tool-state-badge { background: #3b82f6; }
-        .state-VACIADO .tool-state-badge { background: #f59e0b; }
-        .state-TAPADO .tool-state-badge { background: #64748b; }
-        
-        .tool-body { font-size: 0.8rem; display: flex; flex-direction: column; gap: 2px; flex:1;}
-
-        .offline-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block; margin-left: 5px; }
-        .online-dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block; margin-left: 5px; }
-        
-        .tank-details-container { margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; max-height: 0; transition: max-height 0.4s ease-out; }
-        .tank-details-container.open { max-height: 800px; padding: 15px; }
-        
-        .floor-header { font-size: 1.1rem; font-weight: bold; color: var(--text-light); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px dashed var(--border); padding-bottom: 5px; }
-
-        @media print {
-            .global-header, .sidebar, .top-controls, .btn-save, .btn-close, .sub-tabs, select, .cinta-card, .modal, .action-buttons, #toast-container, #custom-confirm, #silobot-modal, .stat-box.clickable, .alert-accordion-item button, .no-print, .row-inputs, #mobile-dashboard { display: none !important; }
-            body { background: white; display: block; height: auto; color: black;}
-            .content, .tab-content { display: block !important; height: auto; overflow: visible; padding: 0; }
-            .data-table { min-width: 100%; border: 1px solid #000; display: table !important;}
-            .data-table th, .data-table td { border: 1px solid #000; padding: 8px; }
-            .print-only { display: block !important; }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Control de Silos SPC</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- PANTALLA DE INICIO MÓVIL -->
-    <div id="mobile-dashboard">
-        <div class="mobile-dash-header">
-            <div class="mobile-dash-title">Gestión de Silos</div>
-            <button onclick="toggleDarkMode()" style="background:var(--card); border:none; padding:5px; font-size:1.2rem; border-radius:50%; cursor:pointer;" type="button">🌙</button>
-        </div>
-        <div class="mobile-grid" id="mobile-dash-grid">
-            <button class="mobile-btn" onclick="cambiarTabMobile('tablero')"><i>📋</i>Tablero</button>
-            <button class="mobile-btn" onclick="cambiarTabMobile('alertas')"><i>🚨</i>Alertas</button>
-            <button class="mobile-btn" onclick="cambiarTabMobile('existencias')"><i>📊</i>Stock</button>
-            <button class="mobile-btn" onclick="cambiarTabMobile('tanques')"><i>🛢️</i>Tanques</button>
-            <button class="mobile-btn" onclick="cambiarTabMobile('rellenos')">
-                <svg viewBox="0 0 24 24"><path d="M4 19V9L8 5L12 9V19H4ZM12 19V13L15 10L18 13V19H12ZM18 19V16L20 14L22 16V19H18Z"/></svg>
-                Elevador
-            </button>
-            <button class="mobile-btn" onclick="cambiarTabMobile('herramienta')"><i>🛠️</i>Anotador</button>
-            <button class="mobile-btn" onclick="cambiarTabMobile('admin')"><i>⚙️</i>Admin</button>
-            <button class="mobile-btn" onclick="toggleSiloBot()" style="background:#f59e0b; color:white; border:none; grid-column: span 2;"><i>🤖</i>SiloBot IA</button>
+    <!-- LOGIN -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>SPC Control</h1>
+            <input type="text" id="login-user" placeholder="Usuario">
+            <input type="password" id="login-pass" placeholder="Contraseña">
+            <button onclick="iniciarSesion()">Ingresar</button>
+            <p id="login-msg" style="color:#ef4444; font-size:0.9rem; margin-top:15px; height:20px;"></p>
         </div>
     </div>
 
-    <div id="app-content">
-        <div id="toast-container"></div>
+    <!-- APP PRINCIPAL -->
+    <div id="app-container" style="display:none; flex-direction:column; height:100vh;">
         
-        <div id="custom-confirm">
-            <div class="confirm-box">
-                <h3 id="confirm-title">Atención</h3>
-                <p id="confirm-msg">¿Estás seguro?</p>
-                <div class="confirm-btns">
-                    <button class="confirm-btn-cancel" onclick="closeConfirm(false)">Cancelar</button>
-                    <button class="confirm-btn-ok" onclick="closeConfirm(true)">Aceptar</button>
+        <div class="global-header">
+            <div style="font-weight:bold; color:var(--primary); font-size:1.2rem;">SPC Control</div>
+            
+            <div class="nav-tabs" id="nav-tabs">
+                <button class="active" onclick="cambiarTab('tablero', this)">Tablero</button>
+                <button onclick="cambiarTab('tanques', this)">Tanques</button>
+                <button onclick="cambiarTab('canos', this)">Caños de Embarque</button>
+                <button onclick="cambiarTab('existencias', this)">Existencias</button>
+                <button onclick="cambiarTab('admin', this)" id="nav-admin" style="display:none;">Administración</button>
+            </div>
+
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span id="user-display" style="font-size:0.85rem; font-weight:bold; color:var(--text-light);"></span>
+                <button onclick="toggleDarkMode()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">🌙</button>
+                <button onclick="cerrarSesion()" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold;">Salir</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- TABLERO -->
+            <div id="tablero" class="tab-content active">
+                <h2>Estado de Silos</h2>
+                <div id="grid-tablero" class="grid-silos"></div>
+            </div>
+
+            <!-- TANQUES -->
+            <div id="tanques" class="tab-content">
+                <h2>Tanques</h2>
+                <div id="grid-tanques" class="grid-silos"></div>
+            </div>
+
+            <!-- CAÑOS -->
+            <div id="canos" class="tab-content">
+                <h2>Unidades de Paso / Emergencia</h2>
+                <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:15px;">Solo CER y Caños de Embarque.</p>
+                <div id="grid-canos" class="grid-silos"></div>
+            </div>
+
+            <!-- EXISTENCIAS -->
+            <div id="existencias" class="tab-content">
+                <h2>Stock por Cereal</h2>
+                <div id="stock-container" style="background:var(--card); padding:20px; border-radius:8px; border:1px solid var(--border);"></div>
+            </div>
+
+            <!-- ADMINISTRACIÓN -->
+            <div id="admin" class="tab-content">
+                <h2>Administración de Usuarios</h2>
+                <div class="admin-card">
+                    <h3>Crear Nuevo Usuario</h3>
+                    <div class="form-group">
+                        <label>Nombre de Usuario (sin espacios)</label>
+                        <input type="text" id="new-user-name" placeholder="Ej: operador1">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña Genérica</label>
+                        <input type="text" id="new-user-pass" value="12345678">
+                    </div>
+                    <div class="form-group">
+                        <label>Rol</label>
+                        <select id="new-user-role">
+                            <option value="OPERADOR">Operador</option>
+                            <option value="LECTOR">Lector</option>
+                            <option value="ADMIN">Administrador</option>
+                        </select>
+                    </div>
+                    <button onclick="crearUsuario()" class="btn-save" style="background:#10b981;">Crear Usuario</button>
+                    <p id="admin-msg" style="color:var(--primary); font-weight:bold; margin-top:10px;"></p>
                 </div>
             </div>
         </div>
 
-        <!-- MODAL DE EDICIÓN DIRECTA (NUEVO) -->
-        <div id="modal-editar-unidad" class="modal">
-            <div class="modal-box">
-                <h2 id="edit-titulo">Editar Unidad</h2>
+        <!-- PANEL LATERAL DE EDICIÓN -->
+        <div id="slide-panel">
+            <div class="panel-header">
+                <h2 id="panel-title" style="margin:0; font-size:1.2rem;">Editar Unidad</h2>
+                <button class="btn-close" onclick="cerrarPanel()">×</button>
+            </div>
+            <div class="panel-body">
                 <input type="hidden" id="edit-id">
-                
+                <div id="panel-alerta" class="alert-box" style="display:none;"></div>
+
                 <div class="form-group">
                     <label>Estado</label>
                     <select id="edit-estado" onchange="toggleCamposCarga()">
@@ -311,904 +113,102 @@
                     </select>
                 </div>
 
-                <div id="edit-campos-carga" style="display:none;">
+                <div id="campos-carga" style="display:none;">
                     <div class="form-group">
                         <label>Cereal</label>
                         <select id="edit-cereal"></select>
                     </div>
                     <div class="form-group">
                         <label>Calidad</label>
-                        <input type="text" id="edit-calidad" placeholder="Ej: G2, Húmedo, etc.">
+                        <input type="text" id="edit-calidad" placeholder="Ej: G2">
                     </div>
                     <div class="form-group">
-                        <label>Fecha de 1° Carga (Contador Fumigación)</label>
+                        <label>Origen</label>
+                        <select id="edit-origen">
+                            <option value="CAMIONES">Camiones</option>
+                            <option value="VAGONES">Vagones</option>
+                            <option value="TRANSILE">Transile</option>
+                            <option value="TRANSFERENCIA">Transferencia (U6)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de 1° Carga</label>
                         <input type="date" id="edit-fecha-carga">
                     </div>
-                    <div class="form-group" id="edit-group-metros">
-                        <label>Metros de Vacío (Solo Silos/Entresilos)</label>
-                        <input type="number" id="edit-metros" step="0.5" min="0" oninput="calcularEdicionTonelaje()">
-                    </div>
-                    <div class="form-group">
-                        <label>Tonelaje</label>
-                        <input type="number" id="edit-tons" min="0">
+                    <div class="form-group" id="group-metros">
+                        <label>Metros de Vacío</label>
+                        <input type="number" id="edit-metros" step="0.5" min="0" oninput="calcularTonelaje()">
                     </div>
                     
-                    <div id="edit-info-fumigacion" style="margin-top: 10px; padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; text-align: center; background: var(--bg);">
-                        <!-- Info de fumigación -->
+                    <!-- SECCIÓN SILOS 700 -->
+                    <div id="seccion-700" style="display:none; background:var(--bg); padding:15px; border-radius:6px; border:1px solid var(--border); margin-bottom:15px;">
+                        <p style="margin:0 0 10px 0; font-size:0.85rem; color:var(--primary); font-weight:bold;">Cálculo Manual (Silo 700)</p>
+                        <div class="form-group">
+                            <label>Tons Calculadas (Tabla)</label>
+                            <input type="text" id="edit-tons-calc" readonly style="background:var(--border); color:var(--text-light);">
+                        </div>
+                        <div class="form-group">
+                            <label>Tons Reales (Balanza)</label>
+                            <input type="number" id="edit-tons-reales" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Espacio de Relleno (t)</label>
+                            <input type="number" id="edit-tons-relleno" min="0">
+                        </div>
                     </div>
-                    <button onclick="fumigarUnidad()" style="background:#3b82f6; color:white; width:100%; padding:12px; border:none; border-radius:6px; margin-top:10px; font-weight:bold; cursor:pointer;" type="button">💨 Registrar Fumigación Hoy</button>
-                </div>
 
-                <button class="btn-save" onclick="guardarEdicionUnidad()" type="button">💾 Guardar Cambios</button>
-                <button class="btn-close" onclick="cerrarModal('modal-editar-unidad')" type="button">Cancelar</button>
-            </div>
-        </div>
+                    <!-- SECCIÓN AUTOMÁTICA -->
+                    <div id="seccion-auto" style="display:none;">
+                        <div class="form-group">
+                            <label>Tonelaje Calculado (Automático)</label>
+                            <input type="number" id="edit-tons-auto" min="0" readonly style="background:var(--border);">
+                        </div>
+                    </div>
 
-        <div id="silobot-modal">
-            <div class="chat-window">
-                <div class="chat-header">
-                    <span>🤖 SiloBot IA</span>
-                    <button onclick="toggleSiloBot()" type="button">×</button>
-                </div>
-                <div class="chat-body" id="chat-body">
-                    <div class="chat-msg bot">¡Hola! Soy tu Gerente de Planta IA. Escribí <b>Ayuda</b> para ver todo lo que puedo hacer.</div>
-                </div>
-                <div class="chat-chips">
-                    <button class="chip" onclick="sendChip('Ayuda')" type="button">❓ Ayuda</button>
-                    <button class="chip" onclick="sendChip('Relleno')" type="button">⛽ Relleno</button>
-                    <button class="chip" onclick="sendChip('Estándar')" type="button">📜 Estándar</button>
-                    <button class="chip" onclick="sendChip('Alertas activas')" type="button">🚨 Alertas</button>
-                    <button class="chip" onclick="sendChip('Silos vacíos')" type="button">🟢 Vacíos</button>
-                </div>
-                <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="Ej: Calculadora, Stock, Tutorial..." onkeypress="handleChatEnter(event)">
-                    <button onclick="sendChatMsg()" type="button">➤</button>
-                </div>
-            </div>
-        </div>
+                    <div class="form-group">
+                        <label>Fumigación</label>
+                        <select id="edit-fumigacion-tipo">
+                            <option value="NO">Sin fumigar</option>
+                            <option value="TOTAL">Fumigación Completa</option>
+                            <option value="PASTILLAS">Solo Pastillas</option>
+                            <option value="LIQUIDO">Solo Líquido</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
+                        <input type="checkbox" id="edit-alerta" style="width:20px; height:20px;" onchange="toggleAlertaMotivo()">
+                        <label for="edit-alerta" style="margin:0; color:var(--danger); font-weight:bold;">Generar Alerta de Calidad</label>
+                    </div>
+                    <div class="form-group" id="group-alerta-motivo" style="display:none;">
+                        <input type="text" id="edit-alerta-motivo" placeholder="Motivo de la alerta...">
+                    </div>
 
-        <div class="global-header">
-            <div class="global-title">Gestión de Silos</div>
-            <button onclick="abrirMobileDashboard()" style="display:none; background:none; border:none; font-size:1.5rem; cursor:pointer;" id="btn-mobile-menu">☰</button>
-            
-            <button class="btn-header-bot" onclick="toggleSiloBot()">🤖 SiloBot</button>
-            
-            <div style="margin-left:10px;">
-                <button onclick="toggleDarkMode()" style="background:transparent; border:none; padding:5px; font-size:1.2rem; cursor:pointer;" type="button">🌙</button>
-                <span id="status-dot" class="online-dot" title="Estado de conexión"></span>
-            </div>
-        </div>
-
-        <div class="main-container">
-            <div class="sidebar">
-                <button class="nav-btn active" onclick="cambiarTab('tablero', this)" type="button">📋<br>Tablero</button>
-                <button class="nav-btn" onclick="cambiarTab('alertas', this)" type="button">🚨<br>Alertas</button>
-                <button class="nav-btn" onclick="cambiarTab('existencias', this)" type="button">📊<br>Stock</button>
-                <button class="nav-btn" onclick="cambiarTab('tanques', this)" type="button">🛢️<br>Tanques</button>
-                <button class="nav-btn" onclick="cambiarTab('rellenos', this)" type="button" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:12px 8px;">
-                    <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:currentColor;"><path d="M4 19V9L8 5L12 9V19H4ZM12 19V13L15 10L18 13V19H12ZM18 19V16L20 14L22 16V19H18Z"/></svg>
-                    Elevador
-                </button>
-                <button class="nav-btn" onclick="cambiarTab('herramienta', this)" type="button">🛠️<br>Anotador</button>
-                <button class="nav-btn" onclick="cambiarTab('admin', this)" type="button">⚙️<br>Admin</button>
-            </div>
-
-            <div class="content">
-                
-                <div id="tablero" class="tab-content active">
-                    <h2>Estado de Unidades</h2>
-                    <div class="top-controls">
-                        <div style="flex:1;">
-                            <select id="filtro-cinta-tablero" class="buscador" onchange="dibujarTablero()">
-                                <option value="TODAS">Tablero Completo</option>
-                                <optgroup label="Por Cinta (Extracción)">
-                                    <option value="C1">Cinta 1 (700/600)</option>
-                                    <option value="C2">Cinta 2 (500/400P)</option>
-                                    <option value="C3">Cinta 3 (300/400I)</option>
-                                    <option value="C4">Cinta 4 (100/200)</option>
-                                </optgroup>
+                    <!-- RECIRCULACIÓN -->
+                    <div style="background:var(--bg); padding:15px; border-radius:6px; border:1px solid var(--border); margin-top:20px; margin-bottom:15px;">
+                        <p style="margin:0 0 10px 0; font-size:0.85rem; color:var(--primary); font-weight:bold;">Recirculación</p>
+                        <div class="form-group">
+                            <label>Motivo</label>
+                            <select id="edit-recir-motivo">
+                                <option value="">-- No recircular --</option>
+                                <option value="FUMIGACION">Fumigación</option>
+                                <option value="MUESTREO">Muestreo / Control</option>
+                                <option value="TEMPERATURA">Bajar Temperatura</option>
                             </select>
                         </div>
-                    </div>
-                    <div id="tablero-resumen" style="font-size:0.85rem; font-weight:bold; margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap; background:var(--card); padding:8px 12px; border-radius:6px; border:1px solid var(--border); justify-content:space-around;"></div>
-                    <div id="contenedor-tablero"></div>
-                </div>
-
-                <div id="tanques" class="tab-content">
-                    <h2>Tanques y Circuitos</h2>
-                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Hacé clic en cualquier unidad para editarla.</p>
-                    <div id="tanques-resumen" class="card-panel" style="display:flex; flex-direction:column; gap:10px;"></div>
-                    <div id="contenedor-todos-tanques"></div>
-                    
-                    <div class="floor-header" style="margin-top:30px; border-bottom-color: #f59e0b;">Unidades de Paso / Emergencia</div>
-                    <div id="contenedor-unidades-paso" class="grid-tarjetas" style="grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px;"></div>
-                </div>
-
-                <div id="alertas" class="tab-content">
-                    <h2>Centro de Alertas</h2>
-                    <div id="alertas-acordeon" style="margin-bottom:20px;"></div>
-                </div>
-
-                <div id="existencias" class="tab-content">
-                    <h2>Stock por Cereal</h2>
-                    <div class="card-panel">
-                        <div id="existencias-cintas-container"></div>
-                    </div>
-                    <div class="card-panel">
-                        <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Disponibilidad de Unidades</h3>
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:10px;">
-                            <div class="stat-box clickable" id="st-box-vacios" onclick="mostrarSilosPorEstado('VACIO', this)">
-                                <span class="stat-num" id="st-vacios">0</span><span class="stat-lbl">Vacíos</span>
-                            </div>
-                            <div class="stat-box clickable" id="st-box-carga" onclick="mostrarSilosPorEstado('CON_CARGA', this)">
-                                <span class="stat-num" id="st-carga">0</span><span class="stat-lbl">Con Carga</span>
-                            </div>
-                            <div class="stat-box clickable" id="st-box-tapados" onclick="mostrarSilosPorEstado('TAPADA', this)">
-                                <span class="stat-num" id="st-tapados">0</span><span class="stat-lbl">Tapados</span>
-                            </div>
-                            <div class="stat-box clickable" id="st-box-fuera" onclick="mostrarSilosPorEstado('FUERA_SERVICIO', this)">
-                                <span class="stat-num" id="st-fuera">0</span><span class="stat-lbl">F. Servicio</span>
-                            </div>
-                        </div>
-                        <div id="lista-silos-por-estado" style="display:none;"></div>
-                    </div>
-                    <button style="background:var(--card); border:1px solid var(--border); color:var(--text); padding:16px; border-radius:6px; width:100%; font-weight:600; cursor:pointer;" onclick="window.print()" type="button">IMPRIMIR REPORTE</button>
-                </div>
-
-                <div id="rellenos" class="tab-content">
-                    <h2>Elevador</h2>
-                    <div class="sub-tabs">
-                        <button class="sub-tab-btn active" onclick="cambiarSubTab('sub-relleno-lista', this)" type="button">Rellenos</button>
-                        <button class="sub-tab-btn" onclick="cambiarSubTab('sub-bajo-silos', this)" type="button">Bajo Silos</button>
-                        <button class="sub-tab-btn" onclick="cambiarSubTab('sub-calculadora', this)" type="button">Calculadora</button>
-                    </div>
-                    
-                    <div id="sub-relleno-lista" style="display:block;">
-                        <div class="card-panel">
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                                <div>
-                                    <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Cereal</label>
-                                    <select id="sel-cereal-relleno" class="buscador" onchange="actualizarOpcionesRelleno()"></select>
-                                </div>
-                                <div>
-                                    <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Calidad</label>
-                                    <select id="sel-calidad-relleno" class="buscador" onchange="calcularRellenos()">
-                                        <option value="TODAS">Todas</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="relleno-total-info" style="text-align:center; font-size:1.1rem; font-weight:bold; margin-bottom:15px; color:var(--primary); display:none; background:var(--bg); padding:10px; border-radius:8px; border:1px solid var(--border);"></div>
-                            
-                            <div id="rellenos-cintas-container"></div>
-                            <div id="detalle-relleno-container" style="margin-top:15px; display:none;">
-                                <h4 style="margin-top:0; color:var(--primary);" id="detalle-relleno-titulo"></h4>
-                                <div class="table-responsive">
-                                    <table class="data-table" id="tabla-rellenos" style="min-width: 700px;">
-                                        <thead>
-                                            <tr><th>Unidad</th><th>Cereal</th><th>Calidad</th><th>F. Carga</th><th>Origen</th><th>Tonelaje</th><th>Fumigación</th><th>Espacio Disp.</th></tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label>Fecha de Recirculación</label>
+                            <input type="date" id="edit-recir-fecha">
                         </div>
                     </div>
 
-                    <div id="sub-bajo-silos" style="display:none;">
-                        <div class="card-panel">
-                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-bottom:15px;">
-                                <div>
-                                    <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Cereal</label>
-                                    <select id="sel-cereal-bajosilos" class="buscador" onchange="actualizarOpcionesBajoSilos()"></select>
-                                </div>
-                                <div>
-                                    <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Calidad</label>
-                                    <select id="sel-calidad-bajosilos" class="buscador" onchange="renderBajoSilos()">
-                                        <option value="TODAS">Todas</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label style="margin-top:0; font-size:0.8rem; font-weight:600;">Agrupar por</label>
-                                    <select id="sel-agrupacion-bajosilos" class="buscador" onchange="renderBajoSilos()">
-                                        <option value="CINTA">Cinta de Extracción</option>
-                                        <option value="LINEA">Línea (100s, 200s, etc)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="bajosilos-container"></div>
-                        </div>
-                    </div>
-
-                    <div id="sub-calculadora" style="display:none;">
-                        <div class="card-panel">
-                            <div class="stat-box" id="calc-resultado-box" style="background:var(--primary); color:white; margin-bottom:15px; text-align:center; border-radius:8px; padding:15px;">
-                                <span class="stat-num" id="calc-resultado" style="color:white; font-size:2.5rem;">0 t</span>
-                                <span class="stat-lbl" id="calc-resultado-lbl" style="color:#cbd5e1;">Cálculo Teórico</span>
-                            </div>
-                            <div id="calc-msj" style="font-size:0.85rem; font-weight:bold; margin-bottom:15px; text-align:center;"></div>
-                            
-                            <label style="font-weight:600; font-size:0.85rem;">1. Elegir Cereal (Define el PH)</label>
-                            <select id="calc-cereal" class="buscador" onchange="calcularMedidaRapida()"></select>
-                            
-                            <label style="font-weight:600; font-size:0.85rem; margin-top:10px; display:block;">2. Silo o Entresilo</label>
-                            <input type="number" id="calc-silo" class="buscador" placeholder="Ej: 315 o 405" min="1" inputmode="numeric" oninput="calcularMedidaRapida()">
-                            
-                            <label style="font-weight:600; font-size:0.85rem; margin-top:10px; display:block;">3. Metros de Vacío (0 a 37, saltos de 0.5)</label>
-                            <input type="number" id="calc-metros" class="buscador" step="0.5" min="0" placeholder="Ej: 15.5" inputmode="decimal" oninput="calcularMedidaRapida()">
-                        </div>
-                    </div>
-                </div>
-
-                <div id="herramienta" class="tab-content">
-                    <h2>Anotador de Embarque</h2>
-                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Control de unidades abiertas (No modifica el Tablero real).</p>
-                    <div class="card-panel">
-                        <h3 style="margin-top:0; font-size:0.9rem; color:var(--text-light);">1. Elegir Cereales (Solo con stock)</h3>
-                        <div id="herramienta-chk-cereales" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;"></div>
-                        <div style="display:flex; flex-direction: column; gap: 10px; border-top:1px solid var(--border); padding-top:15px;">
-                            <span style="color:var(--text-light); font-size:0.8rem;">* Tocá las tarjetas para cambiar su estado.</span>
-                            <button onclick="limpiarAnotador()" style="background:#ef4444; color:white; border:none; padding:12px; border-radius:4px; cursor:pointer; font-weight:bold; width:100%;" type="button">Reiniciar Anotador</button>
-                        </div>
-                    </div>
-                    <div id="herramienta-contenedor-cintas"></div>
-                </div>
-
-                <div id="admin" class="tab-content">
-                    <h2>Administración</h2>
-                    <div class="step-box" style="border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 15px; background: var(--bg);">
-                        <div class="step-title" style="font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 10px;">📸 Cierre de Jornada</div>
-                        <p class="step-desc" style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">Genera un registro interno del estado actual del inventario (Toneladas por cereal y Unidades Vacías).</p>
-                        <button class="btn-save" style="background:#3b82f6; margin-top:0;" onclick="generarExistencia()" type="button">Generar Existencia Diaria</button>
-                        
-                        <details style="margin-top:20px;">
-                            <summary style="font-weight:bold; cursor:pointer; font-size:0.95rem; color:var(--primary);">Ver Historial de Existencias</summary>
-                            <div id="lista-cierres" style="max-height:300px; overflow-y:auto; margin-top:10px; border-top:1px solid var(--border); padding-top:10px;"></div>
-                        </details>
-                    </div>
-                    
-                    <div class="card-panel">
-                        <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Gestión de Cereales (PH)</h3>
-                        <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:10px;">El PH afecta los cálculos automáticos de tonelaje.</p>
-                        <div id="admin-cereales-lista" style="max-height:300px; overflow-y:auto; margin-bottom:15px;"></div>
-                        
-                        <div style="border-top:1px dashed var(--border); padding-top:15px;">
-                            <h4 style="margin:0 0 10px 0; font-size:0.9rem;">Agregar Nuevo Cereal</h4>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items: center;">
-                                <input type="text" id="new-cereal-nombre" placeholder="Nombre" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:4px;">
-                                <input type="number" step="0.1" id="new-cereal-ph" placeholder="PH Base" style="width:100px; padding:8px; border:1px solid var(--border); border-radius:4px;">
-                                <input type="color" id="new-cereal-color" value="#64748b" style="width:50px; padding:2px; border:1px solid var(--border); border-radius:4px; height: 36px;">
-                                <button onclick="crearCereal()" style="background:#3b82f6; color:white; border:none; border-radius:4px; padding:8px 15px; cursor:pointer; font-weight:bold;">Agregar</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-panel">
-                        <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Mantenimiento</h3>
-                        <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Si la app se pone lenta, archivá movimientos viejos (más de 6 meses).</p>
-                        <button class="btn-save" style="background:#f59e0b; margin-top:0;" onclick="archivarHistorial()" type="button">🧹 Archivar Historial Antiguo</button>
-                    </div>
-                    
-                    <div class="card-panel" style="margin-top: 20px; border-top: 1px solid var(--border);">
-                        <h3 style="margin-top:0; font-size:1rem; color:var(--text-light);">Compartir y Sincronizar</h3>
-                        <button class="btn-share" onclick="compartirDatos()" type="button">Compartir Mis Datos</button>
-                        <label style="margin-top:15px; display: block; font-size: 0.85rem;">Importar Datos:</label>
-                        <input type="file" id="import-file" accept=".json" onchange="fusionarDatos(event)" style="padding:10px; font-size:0.85rem; width: 100%; border:1px solid var(--border); border-radius:6px;">
-                    </div>
+                    <button onclick="guardarEdicion()" class="btn-save">Guardar Cambios</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // --- CONTROL DE LA PANTALLA MÓVIL ---
-        function checkMobileView() {
-            if (window.innerWidth <= 768) {
-                document.getElementById('btn-mobile-menu').style.display = 'block';
-            } else {
-                document.getElementById('btn-mobile-menu').style.display = 'none';
-                document.getElementById('mobile-dashboard').classList.remove('active');
-            }
-        }
-        window.addEventListener('resize', checkMobileView);
-
-        function abrirMobileDashboard() {
-            document.getElementById('mobile-dashboard').classList.add('active');
-        }
-
-        function cambiarTabMobile(tabId) {
-            document.getElementById('mobile-dashboard').classList.remove('active');
-            navegarApp(tabId);
-        }
-
-        function navegarApp(tabId) {
-            let btnIndex = ['tablero', 'alertas', 'existencias', 'tanques', 'rellenos', 'herramienta', 'admin'].indexOf(tabId);
-            let targetBtn = document.querySelectorAll('.sidebar .nav-btn')[btnIndex];
-            cambiarTab(tabId, targetBtn);
-        }
-
-        window.onerror = function(msg, url, line, col, error) {
-            console.error("Error crítico:", msg, {url, line, col, error});
-            let errDiv = document.getElementById('error-fatal');
-            if(!errDiv) {
-                errDiv = document.createElement('div');
-                errDiv.id = 'error-fatal';
-                errDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#ef4444;color:white;padding:15px;z-index:99999;font-size:14px;text-align:center;';
-                document.body.appendChild(errDiv);
-            }
-            errDiv.innerHTML = "<b>⚠️ Ocurrió un error.</b><br>Por favor, recargá la página (Ctrl+F5) o borrá los datos del sitio.";
-            return false;
-        };
-
-        const DB_VERSION = 50;
-        const DB_KEY = 'unidad7_db_v50';
-        const PH_BASE = 80;
-
-        const TABLA_SILOS = [[0,1221],[0.5,1204],[1,1187],[1.5,1170],[2,1153],[2.5,1136],[3,1119],[3.5,1102],[4,1085],[4.5,1068],[5,1051],[5.5,1034],[6,1017],[6.5,1000],[7,983],[7.5,966],[8,949],[8.5,932],[9,915],[9.5,898],[10,881],[10.5,864],[11,847],[11.5,830],[12,813],[12.5,796],[13,779],[13.5,762],[14,745],[14.5,728],[15,711],[15.5,694],[16,677],[16.5,660],[17,643],[17.5,626],[18,609],[18.5,592],[19,575],[19.5,558],[20,541],[20.5,524],[21,507],[21.5,490],[22,473],[22.5,456],[23,439],[23.5,422],[24,405],[24.5,388],[25,371],[25.5,354],[26,337],[26.5,320],[27,303],[27.5,286],[28,269],[28.5,252],[29,235],[29.5,218],[30,201],[30.5,184],[31,167],[31.5,150],[32,133],[32.5,116],[33,99],[33.5,82],[34,65],[34.5,48],[35,31],[35.5,23],[36,13],[36.5,8],[37,3.4],[37.5,1]];
-        const TABLA_ENTRESILOS = [[0,311.5],[0.5,307.25],[1,303],[1.5,298.75],[2,294.5],[2.5,290.25],[3,286],[3.5,281.75],[4,277.5],[4.5,273.25],[5,269],[5.5,264.75],[6,260.5],[6.5,256.25],[7,252],[7.5,247.75],[8,243.5],[8.5,239.25],[9,235],[9.5,230.75],[10,226.5],[10.5,222.25],[11,218],[11.5,213.75],[12,209.5],[12.5,205.25],[13,201],[13.5,196.75],[14,192.5],[14.5,188.25],[15,184],[15.5,179.75],[16,175.5],[16.5,171.25],[17,167],[17.5,162.75],[18,158.5],[18.5,154.25],[19,150],[19.5,145.75],[20,141.5],[20.5,137.25],[21,133],[21.5,128.75],[22,124.5],[22.5,120.25],[23,116],[23.5,111.75],[24,107.5],[24.5,103.25],[25,99],[25.5,94.75],[26,90.5],[26.5,86.25],[27,82],[27.5,77.75],[28,73.5],[28.5,69.25],[29,65],[29.5,60.75],[30,56.5],[30.5,52.25],[31,48],[31.5,43.75],[32,39.5],[32.5,35.25],[33,31],[33.5,26.75],[34,22.5],[34.5,18.25],[35,14],[35.5,9.75],[36,6.5],[36.5,3.75],[37,1.25],[37.5,0.6]];
-        
-        const SILOS_MANUALES = [701, 703, 704, 706, 707, 709, 710, 712, 713, 715, 716, 718];
-        const MIN_14 = [702, 705, 708, 711, 714, 717];
-        const MIN_10 = [502, 505, 508, 511, 514, 517];
-
-        let TANQUES_CONFIG = [
-            { id: 'CTM', piso: 1, max: 130, padre: 'SSE5' }, { id: 'IL1', piso: 1, max: 230, padre: 'SL1' }, { id: 'IL2', piso: 1, max: 230, padre: 'SL2' }, { id: 'IL3', piso: 1, max: 230, padre: 'SL3' }, { id: 'IL4', piso: 1, max: 230, padre: 'SL4' }, { id: 'ISE1', piso: 1, max: 120, padre: 'SSE1' }, { id: 'ISE2', piso: 1, max: 130, padre: 'SSE2' }, { id: 'ISE3', piso: 2, max: 130, padre: 'SSE3' }, { id: 'ISE4', piso: 2, max: 130, padre: 'SSE4' }, { id: 'P3', piso: 3, max: 330, padre: 'TA2' }, { id: 'R1', piso: 2, max: 200, padre: 'P2' }, { id: 'R2', piso: 2, max: 200, padre: 'P4' },
-            { id: 'SSE5', piso: 3, max: 200, padre: null }, { id: 'SL1', piso: 3, max: 210, padre: null }, { id: 'SL2', piso: 3, max: 210, padre: null }, { id: 'SL3', piso: 3, max: 210, padre: null }, { id: 'SL4', piso: 3, max: 210, padre: null }, { id: 'SSE1', piso: 3, max: 180, padre: null }, { id: 'SSE2', piso: 3, max: 190, padre: 'TN2' }, { id: 'SSE3', piso: 3, max: 110, padre: 'TA3' }, { id: 'SSE4', piso: 3, max: 110, padre: null }, { id: 'P2', piso: 3, max: 200, padre: null }, { id: 'P4', piso: 3, max: 200, padre: null },
-            { id: 'TN2', piso: 6, max: 70, padre: null }, { id: 'TA3', piso: 6, max: 120, padre: 'TA4' }, { id: 'TA1', piso: 6, max: 130, padre: 'TN4' }, { id: 'TA4', piso: 6, max: 140, padre: null }, { id: 'TN4', piso: 6, max: 260, padre: null }, { id: 'TA2', piso: 6, max: 130, padre: 'TA1' }
-        ].sort((a, b) => a.id.localeCompare(b.id));
-
-        const padresIds = TANQUES_CONFIG.map(t => t.padre).filter(p => p);
-        const TANQUES_FINALES = TANQUES_CONFIG.filter(t => !padresIds.includes(t.id)).sort((a, b) => a.id.localeCompare(b.id));
-        
-        const UNIDADES_PASO_CONFIG = [
-            { id: 'CER', tipo: 'CER', nombre: 'CER (Pulmón U6)' }, { id: 'CANO-1', tipo: 'CAÑO', nombre: 'CAÑO 1' }, { id: 'CANO-2', tipo: 'CAÑO', nombre: 'CAÑO 2' }, { id: 'CANO-3', tipo: 'CAÑO', nombre: 'CAÑO 3' }, { id: 'CANO-4', tipo: 'CAÑO', nombre: 'CAÑO 4' }, { id: 'CANO-5', tipo: 'CAÑO', nombre: 'CAÑO 5' }, { id: 'CANO-6', tipo: 'CAÑO', nombre: 'CAÑO 6' },
-            { id: 'TOLVA-1', tipo: 'TOLVA', nombre: 'TOLVA 1 (Plataforma 10)' }, { id: 'TOLVA-2', tipo: 'TOLVA', nombre: 'TOLVA 2 (Plataforma 9)' }, { id: 'TOLVA-3', tipo: 'TOLVA', nombre: 'TOLVA 3' }, { id: 'TOLVA-4', tipo: 'TOLVA', nombre: 'TOLVA 4' },
-            { id: 'BALANZA-1', tipo: 'BALANZA', nombre: 'BALANZA 1' }, { id: 'BALANZA-2', tipo: 'BALANZA', nombre: 'BALANZA 2' }, { id: 'BALANZA-3', tipo: 'BALANZA', nombre: 'BALANZA 3' }, { id: 'BALANZA-4', tipo: 'BALANZA', nombre: 'BALANZA 4' }, { id: 'BALANZA-5', tipo: 'BALANZA', nombre: 'BALANZA 5' }, { id: 'BALANZA-6', tipo: 'BALANZA', nombre: 'BALANZA 6' }
-        ];
-
-        const FILAS_TABLERO = {
-            '700': [701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718], '600': [601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617], '500': [501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518], '400': [401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417], '300': [301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318], '200': [201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217], '100': [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118]
-        };
-
-        let TODOS_LOS_SILOS = [];
-        Object.keys(FILAS_TABLERO).forEach(k => TODOS_LOS_SILOS = TODOS_LOS_SILOS.concat(FILAS_TABLERO[k]));
-        
-        const CINTAS = { 
-            CE: { nombre: "Embarque (CE)" }, 
-            CD1: { nombre: "Distribución 1 (CD1)" }, 
-            CD2: { nombre: "Distribución 2 (CD2)" }, 
-            CD3: { nombre: "Distribución 3 (CD3)" } 
-        };
-
-        let db = { __version: DB_VERSION, cereales: [], silos: {}, herramienta: { cereales: [], silos: {} }, cierres: [] };
-        let confirmCallback = null;
-
-        function showToast(msg, type = 'info', duration = 3500) {
-            const container = document.getElementById('toast-container'); if(!container) return;
-            const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.innerHTML = msg;
-            container.appendChild(toast); setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, duration);
-            return toast;
-        }
-        function showConfirm(title, msg, callback) { document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-msg').innerText = msg; document.getElementById('custom-confirm').classList.add('active'); confirmCallback = callback; }
-        function closeConfirm(result) { document.getElementById('custom-confirm').classList.remove('active'); if (confirmCallback) { confirmCallback(result); confirmCallback = null; } }
-        function getFechaLocal() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
-        function parseFechaLocal(str) { if(!str) return new Date(0); const [y, m, d] = str.split('-').map(Number); return new Date(y, m - 1, d); }
-        function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        function init() {
-            checkMobileView();
-            if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-            try {
-                let saved = localStorage.getItem(DB_KEY);
-                if (!saved) { 
-                    // Migración de versión anterior
-                    let old = localStorage.getItem('unidad7_db_v49') || localStorage.getItem('unidad7_db_v48'); 
-                    if (old) { db = JSON.parse(old); db.__version = DB_VERSION; if(!db.cierres) db.cierres = []; } 
-                }
-                else { db = JSON.parse(saved); }
-            } catch(e) { db = { __version: DB_VERSION, cereales: [], silos: {}, herramienta: { cereales: [], silos: {} }, cierres: [] }; }
-
-            if (!db.cereales || db.cereales.length === 0) {
-                db.cereales = [
-                    {id:'MAIZ', nombre:'MAÍZ', ph:76, color:'#f97316'},
-                    {id:'SORGO', nombre:'SORGO', ph:72, color:'#3b82f6'},
-                    {id:'SOJA', nombre:'SOJA', ph:71, color:'#eab308'},
-                    {id:'TRIGO', nombre:'TRIGO', ph:78, color:'#16a34a'},
-                    {id:'MEZCLA', nombre:'MEZCLA', ph:75, color:'#ec4899'}
-                ];
-            }
-            if (!db.silos) db.silos = {};
-            if (!db.herramienta) db.herramienta = { cereales: [], silos: {} };
-            if (!db.cierres) db.cierres = [];
-            
-            TANQUES_CONFIG.forEach(t => {
-                if(!db.silos[t.id]) { db.silos[t.id] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, origen: null, lastUpdate: 0, tipo: 'TANQUE', piso: t.piso, max: t.max, padre: t.padre }; }
-                else { db.silos[t.id].tipo = 'TANQUE'; db.silos[t.id].piso = t.piso; db.silos[t.id].max = t.max; db.silos[t.id].padre = t.padre; }
-            });
-
-            UNIDADES_PASO_CONFIG.forEach(u => {
-                if(!db.silos[u.id]) { db.silos[u.id] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, origen: null, lastUpdate: 0, tipo: u.tipo, extra: u.nombre }; }
-                else { db.silos[u.id].tipo = u.tipo; db.silos[u.id].extra = u.nombre; }
-            });
-
-            Object.keys(db.silos).forEach(num => {
-                let d = db.silos[num];
-                if(!d.tipo) {
-                    if (TANQUES_CONFIG.find(t => t.id === num)) d.tipo = 'TANQUE';
-                    else if (UNIDADES_PASO_CONFIG.find(u => u.id === num)) d.tipo = UNIDADES_PASO_CONFIG.find(u => u.id === num).tipo;
-                    else d.tipo = (Number(num) >= 101 && Number(num) <= 718) ? (esSiloTipo(Number(num)) === 'SILO' ? 'SILO' : 'ENTRESILO') : 'TANQUE';
-                }
-            });
-
-            guardarDB();
-            actualizarSelects(); dibujarTablero(); dibujarTanques(); dibujarCierres();
-            actualizarExistencias(); updateOnlineStatus();
-            renderAdminCereales(); 
-            actualizarOpcionesRelleno();
-            actualizarOpcionesBajoSilos();
-
-            if (window.innerWidth <= 768) abrirMobileDashboard();
-        }
-
-        function updateOnlineStatus() {
-            const dot = document.getElementById('status-dot'); if(!dot) return;
-            if(navigator.onLine) { dot.className = 'online-dot'; dot.title = 'Conectado a Internet'; }
-            else { dot.className = 'offline-dot'; dot.title = 'Sin conexión (Modo Offline)'; }
-        }
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
-        function guardarDB() { try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch(e) { showToast("⚠️ Memoria llena. Usá el Archivador en Admin.", "error"); } }
-
-        function cambiarTab(id, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.sidebar .nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); if(btn) btn.classList.add('active');
-            if(id === 'existencias') { actualizarExistencias(); calcularStock(); }
-            if(id === 'alertas') dibujarAlertas();
-            if(id === 'tanques') { dibujarTanques(); actualizarResumenTanques(); }
-            if(id === 'rellenos') { actualizarOpcionesRelleno(); actualizarOpcionesBajoSilos(); }
-            if(id === 'tablero') { dibujarTablero(); }
-            if(id === 'herramienta') renderHerramientaCintas();
-            if(id === 'admin') renderAdminCereales();
-            checkMobileView();
-        }
-
-        function cambiarSubTab(id, btn) { 
-            document.querySelectorAll('#rellenos > div[id^="sub-"]').forEach(d => d.style.display = 'none'); 
-            document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active')); 
-            document.getElementById(id).style.display = 'block'; 
-            btn.classList.add('active'); 
-            if(id === 'sub-bajo-silos') renderBajoSilos();
-        }
-        
-        function interpolar(tabla, metros) { 
-            if(metros <= tabla[0][0]) return tabla[0][1]; 
-            if(metros >= tabla[tabla.length-1][0]) return tabla[tabla.length-1][1]; 
-            for(let i=0; i<tabla.length-1; i++) { 
-                let a = tabla[i], b = tabla[i+1]; 
-                if(metros >= a[0] && metros <= b[0]) return a[1] + (b[1]-a[1]) * ((metros - a[0]) / (b[0] - a[0])); 
-            } 
-            return 0; 
-        }
-
-        function getSiloData(num) {
-            if(!db.silos[num]) {
-                let tipo = 'SILO'; let isNum = !isNaN(num) && num !== '';
-                if(!isNum) { let tConf = TANQUES_CONFIG.find(t => t.id === num); if(tConf) tipo = 'TANQUE'; else { let uConf = UNIDADES_PASO_CONFIG.find(u => u.id === num); if(uConf) tipo = uConf.tipo; else tipo = 'TANQUE'; } }
-                else { let n = parseInt(num); if (!(n >= 101 && n <= 118) && !(n >= 301 && n <= 318) && !(n >= 501 && n <= 518) && !(n >= 701 && n <= 718)) tipo = 'ENTRESILO'; }
-                db.silos[num] = { estado: 'VACIO', cereal: '', calidad: '', tonelaje: 0, historial: [], alerta_manual: false, fecha_primera_carga: null, fumigacion_fecha: null, fumigacion_tipo: null, origen: null, lastUpdate: 0, tipo: tipo };
-            }
-            if(!db.silos[num].historial) db.silos[num].historial = []; if(!db.silos[num].lastUpdate) db.silos[num].lastUpdate = 0;
-            return db.silos[num];
-        }
-
-        function esSiloTipo(num) { return ((num >= 101 && num <= 118) || (num >= 301 && num <= 318) || (num >= 501 && num <= 518) || (num >= 701 && num <= 718)) ? 'SILO' : 'ENTRESILO'; }
-        
-        function obtenerTopeMetros(num) { if(MIN_14.includes(num)) return 14; if(MIN_10.includes(num)) return 10; return 1; }
-        function obtenerTopeEntresilo() { return 4; }
-
-        function getTonelajeMaxRelleno(num, cerealObj) {
-            let n = parseInt(num);
-            let tipo = esSiloTipo(n);
-            let topeMetros = (tipo === 'ENTRESILO') ? obtenerTopeEntresilo() : obtenerTopeMetros(n);
-            let capMaxRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, topeMetros);
-            return Math.round(capMaxRef * cerealObj.ph / PH_BASE);
-        }
-
-        function getEspacioDisp(num) { 
-            let d = db.silos[num]; 
-            if(!d || (d.estado !== 'CON_CARGA' && d.estado !== 'TAPADA')) return 0; 
-            let cereal = db.cereales.find(c => c.id === d.cereal); 
-            if(!cereal) return 0; 
-            let n = parseInt(num); 
-            let maxTons = getTonelajeMaxRelleno(num, cereal);
-            let actual = parseFloat(d.tonelaje) || 0; 
-            return Math.max(0, maxTons - actual); 
-        }
-
-        function getCintaExtraccion(num) {
-            let n = parseInt(num);
-            if (n >= 600 && n <= 718) return 'C1';
-            if ((n >= 500 && n <= 518) || (n >= 402 && n <= 416 && n % 2 === 0)) return 'C2';
-            if ((n >= 300 && n <= 318) || (n >= 401 && n <= 417 && n % 2 !== 0)) return 'C3';
-            if (n >= 100 && n <= 217) return 'C4';
-            return 'C1';
-        }
-
-        function getCintaSobresilo(num) {
-            let n = parseInt(num);
-            if (n >= 700 && n <= 718) return 'CE';
-            if ((n >= 500 && n <= 518) || (n >= 600 && n <= 617)) return 'CD1';
-            if ((n >= 300 && n <= 318) || (n >= 400 && n <= 417)) return 'CD2';
-            if ((n >= 100 && n <= 118) || (n >= 200 && n <= 217)) return 'CD3';
-            return 'CE';
-        }
-
-        // --- NUEVA LÓGICA DE EDICIÓN DIRECTA ---
-        
-        function abrirModalEditarUnidad(id) {
-            let d = getSiloData(id);
-            document.getElementById('edit-id').value = id;
-            document.getElementById('edit-titulo').innerText = `Editar ${d.tipo === 'SILO' || d.tipo === 'ENTRESILO' ? 'Silo' : d.tipo} ${id}`;
-            
-            // Llenar cereales
-            let selCereal = document.getElementById('edit-cereal');
-            selCereal.innerHTML = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-            
-            // Setear valores actuales
-            document.getElementById('edit-estado').value = d.estado;
-            if(d.cereal) selCereal.value = d.cereal;
-            document.getElementById('edit-calidad').value = d.calidad || '';
-            document.getElementById('edit-fecha-carga').value = d.fecha_primera_carga || '';
-            document.getElementById('edit-tons').value = d.tonelaje || 0;
-            document.getElementById('edit-metros').value = '';
-
-            // Ocultar/Mostrar campos de metros según tipo
-            let groupMetros = document.getElementById('edit-group-metros');
-            let esSilo = (d.tipo === 'SILO' || d.tipo === 'ENTRESILO');
-            groupMetros.style.display = esSilo ? 'block' : 'none';
-            
-            // Si es silo, habilitar cálculo automático. Si es tanque/caño, input manual.
-            let inputTons = document.getElementById('edit-tons');
-            inputTons.readOnly = false; // Siempre editable por si falla el cálculo
-
-            toggleCamposCarga();
-            actualizarInfoFumigacion(d);
-            document.getElementById('modal-editar-unidad').classList.add('active');
-        }
-
-        function toggleCamposCarga() {
-            let estado = document.getElementById('edit-estado').value;
-            document.getElementById('edit-campos-carga').style.display = (estado === 'CON_CARGA' || estado === 'TAPADA') ? 'block' : 'none';
-        }
-
-        function calcularEdicionTonelaje() {
-            let id = document.getElementById('edit-id').value;
-            let d = getSiloData(id);
-            if(d.tipo !== 'SILO' && d.tipo !== 'ENTRESILO') return;
-
-            let metros = parseFloat(document.getElementById('edit-metros').value);
-            let cerealId = document.getElementById('edit-cereal').value;
-            if(isNaN(metros) || metros < 0 || !cerealId) return;
-
-            let cereal = db.cereales.find(c => c.id === cerealId);
-            let n = parseInt(id);
-            let tipo = esSiloTipo(n);
-            
-            let capMaxRef = interpolar(tipo === 'SILO' ? TABLA_SILOS : TABLA_ENTRESILOS, metros);
-            let tons = Math.round(capMaxRef * cereal.ph / PH_BASE);
-            
-            // Si el silo está en manuales, el operario podría querer sobrescribirlo
-            document.getElementById('edit-tons').value = tons;
-        }
-
-        function actualizarInfoFumigacion(d) {
-            let infoDiv = document.getElementById('edit-info-fumigacion');
-            if(!d.fecha_primera_carga) {
-                infoDiv.innerHTML = "Sin fecha de carga registrada.";
-                infoDiv.style.color = "var(--text-light)";
-                return;
-            }
-            
-            let fBase = d.fumigacion_fecha || d.fecha_primera_carga;
-            let dias = Math.floor((new Date() - parseFechaLocal(fBase)) / (1000 * 60 * 60 * 24));
-            
-            let color = dias > 90 ? '#ef4444' : (dias > 60 ? '#f59e0b' : '#10b981');
-            let txt = d.fumigacion_fecha ? "Última fumigación" : "1° Carga";
-            
-            infoDiv.innerHTML = `🕒 Días desde ${txt}: <span style="color:${color}; font-size:1.1rem;">${dias}</span>`;
-        }
-
-        function fumigarUnidad() {
-            let id = document.getElementById('edit-id').value;
-            let d = getSiloData(id);
-            d.fumigacion_fecha = getFechaLocal();
-            guardarDB();
-            actualizarInfoFumigacion(d);
-            showToast("💨 Fumigación registrada hoy. Contador reiniciado.", "success");
-        }
-
-        function guardarEdicionUnidad() {
-            let id = document.getElementById('edit-id').value;
-            let d = getSiloData(id);
-            let nuevoEstado = document.getElementById('edit-estado').value;
-            
-            d.estado = nuevoEstado;
-            
-            if(nuevoEstado === 'VACIO') {
-                d.cereal = ''; d.calidad = ''; d.tonelaje = 0; 
-                d.fecha_primera_carga = null; d.fumigacion_fecha = null;
-            } else if (nuevoEstado === 'CON_CARGA' || nuevoEstado === 'TAPADA') {
-                let nuevoCereal = document.getElementById('edit-cereal').value;
-                let nuevaFecha = document.getElementById('edit-fecha-carga').value;
-                
-                // Si antes estaba vacío y ahora carga, o cambió de cereal, resetea fecha
-                if((!d.cereal || d.cereal === '') && nuevoCereal) {
-                    if(!nuevaFecha) nuevaFecha = getFechaLocal();
-                    d.fumigacion_fecha = null; // Resetea fumigación al ingresar nueva mercadería
-                }
-
-                d.cereal = nuevoCereal;
-                d.calidad = document.getElementById('edit-calidad').value.toUpperCase().trim();
-                d.tonelaje = parseFloat(document.getElementById('edit-tons').value) || 0;
-                d.fecha_primera_carga = nuevaFecha || d.fecha_primera_carga || getFechaLocal();
-            }
-
-            d.lastUpdate = Date.now();
-            guardarDB();
-            
-            // Actualizar UI
-            dibujarTablero(); 
-            dibujarTanques();
-            actualizarExistencias();
-            cerrarModal('modal-editar-unidad');
-            showToast(`✅ Unidad ${id} actualizada`, "success");
-        }
-
-        // --- FIN NUEVA LÓGICA ---
-
-        function dibujarTablero() {
-            let contenedor = document.getElementById('contenedor-tablero');
-            if(!contenedor) return;
-            contenedor.innerHTML = '';
-            
-            let filtro = document.getElementById('filtro-cinta-tablero').value;
-            
-            // Resumen
-            let vacios = 0, tapados = 0, fuera = 0;
-            TODOS_LOS_SILOS.forEach(s => {
-                let d = db.silos[s];
-                if(!d || d.estado === 'VACIO') vacios++;
-                else if(d.estado === 'TAPADA') tapados++;
-                else if(d.estado === 'FUERA_SERVICIO') fuera++;
-            });
-            document.getElementById('tablero-resumen').innerHTML = `
-                <span>🚫 Vacíos: ${vacios}</span>
-                <span>⚠️ Tapados: ${tapados}</span>
-                <span>🔴 F. Servicio: ${fuera}</span>
-            `;
-
-            Object.keys(FILAS_TABLERO).forEach(fila => {
-                let silosFila = FILAS_TABLERO[fila];
-                
-                // Aplicar filtros
-                silosFila = silosFila.filter(s => {
-                    if(filtro === 'TODAS') return true;
-                    if(filtro === 'C1') return getCintaExtraccion(s) === 'C1';
-                    if(filtro === 'C2') return getCintaExtraccion(s) === 'C2';
-                    if(filtro === 'C3') return getCintaExtraccion(s) === 'C3';
-                    if(filtro === 'C4') return getCintaExtraccion(s) === 'C4';
-                    if(filtro === 'CE1') return getCintaSobresilo(s) === 'CE' && (s >= 701 && s <= 718);
-                    if(filtro === 'CE2') return getCintaSobresilo(s) === 'CE' && (s >= 701 && s <= 717);
-                    if(filtro === 'CD1') return getCintaSobresilo(s) === 'CD1';
-                    if(filtro === 'CD2') return getCintaSobresilo(s) === 'CD2';
-                    if(filtro === 'CD3') return getCintaSobresilo(s) === 'CD3';
-                    return true;
-                });
-
-                if(silosFila.length === 0) return;
-
-                let divFila = document.createElement('div');
-                divFila.className = 'fila-cinta';
-                divFila.innerHTML = `<div class="grid-tarjetas" id="fila-${fila}"></div>`;
-                contenedor.appendChild(divFila);
-
-                let grid = divFila.querySelector(`#fila-${fila}`);
-                
-                silosFila.forEach(s => {
-                    let d = getSiloData(s);
-                    let tarjeta = document.createElement('div');
-                    
-                    let claseBg = 'bg-VACIO';
-                    if(d.estado !== 'VACIO' && d.cereal) {
-                        let cData = db.cereales.find(c => c.id === d.cereal);
-                        claseBg = cData ? `bg-${cData.id}` : 'bg-OTROS';
-                    }
-                    
-                    tarjeta.className = `tarjeta ${claseBg}`;
-                    if(d.estado === 'TAPADA') tarjeta.classList.add('estado-tapado');
-                    if(d.estado === 'FUERA_SERVICIO') tarjeta.classList.add('estado-fuera');
-                    
-                    tarjeta.onclick = () => abrirModalEditarUnidad(s);
-                    
-                    let txtCalidad = d.calidad ? d.calidad : (d.estado === 'VACIO' ? 'VACÍO' : 'S/C');
-                    let txtTons = d.estado === 'VACIO' ? '' : `<div class="t-info-3">${(d.tonelaje || 0).toLocaleString()} t</div>`;
-                    
-                    // Calcular fumigación
-                    let htmlFumigacion = '';
-                    if(d.estado !== 'VACIO' && d.fecha_primera_carga) {
-                        let fBase = d.fumigacion_fecha || d.fecha_primera_carga;
-                        let dias = Math.floor((new Date() - parseFechaLocal(fBase)) / (1000 * 60 * 60 * 24));
-                        if(dias >= 0) {
-                            let claseDias = dias > 90 ? 'rojo' : (dias > 60 ? 'naranja' : 'verde');
-                            htmlFumigacion = `<div class="fumigacion-badge ${claseDias}">🕒 ${dias}d</div>`;
-                        }
-                    }
-
-                    tarjeta.innerHTML = `
-                        ${htmlFumigacion}
-                        <div class="t-num">${s}</div>
-                        <div class="t-info">${txtCalidad}</div>
-                        ${txtTons}
-                    `;
-                    grid.appendChild(tarjeta);
-                });
-            });
-        }
-
-        function dibujarTanques() {
-            let contenedor = document.getElementById('contenedor-todos-tanques');
-            if(!contenedor) return;
-            contenedor.innerHTML = '';
-            
-            TANQUES_FINALES.forEach(t => {
-                let d = getSiloData(t.id);
-                let div = document.createElement('div');
-                div.className = `tarjeta ${d.estado !== 'VACIO' && d.cereal ? 'bg-'+d.cereal : 'bg-VACIO'}`;
-                div.style.cssText = "min-height: 80px; margin-bottom: 10px; flex-direction: row; justify-content: space-between; padding: 10px 15px; align-items: center;";
-                div.onclick = () => abrirModalEditarUnidad(t.id);
-                
-                div.innerHTML = `
-                    <div style="text-align:left;">
-                        <div style="font-size:1.2rem; font-weight:900;">${t.id}</div>
-                        <div style="font-size:0.7rem; opacity:0.8;">Piso ${t.piso} - Max ${t.max}t</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:0.9rem; font-weight:bold;">${d.estado === 'VACIO' ? 'VACÍO' : d.cereal}</div>
-                        <div style="font-size:0.8rem;">${d.estado === 'VACIO' ? '' : (d.tonelaje || 0).toLocaleString() + ' t'}</div>
-                    </div>
-                `;
-                contenedor.appendChild(div);
-            });
-
-            let contPaso = document.getElementById('contenedor-unidades-paso');
-            if(contPaso) {
-                contPaso.innerHTML = '';
-                UNIDADES_PASO_CONFIG.forEach(u => {
-                    let d = getSiloData(u.id);
-                    let div = document.createElement('div');
-                    div.className = `tarjeta ${d.estado !== 'VACIO' && d.cereal ? 'bg-'+d.cereal : 'bg-VACIO'}`;
-                    div.style.cssText = "min-height: 80px; flex-direction: column; justify-content: center; padding: 10px;";
-                    div.onclick = () => abrirModalEditarUnidad(u.id);
-                    
-                    div.innerHTML = `
-                        <div style="font-size:0.9rem; font-weight:900; text-align:center;">${u.id}</div>
-                        <div style="font-size:0.6rem; text-align:center; opacity:0.8; margin-bottom:4px;">${u.tipo}</div>
-                        <div style="font-size:0.8rem; font-weight:bold;">${d.estado === 'VACIO' ? 'VACÍO' : d.cereal}</div>
-                        <div style="font-size:0.75rem;">${d.estado === 'VACIO' ? '' : (d.tonelaje || 0).toLocaleString() + ' t'}</div>
-                    `;
-                    contPaso.appendChild(div);
-                });
-            }
-        }
-
-        function actualizarResumenTanques() {
-            // Función simplificada
-        }
-
-        function actualizarSelects() {
-            let opts = db.cereales.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-            let calcCereal = document.getElementById('calc-cereal');
-            if(calcCereal) calcCereal.innerHTML = opts;
-            let selRelleno = document.getElementById('sel-cereal-relleno');
-            if(selRelleno) selRelleno.innerHTML = opts;
-            let selBajo = document.getElementById('sel-cereal-bajosilos');
-            if(selBajo) selBajo.innerHTML = opts;
-        }
-
-        function actualizarExistencias() {
-            let cont = document.getElementById('existencias-cintas-container');
-            if(!cont) return;
-            let stock = {};
-            db.cereales.forEach(c => stock[c.id] = 0);
-            
-            Object.keys(db.silos).forEach(id => {
-                let d = db.silos[id];
-                if(d.estado !== 'VACIO' && d.cereal && stock[d.cereal] !== undefined) {
-                    stock[d.cereal] += parseFloat(d.tonelaje) || 0;
-                }
-            });
-
-            cont.innerHTML = db.cereales.map(c => `
-                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);">
-                    <span style="font-weight:bold; color:${c.color};">${c.nombre}</span>
-                    <span style="font-weight:bold;">${stock[c.id].toLocaleString()} t</span>
-                </div>
-            `).join('');
-            
-            // Contadores
-            let vacios = 0, carga = 0, tapados = 0, fuera = 0;
-            TODOS_LOS_SILOS.forEach(s => {
-                let d = db.silos[s];
-                if(!d || d.estado === 'VACIO') vacios++;
-                else if(d.estado === 'CON_CARGA') carga++;
-                else if(d.estado === 'TAPADA') tapados++;
-                else if(d.estado === 'FUERA_SERVICIO') fuera++;
-            });
-            document.getElementById('st-vacios').innerText = vacios;
-            document.getElementById('st-carga').innerText = carga;
-            document.getElementById('st-tapados').innerText = tapados;
-            document.getElementById('st-fuera').innerText = fuera;
-        }
-        
-        function calcularStock() { actualizarExistencias(); }
-        function mostrarSilosPorEstado(estado, el) { /* Simplificado */ }
-        function renderAdminCereales() {
-            let cont = document.getElementById('admin-cereales-lista');
-            if(!cont) return;
-            cont.innerHTML = db.cereales.map(c => `
-                <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border);">
-                    <span>${c.nombre}</span>
-                    <span>PH: ${c.ph}</span>
-                </div>
-            `).join('');
-        }
-        function crearCereal() { showToast("Función en desarrollo para esta demo", "info"); }
-        function dibujarCierres() { }
-        function actualizarOpcionesRelleno() { }
-        function actualizarOpcionesBajoSilos() { }
-        function renderBajoSilos() { }
-        function dibujarAlertas() { }
-        function renderHerramientaCintas() { }
-        function renderHerramientaCerealesChk() { }
-        function generarExistencia() { showToast("Cierre generado (Simulado)", "success"); }
-        function archivarHistorial() { }
-        function compartirDatos() { }
-        function fusionarDatos() { }
-        function limpiarAnotador() { }
-        function calcularMedidaRapida() { }
-        
-        function toggleSiloBot() {
-            document.getElementById('silobot-modal').classList.toggle('active');
-        }
-        function sendChip(msg) { document.getElementById('chat-input').value = msg; sendChatMsg(); }
-        function handleChatEnter(e) { if(e.key === 'Enter') sendChatMsg(); }
-        function sendChatMsg() {
-            let input = document.getElementById('chat-input');
-            let msg = input.value.trim();
-            if(!msg) return;
-            let body = document.getElementById('chat-body');
-            
-            body.innerHTML += `<div class="chat-msg user">${msg}</div>`;
-            input.value = '';
-            body.scrollTop = body.scrollHeight;
-
-            setTimeout(() => {
-                let resp = "🤖 (Demo) Entendido. Esta función de IA está en pausa mientras probamos el nuevo sistema de edición directa.";
-                if(msg.toLowerCase().includes('ayuda')) resp = "💡 <b>¿Cómo usar la nueva app?</b><br><br>1. Andá al <b>Tablero</b>.<br>2. Tocá cualquier tarjeta de silo.<br>3. Se abrirá una ventana para poner cereal, metros y fecha.<br>4. ¡Guarda y listo!";
-                body.innerHTML += `<div class="chat-msg bot">${resp}</div>`;
-                body.scrollTop = body.scrollHeight;
-            }, 500);
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error:', err));
-            });
-        }
-
-        window.onload = init;
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
